@@ -609,16 +609,22 @@ const NODES = [
   },
 ];
 
-// Add dots to nodes
-NODES.forEach((n, i) => {
-  const el = document.getElementById(`node-${i}`);
-  const dot = document.createElement('div');
-  dot.className = 'node-dot';
-  dot.id = `dot-${i}`;
-  const facingCenter = n.angle > 90 && n.angle < 270;
-  dot.style.right = facingCenter ? '-4px' : 'auto';
-  dot.style.left = facingCenter ? 'auto' : '-4px';
-  el.querySelector('.node-pill').appendChild(dot);
+// DOM manipulation — runs after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Add dots to nodes
+  NODES.forEach((n, i) => {
+    const el = document.getElementById(`node-${i}`);
+    const dot = document.createElement('div');
+    dot.className = 'node-dot';
+    dot.id = `dot-${i}`;
+    const facingCenter = n.angle > 90 && n.angle < 270;
+    dot.style.right = facingCenter ? '-4px' : 'auto';
+    dot.style.left = facingCenter ? 'auto' : '-4px';
+    el.querySelector('.node-pill').appendChild(dot);
+  });
+
+  drawSpokes();
 });
 
 function drawSpokes() {
@@ -652,25 +658,23 @@ function drawSpokes() {
   });
 }
 
-window.addEventListener('load', () => setTimeout(drawSpokes, 50));
 window.addEventListener('resize', drawSpokes);
 
 // Panel logic
 let activeNode = null;
 
-const panelData = {
-  label: document.getElementById('panelLabel'),
-  title: document.getElementById('panelTitle'),
-  id: document.getElementById('panelId'),
-  body: document.getElementById('panelBody'),
-  stats: document.getElementById('panelStats'),
-};
-
 function openPanel(i) {
   const n = NODES[i];
-
   if (activeNode === i) { closePanel(); return; }
   activeNode = i;
+
+  const panelData = {
+    label: document.getElementById('panelLabel'),
+    title: document.getElementById('panelTitle'),
+    id: document.getElementById('panelId'),
+    body: document.getElementById('panelBody'),
+    stats: document.getElementById('panelStats'),
+  };
 
   // Reset nodes
   document.querySelectorAll('.orbital-node').forEach(el => el.classList.remove('active'));
