@@ -165,7 +165,6 @@
   /* Orbital nodes */
   .orbital-node {
     position: absolute;
-    transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 20;
   }
@@ -385,8 +384,8 @@
   .center-seal { animation: fadeUp 0.8s ease forwards; }
 
   @keyframes nodeIn {
-    from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); }
-    to   { opacity: 1; transform: translate(-50%, -50%); }
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .orbital-node {
@@ -631,10 +630,11 @@ function layoutOrbital() {
     const nx = cx + Math.cos(rad) * RADIUS;
     const ny = cy + Math.sin(rad) * RADIUS;
 
-    // Position node
+    // Position node — center the pill on the calculated point
     const el = document.getElementById(`node-${i}`);
     el.style.left = nx + 'px';
     el.style.top = ny + 'px';
+    el.style.transform = 'translate(-50%, -50%)';
 
     // Draw spoke from seal edge to near node
     const nodeOffset = 70;
