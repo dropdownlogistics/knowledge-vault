@@ -609,32 +609,29 @@ const NODES = [
   },
 ];
 
-// DOM manipulation -- runs after DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-
-  // Add dots to nodes and wire click events
-  NODES.forEach((n, i) => {
-    const el = document.getElementById('node-' + i);
-    const dot = document.createElement('div');
-    dot.className = 'node-dot';
-    dot.id = 'dot-' + i;
-    const facingCenter = n.angle > 90 && n.angle < 270;
-    dot.style.right = facingCenter ? '-4px' : 'auto';
-    dot.style.left = facingCenter ? 'auto' : '-4px';
-    el.querySelector('.node-pill').appendChild(dot);
-    el.addEventListener('click', function() { openPanel(i); });
-  });
-
-  // Wire Learn More and Close buttons
-  document.getElementById('learnMoreBtn').addEventListener('click', function() {
-    var next = (activeNode === null) ? 0 : (activeNode + 1) % NODES.length;
-    openPanel(next);
-  });
-
-  document.getElementById('closeBtn').addEventListener('click', closePanel);
-
-  drawSpokes();
+// DOM manipulation -- script is at bottom of body, DOM already ready
+// Add dots to nodes and wire click events
+NODES.forEach((n, i) => {
+  const el = document.getElementById('node-' + i);
+  const dot = document.createElement('div');
+  dot.className = 'node-dot';
+  dot.id = 'dot-' + i;
+  const facingCenter = n.angle > 90 && n.angle < 270;
+  dot.style.right = facingCenter ? '-4px' : 'auto';
+  dot.style.left = facingCenter ? 'auto' : '-4px';
+  el.querySelector('.node-pill').appendChild(dot);
+  el.addEventListener('click', function() { openPanel(i); });
 });
+
+// Wire Learn More and Close buttons
+document.getElementById('learnMoreBtn').addEventListener('click', function() {
+  var next = (activeNode === null) ? 0 : (activeNode + 1) % NODES.length;
+  openPanel(next);
+});
+
+document.getElementById('closeBtn').addEventListener('click', closePanel);
+
+drawSpokes();
 
 function drawSpokes() {
   const wrap = document.getElementById('orbitalWrap');
