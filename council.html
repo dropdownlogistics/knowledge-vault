@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Council — DDL Knowledge Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0D1B2A;
+    --card:   #10202f;
+    --cream:  #F5F1EB;
+    --teal:   #2C7A7B;
+    --teal-lt:#3a9a9b;
+    --steel:  #6B7B8D;
+    --border: rgba(245,241,235,0.07);
+    --lock:   #2C7A7B;
+    --revise: #C49A3C;
+    --reject: #B23531;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    width:100%; height:100%;
+    background: var(--navy);
+    color: var(--cream);
+    font-family: 'Source Serif 4', Georgia, serif;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,27,42,0.92);
+    backdrop-filter: blur(8px);
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .topbar-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+  }
+
+  .topbar-page {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .topbar-stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--teal);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    display: block;
+    text-align: right;
+  }
+
+  .topbar-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--steel);
+    letter-spacing: 0.06em;
+    display: block;
+    text-align: right;
+  }
+
+  .topbar-divider { width:1px; height:28px; background:var(--border); }
+
+  .nav-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--steel);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+
+  .nav-link:hover, .nav-link.active { color: var(--teal); }
+
+  /* ── STAGE ── */
+  .stage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+    padding-bottom: 44px;
+  }
+
+  .orbital-wrap {
+    position: relative;
+    width: min(700px, 90vw);
+    height: min(700px, 90vw);
+  }
+
+  .orbit-ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(44,122,123,0.18);
+    pointer-events: none;
+  }
+
+  .orbit-ring-inner {
+    position: absolute; inset: 18%;
+    border-radius: 50%;
+    border: 1px dashed rgba(44,122,123,0.1);
+    pointer-events: none;
+  }
+
+  .spoke-svg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  /* ── CENTER: VERDICT WHEEL ── */
+  .center-node {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px; height: 160px;
+    z-index: 10;
+  }
+
+  .verdict-ring {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Three arc segments via SVG */
+  .verdict-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+  }
+
+  .verdict-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 1px solid rgba(44,122,123,0.3);
+  }
+
+  .verdict-count {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .verdict-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.48rem;
+    color: var(--steel);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Rotating arc animation */
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .verdict-svg { animation: spinSlow 20s linear infinite; }
+
+  /* Verdict label badges floating around */
+  .verdict-badge {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-weight: 600;
+    z-index: 3;
+  }
+
+  .verdict-badge.lock   { background: rgba(44,122,123,0.2);  border: 1px solid rgba(44,122,123,0.5);  color: var(--lock);   top: 8px;  left: 50%; transform: translateX(-50%); }
+  .verdict-badge.revise { background: rgba(196,154,60,0.15); border: 1px solid rgba(196,154,60,0.4);  color: var(--revise); bottom: 18px; right: 8px; }
+  .verdict-badge.reject { background: rgba(178,53,49,0.12);  border: 1px solid rgba(178,53,49,0.35);  color: var(--reject); bottom: 18px; left: 8px; }
+
+  /* ── ORBITAL NODES ── */
+  .orbital-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 20;
+  }
+
+  #node-0 { left: 50%;    top: 11.5%;  }
+  #node-1 { left: 83.3%;  top: 30.75%; }
+  #node-2 { left: 83.3%;  top: 69.25%; }
+  #node-3 { left: 16.7%;  top: 69.25%; }
+  #node-4 { left: 16.7%;  top: 30.75%; }
+
+  .node-pill {
+    padding: 10px 18px;
+    border: 1px solid rgba(44,122,123,0.3);
+    border-radius: 40px;
+    background: rgba(13,27,42,0.85);
+    backdrop-filter: blur(4px);
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .orbital-node:hover .node-pill,
+  .orbital-node.active .node-pill {
+    background: rgba(44,122,123,0.15);
+    border-color: rgba(44,122,123,0.7);
+    box-shadow: 0 0 24px rgba(44,122,123,0.15);
+  }
+
+  .node-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    display: block;
+  }
+
+  .node-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--teal);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .node-dot {
+    position: absolute;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(13,27,42,0.97);
+    border-top: 1px solid rgba(44,122,123,0.2);
+    padding: 28px 40px 24px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 200;
+    backdrop-filter: blur(12px);
+  }
+
+  .detail-panel.open { transform: translateY(0); }
+
+  .detail-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .detail-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .detail-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .detail-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--steel);
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+  }
+
+  .detail-body {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: rgba(245,241,235,0.82);
+    margin-bottom: 16px;
+  }
+
+  .detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .detail-tag {
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    border: 1px solid;
+  }
+
+  .detail-tag.seat    { background: rgba(44,122,123,0.1);  border-color: rgba(44,122,123,0.25); color: var(--teal-lt); }
+  .detail-tag.local   { background: rgba(138,108,201,0.1); border-color: rgba(138,108,201,0.25); color: #8a6cc9; }
+  .detail-tag.lock    { background: rgba(44,122,123,0.12); border-color: rgba(44,122,123,0.4);  color: var(--lock); }
+  .detail-tag.revise  { background: rgba(196,154,60,0.1);  border-color: rgba(196,154,60,0.35); color: var(--revise); }
+  .detail-tag.reject  { background: rgba(178,53,49,0.1);   border-color: rgba(178,53,49,0.3);  color: var(--reject); }
+  .detail-tag.rule    { background: rgba(107,123,141,0.1); border-color: rgba(107,123,141,0.25); color: var(--steel); }
+
+  .detail-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .detail-stat {
+    padding: 7px 12px;
+    background: rgba(44,122,123,0.1);
+    border: 1px solid rgba(44,122,123,0.2);
+    border-radius: 4px;
+  }
+
+  .detail-stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--teal);
+    font-weight: 500;
+    display: block;
+  }
+
+  .detail-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    color: var(--steel);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-top: 1px;
+  }
+
+  .detail-close {
+    position: absolute;
+    top: 18px; right: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--steel);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+
+  .detail-close:hover { color: var(--teal); }
+
+  /* ── FOOTER ── */
+  .footbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 40px;
+    border-top: 1px solid var(--border);
+    background: rgba(13,27,42,0.92);
+    backdrop-filter: blur(8px);
+  }
+
+  .footbar-left {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--steel);
+    letter-spacing: 0.06em;
+  }
+
+  .footbar-right { display:flex; gap:20px; }
+
+  .footbar-nav {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--steel);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+
+  .footbar-nav:hover { color: var(--teal); }
+
+  /* Animations */
+  @keyframes spokePulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.65; }
+  }
+
+  .spoke-line { animation: spokePulse 3s ease-in-out infinite; }
+  .spoke-line:nth-child(1) { animation-delay: 0s; }
+  .spoke-line:nth-child(2) { animation-delay: 0.6s; }
+  .spoke-line:nth-child(3) { animation-delay: 1.2s; }
+  .spoke-line:nth-child(4) { animation-delay: 1.8s; }
+  .spoke-line:nth-child(5) { animation-delay: 2.4s; }
+
+  .spoke-line.active {
+    animation: none;
+    opacity: 1 !important;
+    stroke: var(--teal) !important;
+    stroke-width: 1.5px !important;
+  }
+
+  @keyframes nodeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .orbital-node { opacity:0; animation: nodeIn 0.6s ease forwards; }
+  .orbital-node:nth-child(1) { animation-delay: 0.1s; }
+  .orbital-node:nth-child(2) { animation-delay: 0.2s; }
+  .orbital-node:nth-child(3) { animation-delay: 0.3s; }
+  .orbital-node:nth-child(4) { animation-delay: 0.4s; }
+  .orbital-node:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translate(-50%, calc(-50% + 10px)); }
+    to   { opacity:1; transform: translate(-50%, -50%); }
+  }
+
+  .center-node { animation: fadeUp 0.7s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<div class="topbar">
+  <a class="topbar-left" href="index.html">
+    <svg width="28" height="28" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
+      <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
+      <text x="70" y="82" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+    </svg>
+    <div>
+      <div class="topbar-name">Knowledge Vault</div>
+      <div class="topbar-page">The Council</div>
+    </div>
+  </a>
+  <div class="topbar-right">
+    <div>
+      <div class="topbar-stat-val">10</div>
+      <div class="topbar-stat-label">SEATS</div>
+    </div>
+    <div class="topbar-divider"></div>
+    <div>
+      <div class="topbar-stat-val">5+</div>
+      <div class="topbar-stat-label">COUNCIL REVIEWS</div>
+    </div>
+    <div class="topbar-divider"></div>
+    <div>
+      <div class="topbar-stat-val">3</div>
+      <div class="topbar-stat-label">VERDICTS</div>
+    </div>
+    <div class="topbar-divider"></div>
+    <a class="nav-link" href="index.html">← Vault</a>
+    <a class="nav-link" href="corpus.html">Corpus</a>
+    <a class="nav-link active">Council</a>
+    <a class="nav-link" href="#">Method →</a>
+  </div>
+</div>
+
+<!-- ── STAGE ── -->
+<div class="stage">
+  <div class="orbital-wrap" id="orbitalWrap">
+
+    <div class="orbit-ring"></div>
+    <div class="orbit-ring-inner"></div>
+    <svg class="spoke-svg" id="spokeSvg" viewBox="0 0 700 700"></svg>
+
+    <!-- Center: Verdict Wheel -->
+    <div class="center-node">
+      <div class="verdict-ring">
+        <!-- Rotating three-arc SVG -->
+        <svg class="verdict-svg" viewBox="0 0 160 160">
+          <!-- LOCK arc — teal — top third -->
+          <path d="M 80 5 A 75 75 0 0 1 140.5 57.5" fill="none" stroke="#2C7A7B" stroke-width="6" stroke-linecap="round"/>
+          <!-- REVISE arc — amber — right/bottom -->
+          <path d="M 147 87 A 75 75 0 0 1 42 148" fill="none" stroke="#C49A3C" stroke-width="6" stroke-linecap="round"/>
+          <!-- REJECT arc — crimson — left -->
+          <path d="M 20 130 A 75 75 0 0 1 13 42" fill="none" stroke="#B23531" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+
+        <!-- Static inner -->
+        <div class="verdict-inner">
+          <span class="verdict-count">10</span>
+          <span class="verdict-label">Seats</span>
+        </div>
+
+        <!-- Verdict badges -->
+        <span class="verdict-badge lock">LOCK</span>
+        <span class="verdict-badge revise">REVISE</span>
+        <span class="verdict-badge reject">REJECT</span>
+      </div>
+    </div>
+
+    <!-- Five orbital nodes -->
+    <div class="orbital-node" id="node-0" onclick="openPanel(0)">
+      <div class="node-pill">
+        <span class="node-title">The Ten Seats</span>
+        <span class="node-sub">1001–1010 · cloud + local</span>
+      </div>
+    </div>
+
+    <div class="orbital-node" id="node-1" onclick="openPanel(1)">
+      <div class="node-pill">
+        <span class="node-title">How It Works</span>
+        <span class="node-sub">Deliberation · AutoCouncil · RAG</span>
+      </div>
+    </div>
+
+    <div class="orbital-node" id="node-2" onclick="openPanel(2)">
+      <div class="node-pill">
+        <span class="node-title">Verdicts</span>
+        <span class="node-sub">LOCK · REVISE · REJECT</span>
+      </div>
+    </div>
+
+    <div class="orbital-node" id="node-3" onclick="openPanel(3)">
+      <div class="node-pill">
+        <span class="node-title">Council Reviews</span>
+        <span class="node-sub">CR- series · what's been ratified</span>
+      </div>
+    </div>
+
+    <div class="orbital-node" id="node-4" onclick="openPanel(4)">
+      <div class="node-pill">
+        <span class="node-title">Governance Hierarchy</span>
+        <span class="node-sub">Safety → Operator → Council</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── DETAIL PANEL ── -->
+<div class="detail-panel" id="detailPanel">
+  <span class="detail-close" onclick="closePanel()">CLOSE ✕</span>
+  <div class="detail-inner">
+    <div>
+      <div class="detail-label" id="panelLabel"></div>
+      <div class="detail-title" id="panelTitle"></div>
+      <div class="detail-id" id="panelId"></div>
+      <div class="detail-stats" id="panelStats"></div>
+    </div>
+    <div>
+      <div class="detail-body" id="panelBody"></div>
+      <div class="detail-tags" id="panelTags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footbar" id="footbar">
+  <div class="footbar-left">
+    COUNCIL ADVISES · OPERATOR DECIDES · GOVERNANCE IS NOT OPTIONAL
+  </div>
+  <div class="footbar-right">
+    <a class="footbar-nav" href="index.html">← The Vault</a>
+    <a class="footbar-nav" href="corpus.html">The Corpus</a>
+    <a class="footbar-nav" href="#">The Method →</a>
+    <a class="footbar-nav" href="#">The Products →</a>
+  </div>
+</div>
+
+<script>
+const NODES = [
+  {
+    angle: 270,
+    label: '01 — THE TEN SEATS',
+    title: 'The Council',
+    id: 'Seats 1001–1009 cloud · Seat 1010 local · Dex Jr.',
+    body: 'Ten seats. Nine cloud models, one local. Each seat has a name, a persona, and a role. Archer Hawthorne (LeChat/1001). Marcus Caldwell (Claude/1002). Elias Mercer (Grok/1003). Max Sullivan (Perplexity/1004). Rowan Bennett (Copilot/1005). Ava Sinclair (Meta AI/1006). Leo Prescott (Gemini/1007). Marcus Grey (ChatGPT/1008) — the synthesizer and PM. Kai Langford (DeepSeek/1009). Dex Jr. (local/1010) — 90%+ Judgment-Ready, qwen2.5-coder:7b, running on an RTX 3070. The council is not a feature. It is the deliberation layer.',
+    stats: [
+      { val: '9', label: 'Cloud Seats' },
+      { val: '1', label: 'Local Seat' },
+      { val: '1008', label: 'Synthesizer' },
+    ],
+    tags: [
+      { label: '1001 · Archer Hawthorne · LeChat', type: 'seat' },
+      { label: '1002 · Marcus Caldwell · Claude', type: 'seat' },
+      { label: '1003 · Elias Mercer · Grok', type: 'seat' },
+      { label: '1004 · Max Sullivan · Perplexity', type: 'seat' },
+      { label: '1005 · Rowan Bennett · Copilot', type: 'seat' },
+      { label: '1006 · Ava Sinclair · Meta AI', type: 'seat' },
+      { label: '1007 · Leo Prescott · Gemini', type: 'seat' },
+      { label: '1008 · Marcus Grey · ChatGPT', type: 'seat' },
+      { label: '1009 · Kai Langford · DeepSeek', type: 'seat' },
+      { label: '1010 · Dex Jr. · Local RTX 3070', type: 'local' },
+    ]
+  },
+  {
+    angle: 30,
+    label: '02 — HOW IT WORKS',
+    title: 'Deliberation',
+    id: 'AutoCouncil v3.0 · dex-deliberate.py · RAG-injected',
+    body: 'Manual council: the operator sends a structured prompt to all nine cloud seats simultaneously. Each seat responds independently. Marcus Grey (1008) synthesizes. The operator decides. AutoCouncil runs the same process locally — dex-deliberate.py orchestrates a hybrid six-model deliberation engine with governance injection, RAG integration from the corpus, multi-round position tracking, autonomous follow-up questions, and auto-ingest of outputs back into the corpus. Every deliberation is logged. Every round is auditable. The synthesis is canon.',
+    stats: [
+      { val: 'v3.0', label: 'AutoCouncil' },
+      { val: '6', label: 'Models (Auto)' },
+      { val: 'Multi-round', label: 'Position Tracking' },
+    ],
+    tags: [
+      { label: 'dex-deliberate.py', type: 'local' },
+      { label: 'RAG injection · top-k canon', type: 'seat' },
+      { label: 'Governance context block', type: 'seat' },
+      { label: 'Auto-ingest to corpus', type: 'seat' },
+      { label: 'Full audit trail', type: 'rule' },
+    ]
+  },
+  {
+    angle: 150,
+    label: '03 — VERDICTS',
+    title: 'LOCK / REVISE / REJECT',
+    id: 'Three verdicts · no ambiguity · operator decides',
+    body: 'Every council review ends in one of three verdicts. LOCK: the architecture, decision, or artifact is ratified and immovable. It enters the corpus as canon. It does not get revisited unless new material evidence emerges and the operator initiates a new review. REVISE: specific issues must be addressed before the item can be locked. The issues are documented. A follow-up review is required. REJECT: the proposal fails to meet the standard. It is logged, not deleted. The rationale is recorded. The operator may resubmit with a different approach.',
+    stats: [
+      { val: 'LOCK', label: 'Ratified · Immovable' },
+      { val: 'REVISE', label: 'Issues Documented' },
+      { val: 'REJECT', label: 'Logged · Resubmittable' },
+    ],
+    tags: [
+      { label: 'LOCK — enters corpus as canon', type: 'lock' },
+      { label: 'REVISE — documented issues required', type: 'revise' },
+      { label: 'REJECT — logged, not deleted', type: 'reject' },
+      { label: 'Council advises. Operator decides.', type: 'rule' },
+    ]
+  },
+  {
+    angle: 210,
+    label: '04 — COUNCIL REVIEWS',
+    title: 'The CR- Series',
+    id: 'CR-AUDITFORGE · CR-CANON · CR-DDL · CR-LLMS · CR-CATHEDRAL',
+    body: 'Every significant DDL decision has gone through a formal council review. AuditForge has five CRs — architecture lock, analytics dashboard, v0.3 roadmap, roster and teams, and the v0.2 schema update. The CanonPress pipeline, the naming convention standard, the Excelligence spec, the Dex Jr. calibration arc — all formal reviews. The cathedral vision prompt went to all nine seats on 2026-03-14. The corpus contains the complete record of every position every seat has ever taken.',
+    stats: [
+      { val: '5+', label: 'CR- Reviews' },
+      { val: 'All products', label: 'Coverage' },
+      { val: 'All in corpus', label: 'Record' },
+    ],
+    tags: [
+      { label: 'CR-AUDITFORGE-001 · Architecture Lock', type: 'lock' },
+      { label: 'CR-AUDITFORGE-003 · Analytics · Unanimous LOCK', type: 'lock' },
+      { label: 'CR-AUDITFORGE-004 · v0.3 Roadmap · LOCK', type: 'lock' },
+      { label: 'CR-CANON-001 · OperatorManifest', type: 'lock' },
+      { label: 'CR-LLMS-015 · Dex Jr. Calibration', type: 'seat' },
+      { label: 'CR-CATHEDRAL-001 · Vision · 2026-03-14', type: 'seat' },
+    ]
+  },
+  {
+    angle: 330,
+    label: '05 — GOVERNANCE HIERARCHY',
+    title: 'What Overrides What',
+    id: 'Six tiers · immovable at the top · heuristics at the bottom',
+    body: 'The governance hierarchy defines what wins when things conflict. Safety is absolute — it overrides everything, including the operator. Operator intent is second — the council advises, the operator decides, and no council verdict overrides an explicit operator decision. Governance documents are third — ratified standards, protocols, and ADRs govern behavior until the operator changes them. Council recommendations are fourth. Procedures are fifth. Heuristics are last. The hierarchy is not theoretical. It is enforced. The council knows it cannot override tier one or two.',
+    stats: [
+      { val: '6', label: 'Tiers' },
+      { val: 'Safety', label: 'Tier 1 (Absolute)' },
+      { val: 'Operator', label: 'Tier 2' },
+    ],
+    tags: [
+      { label: '1 · Safety — absolute · overrides all', type: 'reject' },
+      { label: '2 · Operator — decides · council advises', type: 'lock' },
+      { label: '3 · Governance — ratified standards + ADRs', type: 'lock' },
+      { label: '4 · Council — recommendations only', type: 'seat' },
+      { label: '5 · Procedures — operational protocols', type: 'rule' },
+      { label: '6 · Heuristics — last resort', type: 'rule' },
+    ]
+  },
+];
+
+// Add dots
+NODES.forEach((n, i) => {
+  const el = document.getElementById(`node-${i}`);
+  const dot = document.createElement('div');
+  dot.className = 'node-dot';
+  dot.id = `dot-${i}`;
+  const facingCenter = n.angle > 90 && n.angle < 270;
+  dot.style.right = facingCenter ? '-4px' : 'auto';
+  dot.style.left  = facingCenter ? 'auto' : '-4px';
+  el.querySelector('.node-pill').appendChild(dot);
+});
+
+function drawSpokes() {
+  const wrap = document.getElementById('orbitalWrap');
+  const W = wrap.offsetWidth, H = wrap.offsetHeight;
+  const cx = W/2, cy = H/2;
+  const ORBIT_R = W * 0.385, SEAL_R = W * 0.115;
+  const svg = document.getElementById('spokeSvg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.querySelectorAll('line').forEach(l => l.remove());
+
+  NODES.forEach((n, i) => {
+    const rad = (n.angle - 90) * Math.PI / 180;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', cx + Math.cos(rad) * SEAL_R);
+    line.setAttribute('y1', cy + Math.sin(rad) * SEAL_R);
+    line.setAttribute('x2', cx + Math.cos(rad) * (ORBIT_R - 80));
+    line.setAttribute('y2', cy + Math.sin(rad) * (ORBIT_R - 80));
+    line.setAttribute('stroke', '#2C7A7B');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', '4 6');
+    line.classList.add('spoke-line');
+    line.id = `spoke-${i}`;
+    svg.appendChild(line);
+  });
+}
+
+window.addEventListener('load', () => setTimeout(drawSpokes, 50));
+window.addEventListener('resize', drawSpokes);
+
+let activeNode = null;
+
+function openPanel(i) {
+  const n = NODES[i];
+  if (activeNode === i) { closePanel(); return; }
+  activeNode = i;
+
+  document.querySelectorAll('.orbital-node').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.spoke-line').forEach(el => el.classList.remove('active'));
+  document.getElementById(`node-${i}`).classList.add('active');
+  document.getElementById(`spoke-${i}`).classList.add('active');
+
+  document.getElementById('panelLabel').textContent = n.label;
+  document.getElementById('panelTitle').textContent = n.title;
+  document.getElementById('panelId').textContent = n.id;
+  document.getElementById('panelBody').textContent = n.body;
+
+  document.getElementById('panelStats').innerHTML = n.stats.map(s => `
+    <div class="detail-stat">
+      <span class="detail-stat-val">${s.val}</span>
+      <span class="detail-stat-label">${s.label}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('panelTags').innerHTML = n.tags.map(t => `
+    <span class="detail-tag ${t.type}">${t.label}</span>
+  `).join('');
+
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('footbar').style.display = 'none';
+}
+
+function closePanel() {
+  activeNode = null;
+  document.querySelectorAll('.orbital-node').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.spoke-line').forEach(el => el.classList.remove('active'));
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('footbar').style.display = 'flex';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+</script>
+</body>
+</html>
