@@ -163,11 +163,21 @@
   .center-seal:hover { transform: translate(-50%, -50%) scale(1.04); }
 
   /* Orbital nodes */
+  /* Orbital nodes — CSS percentage positions, no JS needed */
   .orbital-node {
     position: absolute;
+    transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 20;
   }
+
+  /* Angle positions on 38.5% radius orbit:
+     x = 50 + 38.5*cos(angle-90), y = 50 + 38.5*sin(angle-90) */
+  #node-0 { left: 50%;     top: 11.5%; }  /* 270° — top */
+  #node-1 { left: 83.3%;   top: 30.75%; } /* 30°  — upper right */
+  #node-2 { left: 83.3%;   top: 69.25%; } /* 150° — lower right */
+  #node-3 { left: 16.7%;   top: 69.25%; } /* 210° — lower left */
+  #node-4 { left: 16.7%;   top: 30.75%; } /* 330° — upper left */
 
   .node-pill {
     padding: 10px 18px;
@@ -599,7 +609,7 @@ const NODES = [
   },
 ];
 
-// Add dots to nodes first
+// Add dots to nodes
 NODES.forEach((n, i) => {
   const el = document.getElementById(`node-${i}`);
   const dot = document.createElement('div');
@@ -611,43 +621,28 @@ NODES.forEach((n, i) => {
   el.querySelector('.node-pill').appendChild(dot);
 });
 
-function layoutOrbital() {
+function drawSpokes() {
   const wrap = document.getElementById('orbitalWrap');
   const W = wrap.offsetWidth;
   const H = wrap.offsetHeight;
   const cx = W / 2;
   const cy = H / 2;
-  const RADIUS = W * 0.385;
-  const SEAL_R = W * 0.115;
+  const ORBIT_R = W * 0.385;
+  const SEAL_R  = W * 0.115;
   const svg = document.getElementById('spokeSvg');
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-
-  // Remove existing spokes
   svg.querySelectorAll('line').forEach(l => l.remove());
 
   NODES.forEach((n, i) => {
     const rad = (n.angle - 90) * Math.PI / 180;
-    const nx = cx + Math.cos(rad) * RADIUS;
-    const ny = cy + Math.sin(rad) * RADIUS;
-
-    // Position node — center the pill on the calculated point
-    const el = document.getElementById(`node-${i}`);
-    el.style.left = nx + 'px';
-    el.style.top = ny + 'px';
-    el.style.transform = 'translate(-50%, -50%)';
-
-    // Draw spoke from seal edge to near node
-    const nodeOffset = 70;
     const sx = cx + Math.cos(rad) * SEAL_R;
     const sy = cy + Math.sin(rad) * SEAL_R;
-    const ex = cx + Math.cos(rad) * (RADIUS - nodeOffset);
-    const ey = cy + Math.sin(rad) * (RADIUS - nodeOffset);
+    const ex = cx + Math.cos(rad) * (ORBIT_R - 80);
+    const ey = cy + Math.sin(rad) * (ORBIT_R - 80);
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', sx);
-    line.setAttribute('y1', sy);
-    line.setAttribute('x2', ex);
-    line.setAttribute('y2', ey);
+    line.setAttribute('x1', sx); line.setAttribute('y1', sy);
+    line.setAttribute('x2', ex); line.setAttribute('y2', ey);
     line.setAttribute('stroke', '#2C7A7B');
     line.setAttribute('stroke-width', '1');
     line.setAttribute('stroke-dasharray', '4 6');
@@ -657,9 +652,8 @@ function layoutOrbital() {
   });
 }
 
-// Run after fonts + layout settle
-window.addEventListener('load', () => { setTimeout(layoutOrbital, 100); });
-window.addEventListener('resize', layoutOrbital);
+window.addEventListener('load', () => setTimeout(drawSpokes, 50));
+window.addEventListener('resize', drawSpokes);
 
 // Panel logic
 let activeNode = null;
