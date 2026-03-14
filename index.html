@@ -600,66 +600,66 @@ const NODES = [
   },
 ];
 
-const CENTER = 350; // SVG coords (viewBox 700x700)
-const RADIUS = 270;
-
-function angleToPos(deg, size) {
-  const rad = (deg - 90) * Math.PI / 180;
-  // Returns % position in the container
-  const x = 50 + (Math.cos(rad) * RADIUS / 700) * 100;
-  const y = 50 + (Math.sin(rad) * RADIUS / 700) * 100;
-  return { x, y };
-}
-
-// Position nodes
+// Add dots to nodes first
 NODES.forEach((n, i) => {
-  const pos = angleToPos(n.angle, 700);
   const el = document.getElementById(`node-${i}`);
-  el.style.left = pos.x + '%';
-  el.style.top = pos.y + '%';
-
-  // Dot position
   const dot = document.createElement('div');
   dot.className = 'node-dot';
   dot.id = `dot-${i}`;
-
-  // Place dot on edge facing center
-  const rad = (n.angle - 90) * Math.PI / 180;
   const facingCenter = n.angle > 90 && n.angle < 270;
   dot.style.right = facingCenter ? '-4px' : 'auto';
   dot.style.left = facingCenter ? 'auto' : '-4px';
   el.querySelector('.node-pill').appendChild(dot);
 });
 
-// Draw spokes
-const svg = document.getElementById('spokeSvg');
-NODES.forEach((n, i) => {
-  const rad = (n.angle - 90) * Math.PI / 180;
-  const nodeX = CENTER + Math.cos(rad) * RADIUS;
-  const nodeY = CENTER + Math.sin(rad) * RADIUS;
+function layoutOrbital() {
+  const wrap = document.getElementById('orbitalWrap');
+  const W = wrap.offsetWidth;
+  const H = wrap.offsetHeight;
+  const cx = W / 2;
+  const cy = H / 2;
+  const RADIUS = W * 0.385;
+  const SEAL_R = W * 0.115;
+  const svg = document.getElementById('spokeSvg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-  // End the spoke at the center seal boundary (~80px radius in 700 coord space)
-  const sealR = 80;
-  const cx = CENTER + Math.cos(rad) * sealR;
-  const cy = CENTER + Math.sin(rad) * sealR;
+  // Remove existing spokes
+  svg.querySelectorAll('line').forEach(l => l.remove());
 
-  // Start spoke at node (offset slightly from center of node toward center)
-  const nodeR = 120; // approximate node pill edge in 700 space
-  const nx = CENTER + Math.cos(rad) * (RADIUS - nodeR * 0.4);
-  const ny = CENTER + Math.sin(rad) * (RADIUS - nodeR * 0.4);
+  NODES.forEach((n, i) => {
+    const rad = (n.angle - 90) * Math.PI / 180;
+    const nx = cx + Math.cos(rad) * RADIUS;
+    const ny = cy + Math.sin(rad) * RADIUS;
 
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1', nx);
-  line.setAttribute('y1', ny);
-  line.setAttribute('x2', cx);
-  line.setAttribute('y2', cy);
-  line.setAttribute('stroke', '#2C7A7B');
-  line.setAttribute('stroke-width', '1');
-  line.setAttribute('stroke-dasharray', '4 6');
-  line.classList.add('spoke-line');
-  line.id = `spoke-${i}`;
-  svg.appendChild(line);
-});
+    // Position node
+    const el = document.getElementById(`node-${i}`);
+    el.style.left = nx + 'px';
+    el.style.top = ny + 'px';
+
+    // Draw spoke from seal edge to near node
+    const nodeOffset = 70;
+    const sx = cx + Math.cos(rad) * SEAL_R;
+    const sy = cy + Math.sin(rad) * SEAL_R;
+    const ex = cx + Math.cos(rad) * (RADIUS - nodeOffset);
+    const ey = cy + Math.sin(rad) * (RADIUS - nodeOffset);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', sx);
+    line.setAttribute('y1', sy);
+    line.setAttribute('x2', ex);
+    line.setAttribute('y2', ey);
+    line.setAttribute('stroke', '#2C7A7B');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', '4 6');
+    line.classList.add('spoke-line');
+    line.id = `spoke-${i}`;
+    svg.appendChild(line);
+  });
+}
+
+// Run after fonts + layout settle
+window.addEventListener('load', () => { setTimeout(layoutOrbital, 100); });
+window.addEventListener('resize', layoutOrbital);
 
 // Panel logic
 let activeNode = null;
