@@ -325,12 +325,6 @@ body {
     </div>
   </div>
   <div class="topbar-right">
-    <div><span class="topbar-stat-val">497,750</span><span class="topbar-stat-label">CORPUS CHUNKS</span></div>
-    <div class="topbar-div"></div>
-    <div><span class="topbar-stat-val">44</span><span class="topbar-stat-label">VAULT FOLDERS</span></div>
-    <div class="topbar-div"></div>
-    <div><span class="topbar-stat-val">20</span><span class="topbar-stat-label">ARTIFACT TYPES</span></div>
-    <div class="topbar-div"></div>
     <a class="learn-btn" href="index.html" style="color:var(--teal)">Vault</a>
     <a class="learn-btn" href="corpus.html">Corpus</a>
     <a class="learn-btn" href="council.html">Council</a>
@@ -552,6 +546,8 @@ document.addEventListener('keydown', function(e) {
 
 layout();
 setTimeout(layout, 100);
+setTimeout(layout, 500);
+window.addEventListener('load', layout);
 window.addEventListener('resize', layout);
 </script>
 </body>
