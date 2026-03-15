@@ -126,9 +126,9 @@ body {
   z-index: 3;
 }
 
-.verdict-badge.lock   { background: rgba(44,122,123,0.2);  border: 1px solid rgba(44,122,123,0.5);  color: var(--lock);   top: 6px;    left: 50%; transform: translateX(-50%); }
-.verdict-badge.revise { background: rgba(196,154,60,0.15); border: 1px solid rgba(196,154,60,0.4);  color: var(--revise); bottom: 14px; right: 6px; }
-.verdict-badge.reject { background: rgba(178,53,49,0.12);  border: 1px solid rgba(178,53,49,0.35);  color: var(--reject); bottom: 14px; left: 6px; }
+.verdict-badge.lock   { background: rgba(44,122,123,0.2);  border: 1px solid rgba(44,122,123,0.5);  color: var(--lock);   top: 10px;   left: 50%; transform: translateX(-50%); }
+.verdict-badge.revise { background: rgba(196,154,60,0.15); border: 1px solid rgba(196,154,60,0.4);  color: var(--revise); bottom: 18px; right: 10px; }
+.verdict-badge.reject { background: rgba(178,53,49,0.12);  border: 1px solid rgba(178,53,49,0.35);  color: var(--reject); bottom: 18px; left: 10px; }
 
 /* NODES */
 .node { position: absolute; transform: translate(-50%, -50%); z-index: 5; cursor: pointer; }
@@ -229,10 +229,11 @@ body {
     <div class="topbar-div"></div>
     <div><span class="topbar-stat-val">3</span><span class="topbar-stat-label">VERDICTS</span></div>
     <div class="topbar-div"></div>
-    <a class="nav-link" href="index.html">← Vault</a>
+    <a class="nav-link" href="index.html">Vault</a>
     <a class="nav-link" href="corpus.html">Corpus</a>
     <a class="nav-link active">Council</a>
-    <a class="nav-link" href="#">Method →</a>
+    <a class="nav-link" href="method.html">Method</a>
+    <a class="nav-link" href="products.html">Products</a>
   </div>
 </div>
 
@@ -247,10 +248,7 @@ body {
     <!-- Center: verdict wheel -->
     <div class="center-node">
       <div class="verdict-wrap">
-        <svg class="verdict-svg" viewBox="0 0 150 150">
-          <path d="M 75 5 A 70 70 0 0 1 131 42" fill="none" stroke="#2C7A7B" stroke-width="6" stroke-linecap="round"/>
-          <path d="M 138 80 A 70 70 0 0 1 40 138" fill="none" stroke="#C49A3C" stroke-width="6" stroke-linecap="round"/>
-          <path d="M 18 125 A 70 70 0 0 1 12 40" fill="none" stroke="#B23531" stroke-width="6" stroke-linecap="round"/>
+        <svg class="verdict-svg" id="verdictSvg" viewBox="0 0 150 150">
         </svg>
         <div class="verdict-inner">
           <span class="verdict-count">10</span>
@@ -392,6 +390,35 @@ var DATA = [
     ]
   }
 ];
+
+// Draw verdict wheel arcs — mathematically centered
+function drawArcs() {
+  var svg = document.getElementById('verdictSvg');
+  var cx = 75, cy = 75, r = 52;
+  var arcs = [
+    { start: -110, end: -10,  color: '#2C7A7B' },
+    { start: 10,   end: 110,  color: '#C49A3C' },
+    { start: 130,  end: 230,  color: '#B23531' }
+  ];
+
+  arcs.forEach(function(a) {
+    var s = a.start * Math.PI / 180;
+    var e = a.end   * Math.PI / 180;
+    var x1 = cx + r * Math.cos(s);
+    var y1 = cy + r * Math.sin(s);
+    var x2 = cx + r * Math.cos(e);
+    var y2 = cy + r * Math.sin(e);
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 0 1 ' + x2 + ' ' + y2);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', a.color);
+    path.setAttribute('stroke-width', '5');
+    path.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(path);
+  });
+}
+
+drawArcs();
 
 var active = null;
 
