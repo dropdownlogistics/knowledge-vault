@@ -4,355 +4,504 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DDL Knowledge Vault</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --navy:  #0D1B2A;
-  --card:  #10202f;
-  --cream: #F5F1EB;
-  --teal:  #2C7A7B;
-  --steel: #6B7B8D;
+  --navy:   #0D1B2A;
+  --card:   #10202f;
+  --cream:  #F5F1EB;
+  --teal:   #2C7A7B;
+  --teal-lt:#3a9a9b;
+  --steel:  #6B7B8D;
   --border: rgba(245,241,235,0.07);
+  --border2: rgba(44,122,123,0.15);
 }
 
 body {
   background: var(--navy);
   color: var(--cream);
   font-family: 'Source Serif 4', serif;
-  width: 100vw;
-  height: 100vh;
 }
 
-/* TOPBAR */
-.topbar {
+/* NAV */
+nav {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 60px;
-  z-index: 10;
+  height: 56px;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 0 48px;
   border-bottom: 1px solid var(--border);
-  background: rgba(13,27,42,0.95);
+  background: rgba(13,27,42,0.97);
 }
 
-.topbar-left { display: flex; align-items: center; gap: 12px; }
+.nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.nav-logo-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--cream); }
+.nav-logo-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--steel); letter-spacing: 0.1em; }
+.nav-links { display: flex; gap: 28px; }
+.nav-link { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); letter-spacing: 0.08em; text-decoration: none; transition: color 0.2s; }
+.nav-link:hover, .nav-link.active { color: var(--teal); }
 
-.topbar-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.topbar-sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--steel);
-  letter-spacing: 0.08em;
-}
-
-.topbar-right { display: flex; align-items: center; gap: 24px; }
-
-.topbar-stat-val {
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--teal);
-  text-align: right;
-}
-
-.topbar-stat-label {
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  color: var(--steel);
-  letter-spacing: 0.06em;
-  text-align: right;
-}
-
-.topbar-div { width: 1px; height: 28px; background: var(--border); }
-
-.learn-btn {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--steel);
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  background: none;
-  border: none;
-}
-.learn-btn:hover { color: var(--teal); }
-
-/* MAIN STAGE */
-.stage {
-  position: fixed;
-  top: 60px; left: 0; right: 0; bottom: 44px;
+/* HERO */
+.hero {
+  padding-top: 56px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-}
-
-/* ORBITAL */
-.orbital {
   position: relative;
-  width: min(640px, 85vw);
-  height: min(640px, 85vw);
+  overflow: hidden;
 }
 
-.orbit-ring {
+/* ORBITAL GRAPHIC */
+.orbital-graphic {
+  width: min(460px, 85vw);
+  height: min(460px, 85vw);
+  position: relative;
+  margin: 24px auto 0;
+  flex-shrink: 0;
+}
+
+/* Outer ring text — rotating */
+.ring-text-svg {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(44,122,123,0.18);
+  width: 100%; height: 100%;
+  animation: spinSlow 40s linear infinite;
   pointer-events: none;
 }
 
-.orbit-ring-inner {
+/* Orbit rings */
+.ring {
   position: absolute;
-  inset: 18%;
   border-radius: 50%;
-  border: 1px dashed rgba(44,122,123,0.1);
   pointer-events: none;
 }
 
-.spokes {
+.ring-1 {
+  inset: 0;
+  border: 1px solid rgba(44,122,123,0.2);
+}
+
+.ring-2 {
+  inset: 12%;
+  border: 1px dashed rgba(44,122,123,0.12);
+}
+
+.ring-3 {
+  inset: 24%;
+  border: 1px solid rgba(44,122,123,0.08);
+}
+
+/* Spokes SVG */
+.spokes-svg {
   position: absolute;
   inset: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
 }
 
-/* CENTER SEAL */
-.seal {
+/* Center seal */
+.center-seal {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 150px;
-  height: 150px;
+  width: 130px; height: 130px;
   pointer-events: none;
-  z-index: 1;
 }
 
-/* NODES */
-.node {
+/* Node labels — decorative, not clickable */
+.label {
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: 5;
-  cursor: pointer;
+  pointer-events: none;
 }
 
-.node-pill {
-  padding: 10px 18px;
-  border: 1px solid rgba(44,122,123,0.3);
+.label-pill {
+  padding: 8px 16px;
+  border: 1px solid rgba(44,122,123,0.25);
   border-radius: 40px;
-  background: rgba(13,27,42,0.9);
+  background: rgba(13,27,42,0.88);
   white-space: nowrap;
-  transition: all 0.2s;
 }
 
-.node:hover .node-pill,
-.node.active .node-pill {
-  background: rgba(44,122,123,0.15);
-  border-color: rgba(44,122,123,0.7);
-}
-
-.node-title {
+.label-title {
   display: block;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--cream);
 }
 
-.node-sub {
+.label-sub {
   display: block;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   color: var(--teal);
-  letter-spacing: 0.06em;
-  margin-top: 2px;
-}
-
-/* PANEL */
-.panel {
-  position: fixed;
-  bottom: 44px; left: 0; right: 0;
-  background: rgba(13,27,42,0.97);
-  border-top: 1px solid rgba(44,122,123,0.2);
-  padding: 28px 40px 24px;
-  transform: translateY(100%);
-  transition: transform 0.35s ease;
-  z-index: 20;
-  pointer-events: none;
-}
-
-.panel.open {
-  transform: translateY(0);
-  pointer-events: all;
-}
-
-.panel-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 40px;
-}
-
-.panel-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--teal);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.panel-title {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
-}
-
-.panel-id {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--steel);
-  letter-spacing: 0.05em;
-  line-height: 1.7;
-}
-
-.panel-body {
-  font-size: 0.88rem;
-  line-height: 1.7;
-  color: rgba(245,241,235,0.82);
-  margin-bottom: 14px;
-}
-
-.panel-stats { display: flex; gap: 12px; flex-wrap: wrap; }
-
-.stat {
-  padding: 6px 12px;
-  background: rgba(44,122,123,0.1);
-  border: 1px solid rgba(44,122,123,0.2);
-  border-radius: 4px;
-}
-
-.stat-val {
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--teal);
-  font-weight: 500;
-}
-
-.stat-label {
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.52rem;
-  color: var(--steel);
   letter-spacing: 0.06em;
   margin-top: 1px;
 }
 
-.panel-close {
+/* Dot on label */
+.label-dot {
   position: absolute;
-  top: 18px; right: 28px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--steel);
-  cursor: pointer;
-  letter-spacing: 0.06em;
-  background: none;
-  border: none;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  top: 50%; right: -4px;
+  transform: translateY(-50%);
 }
 
-.panel-close:hover { color: var(--teal); }
+/* Rotating light beam */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 
-/* FOOTBAR */
-.footbar {
-  position: fixed;
+@keyframes beamSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.beam-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: beamSpin 6s linear infinite;
+}
+
+.beam {
+  position: absolute;
+  top: 0; left: 50%;
+  width: 2px;
+  height: 50%;
+  transform-origin: bottom center;
+  background: linear-gradient(to top, rgba(44,122,123,0.6), transparent);
+  border-radius: 2px;
+}
+
+/* Glow dot on beam tip */
+.beam-dot {
+  position: absolute;
+  top: -1px; left: 50%;
+  transform: translateX(-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 8px 2px rgba(44,122,123,0.6);
+}
+
+/* HERO COPY */
+.hero-copy {
+  text-align: center;
+  padding: 20px 24px 40px;
+  max-width: 640px;
+}
+
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--teal);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.hero-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.hero-headline em {
+  font-style: italic;
+  font-family: 'Source Serif 4', serif;
+  color: var(--teal);
+  font-weight: 400;
+}
+
+.hero-sub {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(245,241,235,0.6);
+  margin-bottom: 28px;
+}
+
+.hero-actions { display: flex; align-items: center; justify-content: center; gap: 16px; }
+
+.btn-primary {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--teal);
+  color: var(--navy);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--teal-lt); }
+
+.btn-ghost {
+  display: inline-block;
+  padding: 12px 24px;
+  border: 1px solid rgba(44,122,123,0.4);
+  color: var(--teal);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { background: rgba(44,122,123,0.1); border-color: rgba(44,122,123,0.7); }
+
+/* TICKER */
+.ticker {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  overflow: hidden;
+  background: rgba(13,27,42,0.5);
+}
+
+.ticker-inner {
+  display: flex;
+  gap: 48px;
+  animation: ticker 30s linear infinite;
+  width: max-content;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticker-val { color: var(--teal); font-weight: 500; }
+.ticker-label { color: var(--steel); }
+
+/* STATS + NAV */
+.content {
+  padding: 72px 48px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  margin-bottom: 72px;
+}
+
+.stat-card {
+  background: var(--card);
+  padding: 28px 24px;
+  border: 1px solid var(--border);
+}
+
+.stat-card:first-child { border-radius: 8px 0 0 8px; }
+.stat-card:last-child  { border-radius: 0 8px 8px 0; }
+
+.stat-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--teal);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--steel);
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--teal);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--teal); }
+
+.nav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+
+.nav-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 32px 36px;
+  text-decoration: none;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-card::after {
+  content: '';
+  position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 44px;
+  height: 2px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.nav-card:hover { background: #0e1c2a; border-color: var(--border2); }
+.nav-card:hover::after { transform: scaleX(1); }
+
+.nav-card-num { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.1em; margin-bottom: 12px; opacity: 0.7; }
+.nav-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; color: var(--cream); margin-bottom: 8px; }
+.nav-card-body { font-size: 0.85rem; line-height: 1.65; color: rgba(245,241,235,0.5); margin-bottom: 16px; }
+.nav-card-arrow { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--teal); letter-spacing: 0.08em; opacity: 0; transition: opacity 0.2s; }
+.nav-card:hover .nav-card-arrow { opacity: 1; }
+
+/* FOOTER */
+footer {
+  padding: 28px 48px;
+  border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  border-top: 1px solid var(--border);
-  background: rgba(13,27,42,0.95);
-  z-index: 10;
 }
 
-.footbar-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--steel);
-  letter-spacing: 0.06em;
-}
-
-.footbar-link {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--teal);
-  letter-spacing: 0.06em;
-  text-decoration: none;
-}
-
-/* Spoke pulse */
-@keyframes pulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.65; }
-}
+.footer-left { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--steel); letter-spacing: 0.06em; line-height: 1.8; }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--steel); text-decoration: none; letter-spacing: 0.06em; transition: color 0.2s; }
+.footer-link:hover { color: var(--teal); }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="topbar-left">
-    <svg width="28" height="28" viewBox="0 0 140 140">
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 140 140">
       <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
       <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
       <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
     </svg>
     <div>
-      <div class="topbar-name">Knowledge Vault</div>
-      <div class="topbar-sub">DROPDOWN LOGISTICS</div>
+      <div class="nav-logo-name">Knowledge Vault</div>
+      <div class="nav-logo-sub">DROPDOWN LOGISTICS</div>
     </div>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">Vault</a>
+    <a class="nav-link" href="corpus.html">Corpus</a>
+    <a class="nav-link" href="council.html">Council</a>
+    <a class="nav-link" href="method.html">Method</a>
+    <a class="nav-link" href="products.html">Products</a>
   </div>
-  <div class="topbar-right">
-    <a class="learn-btn" href="index.html" style="color:var(--teal)">Vault</a>
-    <a class="learn-btn" href="corpus.html">Corpus</a>
-    <a class="learn-btn" href="council.html">Council</a>
-    <a class="learn-btn" href="method.html">Method</a>
-    <a class="learn-btn" href="products.html">Products</a>
-  </div>
-</div>
+</nav>
 
-<!-- MAIN STAGE -->
-<div class="stage">
-  <div class="orbital" id="orbital">
+<!-- HERO -->
+<section class="hero">
 
-    <div class="orbit-ring"></div>
-    <div class="orbit-ring-inner"></div>
+  <!-- Decorative orbital graphic -->
+  <div class="orbital-graphic" id="og">
 
-    <!-- Spokes drawn by JS -->
-    <svg class="spokes" id="spokes"></svg>
+    <!-- Rotating ring text -->
+    <svg class="ring-text-svg" viewBox="0 0 460 460">
+      <defs>
+        <path id="ringPath" d="M 230,230 m -210,0 a 210,210 0 1,1 420,0 a 210,210 0 1,1 -420,0"/>
+      </defs>
+      <text font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(44,122,123,0.35)" letter-spacing="5">
+        <textPath href="#ringPath">KNOWLEDGE VAULT · DROPDOWN LOGISTICS · CHAOS → STRUCTURED → AUTOMATED · DDL CORPUS · 497,750 CHUNKS · </textPath>
+      </text>
+    </svg>
+
+    <!-- Static rings -->
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+
+    <!-- Rotating light beam -->
+    <div class="beam-wrap">
+      <div class="beam">
+        <div class="beam-dot"></div>
+      </div>
+    </div>
+
+    <!-- Spokes + label dots -->
+    <svg class="spokes-svg" id="spokesSvg" viewBox="0 0 580 580"></svg>
+
+    <!-- Decorative labels -->
+    <div class="label" id="lbl0">
+      <div class="label-pill">
+        <span class="label-title">The Corpus</span>
+        <span class="label-sub">497,750 chunks</span>
+        <div class="label-dot"></div>
+      </div>
+    </div>
+    <div class="label" id="lbl1">
+      <div class="label-pill">
+        <span class="label-title">The Council</span>
+        <span class="label-sub">10 seats · 3 verdicts</span>
+        <div class="label-dot"></div>
+      </div>
+    </div>
+    <div class="label" id="lbl2">
+      <div class="label-pill">
+        <span class="label-title">The Method</span>
+        <span class="label-sub">Chaos → Automated</span>
+        <div class="label-dot"></div>
+      </div>
+    </div>
+    <div class="label" id="lbl3">
+      <div class="label-pill">
+        <span class="label-title">The Products</span>
+        <span class="label-sub">3 live · 1 operator</span>
+        <div class="label-dot"></div>
+      </div>
+    </div>
+    <div class="label" id="lbl4">
+      <div class="label-pill">
+        <span class="label-title">Dex Jr.</span>
+        <span class="label-sub">Seat 1010 · RTX 3070</span>
+        <div class="label-dot"></div>
+      </div>
+    </div>
 
     <!-- Center seal -->
-    <div class="seal">
+    <div class="center-seal">
       <svg viewBox="0 0 140 140">
         <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="2"/>
         <circle cx="70" cy="70" r="56" fill="none" stroke="#2C7A7B" stroke-width="0.75" stroke-dasharray="3 4"/>
         <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
         <text x="70" y="60" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="32" fill="#2C7A7B" letter-spacing="-2">KV</text>
-        <text x="70" y="84" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#6B7B8D" letter-spacing="3">KNOWLEDGE VAULT</text>
-        <line x1="38" y1="90" x2="102" y2="90" stroke="#2C7A7B" stroke-width="0.75" opacity="0.6"/>
-        <text x="70" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#6B7B8D" letter-spacing="2.5">DROPDOWN LOGISTICS</text>
+        <text x="70" y="82" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#6B7B8D" letter-spacing="3">KNOWLEDGE VAULT</text>
+        <line x1="38" y1="88" x2="102" y2="88" stroke="#2C7A7B" stroke-width="0.75" opacity="0.5"/>
+        <text x="70" y="97" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5" fill="#6B7B8D" letter-spacing="2">DROPDOWN LOGISTICS</text>
         <line x1="70" y1="6" x2="70" y2="12" stroke="#2C7A7B" stroke-width="1.5"/>
         <line x1="70" y1="128" x2="70" y2="134" stroke="#2C7A7B" stroke-width="1.5"/>
         <line x1="6" y1="70" x2="12" y2="70" stroke="#2C7A7B" stroke-width="1.5"/>
@@ -360,195 +509,161 @@ body {
       </svg>
     </div>
 
-    <!-- Nodes -->
-    <div class="node" id="n0">
-      <div class="node-pill"><span class="node-title">What It Is</span><span class="node-sub">System of Structure</span></div>
-    </div>
-    <div class="node" id="n1">
-      <div class="node-pill"><span class="node-title">The Corpus</span><span class="node-sub">497,750 chunks · 9 collections</span></div>
-    </div>
-    <div class="node" id="n2">
-      <div class="node-pill"><span class="node-title">Dex Jr.</span><span class="node-sub">The archivist · Seat 1010</span></div>
-    </div>
-    <div class="node" id="n3">
-      <div class="node-pill"><span class="node-title">Governance</span><span class="node-sub">20 types · 65 standards</span></div>
-    </div>
-    <div class="node" id="n4">
-      <div class="node-pill"><span class="node-title">The Cathedral</span><span class="node-sub">One operator. One rig.</span></div>
-    </div>
+  </div>
 
+  <!-- Hero copy -->
+  <div class="hero-copy">
+    <div class="hero-eyebrow">DDL Knowledge Vault · Governed Institutional Memory</div>
+    <h1 class="hero-headline">
+      The front door for<br>
+      <em>DDL institutional memory.</em>
+    </h1>
+    <p class="hero-sub">
+      Every artifact has a canonical home. Every decision is traceable. Every query has a governed answer.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="corpus.html">Explore the Corpus</a>
+      <a class="btn-ghost" href="method.html">The Method →</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-val">497,750</span><span class="ticker-label">CORPUS CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">44</span><span class="ticker-label">VAULT FOLDERS</span></span>
+    <span class="ticker-item"><span class="ticker-val">20</span><span class="ticker-label">ARTIFACT TYPES</span></span>
+    <span class="ticker-item"><span class="ticker-val">9</span><span class="ticker-label">COLLECTIONS</span></span>
+    <span class="ticker-item"><span class="ticker-val">226,123</span><span class="ticker-label">CANON CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">10</span><span class="ticker-label">COUNCIL SEATS</span></span>
+    <span class="ticker-item"><span class="ticker-val">65</span><span class="ticker-label">STANDARDS</span></span>
+    <span class="ticker-item"><span class="ticker-val">3</span><span class="ticker-label">LIVE PRODUCTS</span></span>
+    <span class="ticker-item"><span class="ticker-val">1</span><span class="ticker-label">OPERATOR</span></span>
+    <span class="ticker-item"><span class="ticker-val">497,750</span><span class="ticker-label">CORPUS CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">44</span><span class="ticker-label">VAULT FOLDERS</span></span>
+    <span class="ticker-item"><span class="ticker-val">20</span><span class="ticker-label">ARTIFACT TYPES</span></span>
+    <span class="ticker-item"><span class="ticker-val">9</span><span class="ticker-label">COLLECTIONS</span></span>
+    <span class="ticker-item"><span class="ticker-val">226,123</span><span class="ticker-label">CANON CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">10</span><span class="ticker-label">COUNCIL SEATS</span></span>
+    <span class="ticker-item"><span class="ticker-val">65</span><span class="ticker-label">STANDARDS</span></span>
+    <span class="ticker-item"><span class="ticker-val">3</span><span class="ticker-label">LIVE PRODUCTS</span></span>
+    <span class="ticker-item"><span class="ticker-val">1</span><span class="ticker-label">OPERATOR</span></span>
   </div>
 </div>
 
-<!-- PANEL -->
-<div class="panel" id="panel">
-  <button class="panel-close" id="closeBtn">CLOSE ✕</button>
-  <div class="panel-inner">
-    <div>
-      <div class="panel-label" id="pLabel"></div>
-      <div class="panel-title" id="pTitle"></div>
-      <div class="panel-id" id="pId"></div>
+<!-- STATS + NAV -->
+<section class="content">
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">497K</div>
+      <div class="stat-desc">Corpus chunks<br>across 9 collections</div>
     </div>
-    <div>
-      <div class="panel-body" id="pBody"></div>
-      <div class="panel-stats" id="pStats"></div>
+    <div class="stat-card">
+      <div class="stat-number">44</div>
+      <div class="stat-desc">Governed vault folders<br>on two drives</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">10</div>
+      <div class="stat-desc">Council seats<br>9 cloud · 1 local</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">3</div>
+      <div class="stat-desc">Live products<br>one methodology</div>
     </div>
   </div>
-</div>
 
-<!-- FOOTBAR -->
-<div class="footbar">
-  <span class="footbar-text">ONE OPERATOR &nbsp;·&nbsp; ONE RIG &nbsp;·&nbsp; CHAOS → STRUCTURED → AUTOMATED</span>
-  <a class="footbar-link" href="corpus.html">The Corpus →</a>
-</div>
+  <div class="section-label">Explore the Vault</div>
+
+  <div class="nav-grid">
+    <a class="nav-card" href="corpus.html">
+      <div class="nav-card-num">01 — THE CORPUS</div>
+      <div class="nav-card-title">Half a Million Chunks</div>
+      <div class="nav-card-body">Canon. Archive. Nine named collections. The corpus is the institutional memory — everything DDL has ever built, decided, or written.</div>
+      <div class="nav-card-arrow">Explore the Corpus →</div>
+    </a>
+    <a class="nav-card" href="council.html">
+      <div class="nav-card-num">02 — THE COUNCIL</div>
+      <div class="nav-card-title">Ten Seats. Three Verdicts.</div>
+      <div class="nav-card-body">Nine cloud models, one local AI. Every significant decision goes through a formal review. LOCK. REVISE. REJECT. The council advises. The operator decides.</div>
+      <div class="nav-card-arrow">Meet the Council →</div>
+    </a>
+    <a class="nav-card" href="method.html">
+      <div class="nav-card-num">03 — THE METHOD</div>
+      <div class="nav-card-title">Chaos → Structured → Automated</div>
+      <div class="nav-card-body">The architecture does not change. The data does. Star schema thinking applied universally — to products, governance, content, and the AI that runs it all.</div>
+      <div class="nav-card-arrow">Understand the Method →</div>
+    </a>
+    <a class="nav-card" href="products.html">
+      <div class="nav-card-num">04 — THE PRODUCTS</div>
+      <div class="nav-card-title">Three Products. One Rig.</div>
+      <div class="nav-card-body">AuditForge. BlindSpot. The DDL site. Each a different surface of the same methodology. Built by one operator, governed by the same architecture.</div>
+      <div class="nav-card-arrow">See the Products →</div>
+    </a>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    DDL Knowledge Vault · v1.0 · 2026-03-14<br>
+    Dropdown Logistics · Dave Kitchens · CPA<br>
+    Chaos → Structured → Automated
+  </div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://dropdownlogistics.com" target="_blank">dropdownlogistics.com</a>
+    <a class="footer-link" href="https://auditforge.dev" target="_blank">auditforge.dev</a>
+    <a class="footer-link" href="https://blindspot.bet" target="_blank">blindspot.bet</a>
+  </div>
+</footer>
 
 <script>
-var DATA = [
-  {
-    angle: 270,
-    label: '01 — WHAT IT IS',
-    title: 'System of Structure',
-    id: 'STD-VAULT-002 · v1.0 · 2026-03-14',
-    body: 'The DDL Knowledge Vault is a governed local repository that ensures every DDL artifact has a canonical home, a consistent structure, and a clear path into the RAG corpus. It is the answer to "where does this live?" for every artifact the studio produces. Not a web app. Not a cloud service. A folder structure with enforced naming, an intake protocol, and a retrieval pipeline behind it.',
-    stats: [['44','Vault Folders'],['2','Mirror Drives'],['20','Artifact Types'],['v1.0','Version']]
-  },
-  {
-    angle: 30,
-    label: '02 — THE CORPUS',
-    title: 'Half a Million Chunks',
-    id: 'dex_canon · ddl_archive · 9 named collections',
-    body: 'The corpus is the institutional memory. 226,123 canon chunks — governed, ratified, high-confidence retrieval. 271,627 archive chunks — complete historical record. Nine named collections give Dex Jr. scoped retrieval. Memory pool becomes memory topology.',
-    stats: [['226K','Canon Chunks'],['271K','Archive Chunks'],['9','Collections'],['23','File Types']]
-  },
-  {
-    angle: 150,
-    label: '03 — THE ARCHIVIST',
-    title: 'Dex Jr.',
-    id: 'Seat 1010 · qwen2.5-coder:7b · 90%+ Judgment-Ready',
-    body: 'Local AI on an RTX 3070. Not a chatbot. Not a search engine. A governed continuity engine — archivist, normalizer, retrieval judge, governance detector, and operator coprocessor. The corpus is what makes him irreplaceable.',
-    stats: [['90%+','Judgment-Ready'],['7B','Parameters'],['RTX 3070','Local GPU'],['v4.1','Modelfile']]
-  },
-  {
-    angle: 210,
-    label: '04 — GOVERNANCE',
-    title: 'Structured by Design',
-    id: 'STD-VAULT-002 · PRO-VAULT-001 · 10-Seat Council',
-    body: 'Everything that enters the Vault is named, classified, versioned, and ingested. Twenty canonical artifact types. Sixty-five ratified standards. A ten-seat AI council that reviews, deliberates, and advises — but never decides. The operator decides.',
-    stats: [['65','Standards'],['10','Council Seats'],['27+','OBS Entries'],['3','Verdicts']]
-  },
-  {
-    angle: 330,
-    label: '05 — THE CATHEDRAL',
-    title: 'One Person. One Rig.',
-    id: 'Dropdown Logistics · Dave Kitchens · CPA',
-    body: 'A governed personal intelligence studio where every meaningful output can be traced back through structure, decision, provenance, and retrieval. The Vault gives intake shape. The corpus preserves memory. The council pressure-tests meaning. Dex Jr. retrieves and normalizes.',
-    stats: [['3','Live Products'],['203','Site Pages'],['8','Wings'],['1','Operator']]
-  }
-];
+// Position decorative labels around the orbital
+var angles = [270, 30, 150, 210, 330];
+var ids = ['lbl0','lbl1','lbl2','lbl3','lbl4'];
 
-var active = null;
-
-function pos(angle, r, size) {
-  var rad = (angle - 90) * Math.PI / 180;
-  return {
-    x: size/2 + Math.cos(rad) * r,
-    y: size/2 + Math.sin(rad) * r
-  };
-}
-
-function layout() {
-  var wrap = document.getElementById('orbital');
+function posLabels() {
+  var wrap = document.getElementById('og');
   var size = wrap.offsetWidth;
+  if (size < 50) return;
+  var cx = size / 2;
+  var cy = size / 2;
   var r = size * 0.385;
   var sealR = size * 0.115;
-  var svg = document.getElementById('spokes');
-  svg.innerHTML = '';
+  var svg = document.getElementById('spokesSvg');
   svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
+  svg.innerHTML = '';
 
-  for (var i = 0; i < DATA.length; i++) {
-    var d = DATA[i];
-    var np = pos(d.angle, r, size);
-    var sp = pos(d.angle, sealR, size);
-    var ep = pos(d.angle, r - 75, size);
+  for (var i = 0; i < angles.length; i++) {
+    var rad = (angles[i] - 90) * Math.PI / 180;
+    var nx = cx + Math.cos(rad) * r;
+    var ny = cy + Math.sin(rad) * r;
+    var sx = cx + Math.cos(rad) * sealR;
+    var sy = cy + Math.sin(rad) * sealR;
+    var ex = cx + Math.cos(rad) * (r - 70);
+    var ey = cy + Math.sin(rad) * (r - 70);
 
-    var el = document.getElementById('n' + i);
-    el.style.left = np.x + 'px';
-    el.style.top = np.y + 'px';
+    var el = document.getElementById(ids[i]);
+    el.style.left = nx + 'px';
+    el.style.top = ny + 'px';
 
     var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', sp.x);
-    line.setAttribute('y1', sp.y);
-    line.setAttribute('x2', ep.x);
-    line.setAttribute('y2', ep.y);
+    line.setAttribute('x1', sx); line.setAttribute('y1', sy);
+    line.setAttribute('x2', ex); line.setAttribute('y2', ey);
     line.setAttribute('stroke', '#2C7A7B');
     line.setAttribute('stroke-width', '1');
     line.setAttribute('stroke-dasharray', '4 6');
-    line.setAttribute('opacity', '0.4');
-    line.id = 'spoke' + i;
+    line.setAttribute('opacity', '0.35');
     svg.appendChild(line);
   }
 }
 
-function openPanel(i) {
-  if (active === i) { closePanel(); return; }
-  active = i;
-  var d = DATA[i];
-
-  for (var j = 0; j < 5; j++) {
-    document.getElementById('n' + j).classList.remove('active');
-    var s = document.getElementById('spoke' + j);
-    if (s) { s.setAttribute('opacity', '0.4'); s.setAttribute('stroke-width', '1'); }
-  }
-
-  document.getElementById('n' + i).classList.add('active');
-  var as = document.getElementById('spoke' + i);
-  if (as) { as.setAttribute('opacity', '1'); as.setAttribute('stroke-width', '1.5'); }
-
-  document.getElementById('pLabel').textContent = d.label;
-  document.getElementById('pTitle').textContent = d.title;
-  document.getElementById('pId').textContent = d.id;
-  document.getElementById('pBody').textContent = d.body;
-
-  var html = '';
-  for (var k = 0; k < d.stats.length; k++) {
-    html += '<div class="stat"><span class="stat-val">' + d.stats[k][0] + '</span><span class="stat-label">' + d.stats[k][1] + '</span></div>';
-  }
-  document.getElementById('pStats').innerHTML = html;
-  document.getElementById('panel').classList.add('open');
-}
-
-function closePanel() {
-  active = null;
-  for (var j = 0; j < 5; j++) {
-    document.getElementById('n' + j).classList.remove('active');
-  }
-  document.getElementById('panel').classList.remove('open');
-}
-
-// Wire nodes
-for (var i = 0; i < 5; i++) {
-  (function(idx) {
-    document.getElementById('n' + idx).addEventListener('click', function() {
-      openPanel(idx);
-    });
-  })(i);
-}
-
-document.getElementById('closeBtn').addEventListener('click', closePanel);
-document.getElementById('learnBtn').addEventListener('click', function() {
-  var next = (active === null) ? 0 : (active + 1) % 5;
-  openPanel(next);
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closePanel();
-});
-
-layout();
-setTimeout(layout, 100);
-setTimeout(layout, 500);
-window.addEventListener('load', layout);
-window.addEventListener('resize', layout);
+posLabels();
+setTimeout(posLabels, 200);
+window.addEventListener('resize', posLabels);
 </script>
 </body>
 </html>
