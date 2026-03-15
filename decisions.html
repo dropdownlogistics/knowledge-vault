@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Decisions — DDL Knowledge Vault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0D1B2A;--card:#10202f;--card2:#0c1a27;--deep:#080f18;
+  --cream:#F5F1EB;--teal:#2C7A7B;--steel:#6B7B8D;
+  --violet:#8A6CC9;--vlt:#A98FE0;--amber:#C49A3C;
+  --green:#4A9E6B;--crimson:#B23531;
+  --border:rgba(245,241,235,0.07);--bv:rgba(138,108,201,0.18);
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--cream);font-family:'Source Serif 4',serif}
+
+nav{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid var(--border);background:rgba(13,27,42,0.97)}
+.nl{display:flex;align-items:center;gap:12px;text-decoration:none}
+.nn{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream)}
+.ns{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--violet);letter-spacing:.1em}
+.nlinks{display:flex;gap:28px}
+.nlink{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);letter-spacing:.08em;text-decoration:none;transition:color .2s}
+.nlink:hover,.nlink.active{color:var(--teal)}
+
+/* HERO */
+.hero{padding:100px 64px 56px;max-width:1100px;margin:0 auto}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--violet)}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-.04em;line-height:1.05;margin-bottom:14px}
+.hero-sub{font-size:.95rem;line-height:1.8;color:rgba(245,241,235,.6);max-width:580px;margin-bottom:32px}
+.hero-stats{display:flex;gap:32px;margin-bottom:0}
+.hs{display:flex;flex-direction:column;gap:4px}
+.hs-num{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;letter-spacing:-.03em;color:var(--violet)}
+.hs-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 0;overflow:hidden;margin-bottom:0}
+.ti-inner{display:flex;gap:48px;animation:tick 45s linear infinite;width:max-content}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.08em;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tv{color:var(--violet);font-weight:500}.tla{color:var(--steel)}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:48px 64px 80px}
+
+.sl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.sl::before{content:'';display:block;width:24px;height:1px;background:var(--violet)}
+.sl.t{color:var(--teal)}.sl.t::before{background:var(--teal)}
+.sl.a{color:var(--amber)}.sl.a::before{background:var(--amber)}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.filter-btn{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;padding:6px 14px;border:1px solid var(--border);border-radius:3px;color:var(--steel);background:transparent;cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--bv);color:var(--violet)}
+.filter-btn.active{background:rgba(138,108,201,.12);border-color:rgba(138,108,201,.3);color:var(--violet)}
+
+/* ADR TABLE */
+.decision-table{width:100%;border-collapse:collapse;margin-bottom:64px}
+.decision-table thead tr{border-bottom:1px solid var(--border)}
+.decision-table th{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:10px 14px}
+.decision-table tbody tr{border-bottom:1px solid rgba(245,241,235,.04);transition:background .15s;cursor:pointer}
+.decision-table tbody tr:hover{background:rgba(138,108,201,.05)}
+.decision-table tbody tr:last-child{border-bottom:none}
+.decision-table td{padding:14px 14px;vertical-align:middle}
+
+.dt-id{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--violet);white-space:nowrap;font-weight:500}
+.dt-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;color:var(--cream);letter-spacing:-.01em;margin-bottom:3px}
+.dt-desc{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--steel);line-height:1.5}
+.dt-date{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);white-space:nowrap}
+.dt-ver{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--steel);white-space:nowrap}
+.dt-status{white-space:nowrap}
+.dt-verdict{white-space:nowrap;text-align:center}
+
+.status-badge{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.08em;padding:3px 8px;border-radius:3px;white-space:nowrap}
+.s-lock{background:rgba(74,158,107,.15);border:1px solid rgba(74,158,107,.3);color:var(--green)}
+.s-pending{background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.25);color:var(--amber)}
+.s-draft{background:rgba(138,108,201,.1);border:1px solid rgba(138,108,201,.2);color:var(--violet)}
+.s-super{background:rgba(107,123,141,.1);border:1px solid rgba(107,123,141,.2);color:var(--steel)}
+
+.verdict-mini{display:flex;gap:4px;justify-content:center;align-items:center}
+.vm-dot{width:8px;height:8px;border-radius:50%}
+.vm-lock{background:var(--green)}.vm-rev{background:var(--amber)}.vm-off{background:var(--steel)}
+.vm-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel)}
+
+.dt-link{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--teal);text-decoration:none;opacity:0;transition:opacity .2s;white-space:nowrap}
+.decision-table tbody tr:hover .dt-link{opacity:1}
+
+/* STANDARD CARDS */
+.std-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:64px}
+.std-card{background:var(--card);border:1px solid var(--border);padding:18px 24px;display:grid;grid-template-columns:160px 1fr auto;gap:24px;align-items:center;transition:all .2s;text-decoration:none}
+.std-card:first-child{border-radius:8px 8px 0 0}.std-card:last-child{border-radius:0 0 8px 8px}
+.std-card:hover{background:var(--card2);border-color:var(--bv)}
+.std-id{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--amber);font-weight:500}
+.std-info{}
+.std-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;color:var(--cream);letter-spacing:-.01em;margin-bottom:3px}
+.std-desc{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--steel);line-height:1.5}
+.std-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.std-count{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel);white-space:nowrap}
+
+/* ABOUT BLOCK */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:64px}
+.about-card{background:var(--card);border:1px solid var(--border);padding:24px 28px}
+.about-card:first-child{border-radius:8px 0 0 8px}.about-card:last-child{border-radius:0 8px 8px 0}
+.about-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream);margin-bottom:10px;letter-spacing:-.01em}
+.about-body{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:rgba(245,241,235,.6);line-height:1.8}
+.about-body .hl{color:var(--violet)}
+
+/* NAV CARDS */
+.ng{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
+.nc{background:var(--card);border:1px solid var(--border);padding:24px 28px;text-decoration:none;transition:all .25s;position:relative;overflow:hidden}
+.nc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+.nc:hover{background:var(--card2);border-color:rgba(44,122,123,.2)}.nc:hover::after{transform:scaleX(1)}
+.nc:hover .nca{opacity:1}
+.ncn{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--teal);letter-spacing:.1em;margin-bottom:8px;opacity:.7}
+.nct{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;letter-spacing:-.02em;color:var(--cream);margin-bottom:5px}
+.ncb{font-size:.85rem;line-height:1.6;color:rgba(245,241,235,.5);margin-bottom:12px}
+.nca{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--teal);letter-spacing:.08em;opacity:0;transition:opacity .2s}
+
+footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.fl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.06em;line-height:1.8}
+.flinks{display:flex;gap:20px}
+.flink{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);text-decoration:none;letter-spacing:.06em;transition:color .2s}
+.flink:hover{color:var(--teal)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nl" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
+      <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
+      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+    </svg>
+    <div><div class="nn">Knowledge Vault</div><div class="ns">DECISIONS REGISTRY</div></div>
+  </a>
+  <div class="nlinks">
+    <a class="nlink" href="index.html">Vault</a>
+    <a class="nlink" href="corpus.html">Corpus</a>
+    <a class="nlink" href="council.html">Council</a>
+    <a class="nlink" href="method.html">Method</a>
+    <a class="nlink" href="products.html">Products</a>
+    <a class="nlink" href="commands.html">Commands</a>
+    <a class="nlink active" href="decisions.html">Decisions</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Institutional Record</div>
+  <h1 class="hero-title">The decisions<br>that don't move.</h1>
+  <p class="hero-sub">Every ADR, every ratified standard, every council-locked architecture choice. The corpus that governs the corpus. Once a decision lands here, changes require a new document that explicitly supersedes it.</p>
+  <div class="hero-stats">
+    <div class="hs"><div class="hs-num">1</div><div class="hs-label">ADR Ratified</div></div>
+    <div class="hs"><div class="hs-num">65+</div><div class="hs-label">Standards on record</div></div>
+    <div class="hs"><div class="hs-num">9</div><div class="hs-label">Council seats</div></div>
+    <div class="hs"><div class="hs-num">0</div><div class="hs-label">REJECT verdicts issued</div></div>
+  </div>
+</div>
+
+<div class="ticker">
+  <div class="ti-inner">
+    <span class="ti"><span class="tv">ADR-CORPUS-001</span><span class="tla">UNANIMOUSLY LOCKED</span></span>
+    <span class="ti"><span class="tv">8 LOCK · 0 REVISE</span><span class="tla">FINAL TALLY</span></span>
+    <span class="ti"><span class="tv">dex_decisions</span><span class="tla">BUILD NEXT</span></span>
+    <span class="ti"><span class="tv">Tier gates first</span><span class="tla">IMMOVABLE</span></span>
+    <span class="ti"><span class="tv">No router = no dex_dave</span><span class="tla">HARD GATE</span></span>
+    <span class="ti"><span class="tv">STD-FACT-001</span><span class="tla">UNIVERSAL FACT TABLE</span></span>
+    <span class="ti"><span class="tv">STD-VAULT-002</span><span class="tla">INTAKE CLASSIFICATION</span></span>
+    <span class="ti"><span class="tv">SYS-020</span><span class="tla">DOCUMENT TEMPLATE REGISTRY</span></span>
+    <span class="ti"><span class="tv">AccidentalIntelligence</span><span class="tla">CANON TERM · 2026-03-15</span></span>
+    <span class="ti"><span class="tv">ADR-CORPUS-001</span><span class="tla">UNANIMOUSLY LOCKED</span></span>
+    <span class="ti"><span class="tv">8 LOCK · 0 REVISE</span><span class="tla">FINAL TALLY</span></span>
+    <span class="ti"><span class="tv">dex_decisions</span><span class="tla">BUILD NEXT</span></span>
+    <span class="ti"><span class="tv">Tier gates first</span><span class="tla">IMMOVABLE</span></span>
+    <span class="ti"><span class="tv">No router = no dex_dave</span><span class="tla">HARD GATE</span></span>
+    <span class="ti"><span class="tv">STD-FACT-001</span><span class="tla">UNIVERSAL FACT TABLE</span></span>
+    <span class="ti"><span class="tv">STD-VAULT-002</span><span class="tla">INTAKE CLASSIFICATION</span></span>
+    <span class="ti"><span class="tv">SYS-020</span><span class="tla">DOCUMENT TEMPLATE REGISTRY</span></span>
+    <span class="ti"><span class="tv">AccidentalIntelligence</span><span class="tla">CANON TERM · 2026-03-15</span></span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ADR REGISTRY -->
+  <div class="sl">Architecture Decision Records</div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filter('all',this)">ALL</button>
+    <button class="filter-btn" onclick="filter('locked',this)">LOCKED</button>
+    <button class="filter-btn" onclick="filter('pending',this)">PENDING</button>
+    <button class="filter-btn" onclick="filter('corpus',this)">CORPUS</button>
+    <button class="filter-btn" onclick="filter('governance',this)">GOVERNANCE</button>
+  </div>
+
+  <table class="decision-table" id="adrTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Decision</th>
+        <th>Date</th>
+        <th>Ver</th>
+        <th>Status</th>
+        <th>Verdict</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-tags="locked corpus" onclick="window.location='adr-corpus-001.html'">
+        <td class="dt-id">ADR-CORPUS-001</td>
+        <td>
+          <div class="dt-title">Collection Authority Model</div>
+          <div class="dt-desc">Precedence hierarchy · dex_dave isolation rule · Query router design · 5-tier collection architecture</div>
+        </td>
+        <td class="dt-date">2026-03-15</td>
+        <td class="dt-ver">v0.3</td>
+        <td class="dt-status"><span class="status-badge s-lock">LOCKED</span></td>
+        <td class="dt-verdict">
+          <div class="verdict-mini">
+            <div class="vm-dot vm-lock"></div>
+            <span class="vm-label">8</span>
+            <div class="vm-dot vm-off"></div>
+            <span class="vm-label">1</span>
+          </div>
+        </td>
+        <td><a class="dt-link" href="adr-corpus-001.html">View →</a></td>
+      </tr>
+      <tr data-tags="pending corpus" style="opacity:.5">
+        <td class="dt-id">ADR-CORPUS-002</td>
+        <td>
+          <div class="dt-title">Query Router Implementation Standard</div>
+          <div class="dt-desc">Keyword router MVP spec · Misfire logging · Upgrade path to embedding classifier</div>
+        </td>
+        <td class="dt-date">—</td>
+        <td class="dt-ver">—</td>
+        <td class="dt-status"><span class="status-badge s-pending">PENDING</span></td>
+        <td class="dt-verdict"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel)">—</span></td>
+        <td></td>
+      </tr>
+      <tr data-tags="pending governance" style="opacity:.5">
+        <td class="dt-id">ADR-GOV-001</td>
+        <td>
+          <div class="dt-title">dex_decisions Admission Criteria</div>
+          <div class="dt-desc">Field set for designated decisions · Micro-standard for decision status, scope, and rationale</div>
+        </td>
+        <td class="dt-date">—</td>
+        <td class="dt-ver">—</td>
+        <td class="dt-status"><span class="status-badge s-pending">PENDING</span></td>
+        <td class="dt-verdict"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel)">—</span></td>
+        <td></td>
+      </tr>
+      <tr data-tags="pending corpus" style="opacity:.5">
+        <td class="dt-id">ADR-CORPUS-003</td>
+        <td>
+          <div class="dt-title">External Collection Versioning</div>
+          <div class="dt-desc">valid_from / valid_to effective-dating on ext_ collections · Deprecation policy</div>
+        </td>
+        <td class="dt-date">—</td>
+        <td class="dt-ver">—</td>
+        <td class="dt-status"><span class="status-badge s-pending">PENDING</span></td>
+        <td class="dt-verdict"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel)">—</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- KEY STANDARDS -->
+  <div class="sl a">Key Standards</div>
+  <div class="std-grid" style="margin-bottom:64px">
+    <a class="std-card" href="#">
+      <div class="std-id">STD-FACT-001</div>
+      <div class="std-info">
+        <div class="std-title">Universal Fact Table Standard</div>
+        <div class="std-desc">34 columns · 5 zones · Star schema grain definition · Excel template + dashboard wiring · Ratified</div>
+      </div>
+      <div class="std-meta">
+        <span class="status-badge s-lock">RATIFIED</span>
+        <div class="std-count">34 columns</div>
+      </div>
+    </a>
+    <a class="std-card" href="#">
+      <div class="std-id">STD-VAULT-002</div>
+      <div class="std-info">
+        <div class="std-title">Knowledge Vault Intake Classification</div>
+        <div class="std-desc">20 artifact types · 7 categories · Canon path markers · Foundation path markers · Archive tiers</div>
+      </div>
+      <div class="std-meta">
+        <span class="status-badge s-lock">RATIFIED</span>
+        <div class="std-count">20 types</div>
+      </div>
+    </a>
+    <a class="std-card" href="#">
+      <div class="std-id">SYS-020</div>
+      <div class="std-info">
+        <div class="std-title">Document Template Registry</div>
+        <div class="std-desc">20 document types across 7 categories · Site template mapping · CODEX, CHRONICLE, ATLAS, LEDGER</div>
+      </div>
+      <div class="std-meta">
+        <span class="status-badge s-lock">RATIFIED</span>
+        <div class="std-count">20 types</div>
+      </div>
+    </a>
+    <a class="std-card" href="#">
+      <div class="std-id">PRO-CANONPRESS-001</div>
+      <div class="std-info">
+        <div class="std-title">CanonPress Publication System</div>
+        <div class="std-desc">Four series: Converge, RedLine, DeepCut, GroundTruth · CR- prefix format · Verdict protocol</div>
+      </div>
+      <div class="std-meta">
+        <span class="status-badge s-lock">RATIFIED</span>
+        <div class="std-count">6 series</div>
+      </div>
+    </a>
+    <a class="std-card" href="#">
+      <div class="std-id">STD-OBS-001</div>
+      <div class="std-info">
+        <div class="std-title">Observation Log Standard</div>
+        <div class="std-desc">OBS-XX format · Failure mode tracking · Version attribution · RESOLVED / OPEN / DEFERRED states</div>
+      </div>
+      <div class="std-meta">
+        <span class="status-badge s-lock">RATIFIED</span>
+        <div class="std-count">34+ entries</div>
+      </div>
+    </a>
+    <a class="std-card" href="#" style="opacity:.55">
+      <div class="std-id">STD-CORPUS-003</div>
+      <div class="std-info">
+        <div class="std-title">Collection Health Monitoring Protocol</div>
+        <div class="std-desc">Stale collection detection · Embedding quality tracking · Cross-collection dedup policy</div>
+      </div>
+      <div class="std-meta">
+        <span class="status-badge s-pending">PENDING</span>
+        <div class="std-count">deferred</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- ABOUT THE DECISION SYSTEM -->
+  <div class="sl">How This Works</div>
+  <div class="about-grid" style="margin-bottom:64px">
+    <div class="about-card">
+      <div class="about-title">The ADR Process</div>
+      <div class="about-body">
+        Every significant architecture decision gets an ADR. Draft → PM review → council prompt → council review → revision → ratification. Once signed, <span class="hl">immovable</span>. Changes require a new ADR with explicit supersession. The process is the governance. The governance is the corpus.
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-title">The Verdict System</div>
+      <div class="about-body">
+        Council seats issue one of three verdicts: <span class="hl">LOCK</span> (ratify as written), <span class="hl">REVISE</span> (specific changes before ratification), or <span class="hl">REJECT</span> (fundamental flaw — rare). The path to LOCK is always the goal. Find errors if they exist. If they don't, say LOCK.
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-title">dex_decisions</div>
+      <div class="about-body">
+        This registry feeds <span class="hl">dex_decisions</span> — the corpus collection that transforms Dex Jr. from archivist to advisor. Weight 0.95. Every ratified ADR and LOCK verdict lands here. ADR-CORPUS-001 is artifact #1.
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-title">AccidentalIntelligence</div>
+      <div class="about-body">
+        Canon term coined 2026-03-15. When a governed, hallucination-free system produces an output so unexpected it reads as insight. The system didn't reason its way there — it just knew, because the data was always there. <span class="hl">This is what dex_decisions is built to produce.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="sl t">Navigate the Vault</div>
+  <div class="ng">
+    <a class="nc" href="corpus.html"><div class="ncn">THE CORPUS</div><div class="nct">518,499 Chunks</div><div class="ncb">The decisions in this registry feed dex_decisions. The corpus is where they become retrievable.</div><div class="nca">Explore the Corpus →</div></a>
+    <a class="nc" href="council.html"><div class="ncn">THE COUNCIL</div><div class="nct">Ten Seats. Three Verdicts.</div><div class="ncb">The seats that reviewed ADR-CORPUS-001. Two rounds. Eight LOCK. One abstained.</div><div class="nca">Meet the Council →</div></a>
+    <a class="nc" href="adr-corpus-001.html"><div class="ncn">ADR-CORPUS-001</div><div class="nct">The Full Lifecycle</div><div class="ncb">Seven acts. First draft to unanimous lock. The template every future ADR will follow.</div><div class="nca">Read the ADR →</div></a>
+    <a class="nc" href="commands.html"><div class="ncn">COMMANDS</div><div class="nct">Build dex_decisions</div><div class="ncb">The ingest commands that take this registry from a page to a retrievable corpus collection.</div><div class="nca">Go to Commands →</div></a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="fl">DDL Knowledge Vault · Decisions Registry · 2026-03-15<br>Dropdown Logistics · Dave Kitchens · CPA · Chaos → Structured → Automated</div>
+  <div class="flinks">
+    <a class="flink" href="https://dropdownlogistics.com" target="_blank">dropdownlogistics.com</a>
+    <a class="flink" href="https://github.com/dropdownlogistics/dex-rag" target="_blank">dex-rag</a>
+  </div>
+</footer>
+
+<script>
+function filter(tag, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#adrTable tbody tr').forEach(row => {
+    if (tag === 'all') { row.style.display = ''; return; }
+    var tags = row.getAttribute('data-tags') || '';
+    row.style.display = tags.includes(tag) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>ADR-CORPUS-001 — DDL Knowledge Vault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0D1B2A;--card:#10202f;--card2:#0c1a27;--deep:#080f18;
+  --cream:#F5F1EB;--teal:#2C7A7B;--steel:#6B7B8D;
+  --violet:#8A6CC9;--vlt:#A98FE0;--amber:#C49A3C;
+  --green:#4A9E6B;--crimson:#B23531;
+  --border:rgba(245,241,235,0.07);
+  --bv:rgba(138,108,201,0.18);
+  --bt:rgba(44,122,123,0.18);
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--cream);font-family:'Source Serif 4',serif;line-height:1.7}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid var(--border);background:rgba(13,27,42,0.97)}
+.nl{display:flex;align-items:center;gap:12px;text-decoration:none}
+.nn{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream)}
+.ns{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--violet);letter-spacing:.1em}
+.nlinks{display:flex;gap:28px}
+.nlink{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);letter-spacing:.08em;text-decoration:none;transition:color .2s}
+.nlink:hover,.nlink.active{color:var(--teal)}
+
+/* HERO */
+.hero{padding:100px 64px 64px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:80px;align-items:start}
+.hero-left{}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.hero-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--violet)}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-.04em;line-height:1.05;margin-bottom:16px}
+.hero-title .mono{font-family:'JetBrains Mono',monospace;font-size:.7em;color:var(--violet);font-weight:500;letter-spacing:-.02em}
+.hero-sub{font-size:1rem;line-height:1.8;color:rgba(245,241,235,.65);margin-bottom:32px;max-width:560px}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;padding:4px 10px;border-radius:3px;white-space:nowrap}
+.bv{background:rgba(138,108,201,.12);border:1px solid rgba(138,108,201,.3);color:var(--violet)}
+.bg{background:rgba(74,158,107,.12);border:1px solid rgba(74,158,107,.3);color:var(--green)}
+.ba{background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.25);color:var(--amber)}
+.bc{background:rgba(178,53,49,.1);border:1px solid rgba(178,53,49,.25);color:var(--crimson)}
+.hero-meta{display:flex;flex-direction:column;gap:6px}
+.hm{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);display:flex;gap:10px}
+.hm .k{color:rgba(107,123,141,.6);min-width:80px}
+.hm .v{color:var(--cream)}
+.hm .vv{color:var(--violet)}
+
+/* TIMELINE SIDEBAR */
+.timeline{position:sticky;top:72px}
+.tl-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+.tl-items{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;transition:all .2s}
+.tl-item:last-child{border-bottom:none}
+.tl-item:hover .tl-num{color:var(--violet);border-color:var(--violet)}
+.tl-item:hover .tl-name{color:var(--cream)}
+.tl-item.active .tl-num{background:var(--violet);color:var(--cream);border-color:var(--violet)}
+.tl-item.active .tl-name{color:var(--cream)}
+.tl-num{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:500;width:22px;height:22px;border-radius:50%;border:1px solid rgba(107,123,141,.3);color:var(--steel);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-top:2px}
+.tl-content{}
+.tl-name{font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600;color:var(--steel);transition:color .2s;letter-spacing:-.01em}
+.tl-desc{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:rgba(107,123,141,.6);letter-spacing:.04em;line-height:1.5;margin-top:2px}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:0 64px 80px;display:grid;grid-template-columns:1fr 340px;gap:80px}
+.main{}
+.side{} /* empty — sidebar only in hero */
+
+/* ACT SECTIONS */
+.act{margin-bottom:72px;scroll-margin-top:80px}
+.act-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.act-num{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--violet);letter-spacing:.1em;background:rgba(138,108,201,.12);border:1px solid rgba(138,108,201,.25);border-radius:3px;padding:3px 8px;white-space:nowrap}
+.act-title{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:-.03em;color:var(--cream)}
+.act-rule{height:1px;background:linear-gradient(to right,rgba(138,108,201,.4),transparent);margin-bottom:28px}
+
+/* PROSE */
+.prose{font-size:.95rem;line-height:1.85;color:rgba(245,241,235,.75);margin-bottom:20px}
+.prose strong{color:var(--cream)}
+.prose em{font-style:italic;color:rgba(245,241,235,.85)}
+
+/* CODE BLOCK */
+.codeblock{background:var(--deep);border:1px solid var(--bv);border-radius:8px;padding:20px 24px;margin-bottom:20px;font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:1.85;color:var(--cream);white-space:pre-wrap;word-break:break-word;overflow-x:auto}
+.codeblock .k{color:var(--violet)}.codeblock .v{color:var(--teal)}.codeblock .c{color:rgba(107,123,141,.7)}.codeblock .h{color:var(--amber)}.codeblock .ok{color:var(--green)}.codeblock .bad{color:var(--crimson)}
+
+/* FLAG CARDS */
+.flag-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:20px}
+.flag-card{background:var(--card);border:1px solid var(--border);padding:18px 22px;position:relative;overflow:hidden}
+.flag-card:first-child{border-radius:8px 8px 0 0}.flag-card:last-child{border-radius:0 0 8px 8px}
+.flag-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+.flag-num{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--amber);letter-spacing:.1em;margin-bottom:6px}
+.flag-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream);margin-bottom:6px;letter-spacing:-.01em}
+.flag-body{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(245,241,235,.65);line-height:1.7}
+
+/* VERDICT GRID */
+.verdict-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:20px}
+.vc{background:var(--card);border:1px solid var(--border);padding:16px 18px;position:relative}
+.vc:first-child{border-radius:8px 0 0 8px}.vc:last-child{border-radius:0 8px 8px 0}
+.vc:nth-child(3n+1):not(:first-child){border-radius:0}
+.vc-seat{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.08em;margin-bottom:6px}
+.vc-name{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:600;color:var(--cream);margin-bottom:8px;letter-spacing:-.01em}
+.vc-verdict{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;padding:3px 8px;border-radius:3px;display:inline-block;margin-bottom:8px}
+.vlock{background:rgba(74,158,107,.15);border:1px solid rgba(74,158,107,.3);color:var(--green)}
+.vrev{background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.3);color:var(--amber)}
+.voff{background:rgba(107,123,141,.1);border:1px solid rgba(107,123,141,.2);color:var(--steel)}
+.vc-note{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:rgba(245,241,235,.55);line-height:1.6}
+
+/* CONVERGENCE TABLE */
+.conv-table{width:100%;border-collapse:collapse;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.conv-table th{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:10px 14px;border-bottom:1px solid var(--border)}
+.conv-table td{font-family:'JetBrains Mono',monospace;font-size:.68rem;padding:11px 14px;border-bottom:1px solid rgba(245,241,235,.04);vertical-align:top;line-height:1.6}
+.conv-table tr:last-child td{border-bottom:none}
+.cn{color:var(--violet)}.cv{color:var(--cream)}.cs{color:rgba(107,123,141,.5);font-style:italic}
+.cseats{color:var(--amber);font-size:.6rem}
+
+/* SIX CHANGES */
+.change-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:20px}
+.change-card{background:var(--card);border:1px solid var(--border);padding:18px 22px;position:relative;overflow:hidden}
+.change-card:first-child{border-radius:8px 8px 0 0}.change-card:last-child{border-radius:0 0 8px 8px}
+.change-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--violet)}
+.change-num{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--violet);letter-spacing:.1em;margin-bottom:6px}
+.change-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream);margin-bottom:6px;letter-spacing:-.01em}
+.change-body{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(245,241,235,.65);line-height:1.7}
+.change-seats{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--amber);margin-top:6px}
+
+/* FINAL ADR BLOCK */
+.final-block{background:var(--deep);border:1px solid var(--bv);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.final-header{background:rgba(138,108,201,.08);padding:16px 24px;border-bottom:1px solid var(--bv);display:flex;align-items:center;justify-content:space-between}
+.final-header-left{}
+.final-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream);letter-spacing:-.01em}
+.final-sub{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--violet);letter-spacing:.06em;margin-top:3px}
+.final-badges{display:flex;gap:6px}
+.final-body{padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:.7rem;line-height:1.85;color:var(--cream);white-space:pre-wrap;max-height:420px;overflow-y:auto}
+.final-body::-webkit-scrollbar{width:4px}.final-body::-webkit-scrollbar-track{background:transparent}.final-body::-webkit-scrollbar-thumb{background:rgba(138,108,201,.3);border-radius:2px}
+.final-footer{padding:14px 24px;border-top:1px solid var(--bv);display:flex;align-items:center;justify-content:space-between}
+.ff-left{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel);letter-spacing:.06em}
+.ratify-btn{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;padding:8px 18px;background:var(--violet);color:var(--cream);border:none;border-radius:4px;cursor:pointer;transition:opacity .2s}
+.ratify-btn:hover{opacity:.85}
+
+/* RATIFICATION BLOCK */
+.ratify-block{background:rgba(74,158,107,.06);border:1px solid rgba(74,158,107,.2);border-radius:8px;padding:24px 28px;margin-bottom:20px}
+.rb-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--green);margin-bottom:10px;letter-spacing:-.01em}
+.rb-body{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(245,241,235,.65);line-height:1.7}
+
+/* NOISE SECTION */
+.noise-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:20px}
+.noise-card{background:var(--card2);border:1px solid var(--border);padding:14px 18px;border-radius:4px;opacity:.65}
+.noise-card:first-child{border-radius:8px 8px 0 0}.noise-card:last-child{border-radius:0 0 8px 8px}
+.noise-tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--steel);letter-spacing:.1em;margin-bottom:4px}
+.noise-body{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(107,123,141,.7);line-height:1.6}
+
+/* RECEIPT */
+.receipt{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);letter-spacing:.08em;display:flex;align-items:center;gap:12px;padding:20px 0;border-top:1px solid var(--border);margin-top:48px}
+.receipt::before,.receipt::after{content:'';flex:1;max-width:60px;height:1px;background:var(--border)}
+
+footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.fl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.06em;line-height:1.8}
+.flinks{display:flex;gap:20px}
+.flink{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);text-decoration:none;letter-spacing:.06em;transition:color .2s}
+.flink:hover{color:var(--teal)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nl" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
+      <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
+      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+    </svg>
+    <div><div class="nn">Knowledge Vault</div><div class="ns">ADR-CORPUS-001</div></div>
+  </a>
+  <div class="nlinks">
+    <a class="nlink" href="index.html">Vault</a>
+    <a class="nlink" href="corpus.html">Corpus</a>
+    <a class="nlink" href="council.html">Council</a>
+    <a class="nlink" href="method.html">Method</a>
+    <a class="nlink" href="products.html">Products</a>
+    <a class="nlink" href="commands.html">Commands</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Architecture Decision Record</div>
+    <h1 class="hero-title">
+      <span class="mono">ADR-CORPUS-001</span><br>
+      Collection Authority Model
+    </h1>
+    <p class="hero-sub">The gate that unblocked everything. Defines how the DDL corpus resolves competing chunks across collections — the precedence hierarchy, the dex_dave isolation rule, and the query router architecture that enforces it all.</p>
+    <div class="hero-badges">
+      <span class="badge bv">v0.3</span>
+      <span class="badge bg">UNANIMOUSLY LOCKED</span>
+      <span class="badge ba">6 RULES CHANGED</span>
+      <span class="badge bv">8 LOCK · 1 ABSTAINED</span>
+    </div>
+    <div class="hero-meta">
+      <div class="hm"><span class="k">Date</span><span class="v">2026-03-15</span></div>
+      <div class="hm"><span class="k">Author</span><span class="v">Dave Kitchens (Operator)</span></div>
+      <div class="hm"><span class="k">Council</span><span class="v">CR-ADR-CORPUS-001 · 2 LOCK · 7 REVISE · 1 off-prompt</span></div>
+      <div class="hm"><span class="k">Blocks</span><span class="vv">Named collection build queue · dex_dave ingestion · Query Router</span></div>
+      <div class="hm"><span class="k">Superseded by</span><span class="v">Nothing yet. ADR-CORPUS-002 required for changes.</span></div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline">
+    <div class="tl-label">Decision Lifecycle</div>
+    <div class="tl-items">
+      <a class="tl-item active" href="#act1">
+        <div class="tl-num">1</div>
+        <div class="tl-content"><div class="tl-name">First Draft</div><div class="tl-desc">v0.1 · Raw ADR</div></div>
+      </a>
+      <a class="tl-item" href="#act2">
+        <div class="tl-num">2</div>
+        <div class="tl-content"><div class="tl-name">LLM PM's Comments</div><div class="tl-desc">4 flags before council</div></div>
+      </a>
+      <a class="tl-item" href="#act3">
+        <div class="tl-num">3</div>
+        <div class="tl-content"><div class="tl-name">Second Draft</div><div class="tl-desc">v0.2 · Pre-council clean</div></div>
+      </a>
+      <a class="tl-item" href="#act4">
+        <div class="tl-num">4</div>
+        <div class="tl-content"><div class="tl-name">Council Reaction</div><div class="tl-desc">9 seats · All verdicts</div></div>
+      </a>
+      <a class="tl-item" href="#act5">
+        <div class="tl-num">5</div>
+        <div class="tl-content"><div class="tl-name">Marcus's Comments</div><div class="tl-desc">Convergence map · 6 changes</div></div>
+      </a>
+      <a class="tl-item" href="#act6">
+        <div class="tl-num">6</div>
+        <div class="tl-content"><div class="tl-name">Final Product</div><div class="tl-desc">v0.3 · Ratification ready</div></div>
+      </a>
+      <a class="tl-item" href="#act7">
+        <div class="tl-num" style="background:var(--green);border-color:var(--green);color:var(--navy)">✓</div>
+        <div class="tl-content"><div class="tl-name" style="color:var(--green)">Unanimous Lock</div><div class="tl-desc">All REVISE → LOCK · Ratified</div></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+<div class="main">
+
+  <!-- ACT 1 — FIRST DRAFT -->
+  <div class="act" id="act1">
+    <div class="act-header">
+      <span class="act-num">ACT 01</span>
+      <div class="act-title">First Draft</div>
+    </div>
+    <div class="act-rule"></div>
+
+    <p class="prose">ADR-CORPUS-001 v0.1 was written on 2026-03-15 by Marcus Caldwell (Seat 1002) on behalf of the operator. It translated three unanimous council findings from prior reviews into four binding rules. The corpus had just crossed 497,750 chunks across two live collections. Nine named collections were ratified but waiting — blocked on this single unanswered question.</p>
+
+    <div class="codeblock"><span class="k">THE QUESTION THIS ADR ANSWERS:</span>
+
+When multiple collections return relevant chunks for the same
+query, which chunks win?
+
+<span class="k">WHAT WAS BLOCKING:</span>
+<span class="h">—</span> --collection flag in dex-ingest.py
+<span class="h">—</span> Named collection build queue (9 collections waiting)
+<span class="h">—</span> dex_dave ingestion (no isolation rules yet)
+<span class="h">—</span> Query router design (no routing table yet)
+
+<span class="k">V0.1 FOUR RULES:</span>
+<span class="ok">Rule 1</span>  Collection precedence hierarchy (5 tiers, weights)
+<span class="ok">Rule 2</span>  Artifact type precedence within collections
+<span class="ok">Rule 3</span>  dex_dave isolation rule
+<span class="ok">Rule 4</span>  Query router design (keyword MVP)
+
+<span class="k">V0.1 ISSUES (unfixed at draft):</span>
+<span class="bad">—</span> Tier 1 appeared twice (dex_canon and ddl_archive both Tier 1)
+<span class="bad">—</span> dex_dave tier/weight tension not explicitly resolved
+<span class="bad">—</span> Interim ingestion gate mentioned but not elevated
+<span class="bad">—</span> Corpus state stale: 497,750 (actual: 518,499)</div>
+  </div>
+
+  <!-- ACT 2 — LLM PM'S COMMENTS -->
+  <div class="act" id="act2">
+    <div class="act-header">
+      <span class="act-num">ACT 02</span>
+      <div class="act-title">LLM PM's Comments</div>
+    </div>
+    <div class="act-rule"></div>
+
+    <p class="prose">Before the ADR went to council, the LLM PM flagged four issues. All four were clean catches that would have generated noise in the council responses — and all four were fixed in v0.2.</p>
+
+    <div class="flag-grid">
+      <div class="flag-card">
+        <div class="flag-num">FLAG 01</div>
+        <div class="flag-title">Tier numbering error</div>
+        <div class="flag-body">Tier 1 appeared twice — once for dex_canon and again for ddl_archive. The council would notice and it would generate noise. Needs clean tier numbering before it goes out.</div>
+      </div>
+      <div class="flag-card">
+        <div class="flag-num">FLAG 02</div>
+        <div class="flag-title">Tier/weight inconsistency on dex_dave</div>
+        <div class="flag-body">dex_dave (0.90) is above product collections in tier, but dex_lore is listed at 0.95 inside Tier 2 — numerically outweighing dex_dave at 0.90 in Tier 3. The weight and the tier don't agree. Council will flag this. The question should surface it explicitly.</div>
+      </div>
+      <div class="flag-card">
+        <div class="flag-num">FLAG 03</div>
+        <div class="flag-title">Q2c buried — highest-stakes question</div>
+        <div class="flag-body">"What happens in the window before the router is built?" is genuinely high-stakes. It was buried third in a three-part question. It needed elevation — moved to lead position with explicit framing as the highest-stakes operational constraint in the ADR.</div>
+      </div>
+      <div class="flag-card">
+        <div class="flag-num">FLAG 04</div>
+        <div class="flag-title">Stale corpus count</div>
+        <div class="flag-body">Corpus state showed 497,750 chunks. Current: 518,499. Minor but the council will see the delta. dex_code (20,384) and ext_creator (110) went live 2026-03-14 — not reflected in v0.1.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACT 3 — SECOND DRAFT -->
+  <div class="act" id="act3">
+    <div class="act-header">
+      <span class="act-num">ACT 03</span>
+      <div class="act-title">Second Draft</div>
+    </div>
+    <div class="act-rule"></div>
+
+    <p class="prose">v0.2 incorporated all four PM flags plus several additional improvements identified during revision. The ADR went to council in this state.</p>
+
+    <div class="codeblock"><span class="k">V0.2 CHANGES (pre-council PM revisions):</span>
+
+<span class="ok">✓</span> Fixed duplicate tier numbering — tiers renumbered 0–5 with labels
+<span class="ok">✓</span> Resolved dex_dave / dex_lore weight/tier conflict
+  Added note: tier gates eligibility, weight governs within eligible set
+<span class="ok">✓</span> Elevated dex_dave interim gate to Rule 3 body as named hard gate
+  "No router = no dex_dave ingestion"
+<span class="ok">✓</span> Updated corpus state to 518,499 chunks
+  dex_code (20,384) + ext_creator (110) now shown as live
+<span class="ok">✓</span> ext_creator weight corrected: 0.85 (raised from 0.60 after testing)
+<span class="ok">✓</span> Added compound route for product-scoped governance queries
+<span class="ok">✓</span> dex_code removed from build order (already built)
+<span class="ok">✓</span> Fact_QueryLog weight changed to — (unassigned, usage-derived)
+<span class="ok">✓</span> Added effective-dating + temporal metadata to WHAT THIS DOES NOT DECIDE
+<span class="ok">✓</span> Council prompt updated: Q2a elevated to lead position with hard-gate framing
+
+<span class="k">STATUS AFTER V0.2:</span>
+Ready for council review. Four clean tiers. Hard gate named.
+Compound routing added. Corpus state accurate.</div>
+  </div>
+
+  <!-- ACT 4 — COUNCIL REACTION -->
+  <div class="act" id="act4">
+    <div class="act-header">
+      <span class="act-num">ACT 04</span>
+      <div class="act-title">Council Reaction</div>
+    </div>
+    <div class="act-rule"></div>
+
+    <p class="prose">CR-ADR-CORPUS-001 went to all nine seated council members. Nine responded. Seat 1006 (Meta AI / Ava Sinclair) acknowledged a different thread entirely — a CanonPress log. Eight seats engaged substantively with the ADR.</p>
+
+    <div class="verdict-grid">
+      <div class="vc">
+        <div class="vc-seat">1001 — Archer Hawthorne</div>
+        <div class="vc-name">LeChat</div>
+        <div class="vc-verdict vlock">LOCK</div>
+        <div class="vc-note">All four rules sound. Hard gate correct. Suggested adding dex_operator collection — out of scope.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1002 — Marcus Caldwell</div>
+        <div class="vc-name">Claude</div>
+        <div class="vc-verdict vlock">LOCK</div>
+        <div class="vc-note">One mandatory addition: compound routing must state the general principle, not just GOVERNANCE + PRODUCT. Identified three non-blocking gaps deferred to future STDs.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1003 — Elias Mercer</div>
+        <div class="vc-name">Grok</div>
+        <div class="vc-verdict vrev">REVISE</div>
+        <div class="vc-note">Two surgical changes: explicit routing/weight handling for dex_graveyard, temporal metadata note on dex_code. With those: LOCK-ready.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1004 — Max Sullivan</div>
+        <div class="vc-name">Perplexity</div>
+        <div class="vc-verdict vrev">REVISE</div>
+        <div class="vc-note">dex_dave should not imply global precedence over product collections. Router handles the scoping — but the tier label creates the wrong impression.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1005 — Rowan Bennett</div>
+        <div class="vc-name">Copilot</div>
+        <div class="vc-verdict vrev">REVISE</div>
+        <div class="vc-note">Tier vs. weight ambiguity must be resolved in code, not just prose. Fallback protocol needed. Add dex_decisions to DEFAULT route. Most expansive change set — some accepted, some rejected as scope creep.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1006 — Ava Sinclair</div>
+        <div class="vc-name">Meta AI</div>
+        <div class="vc-verdict voff">OFF-PROMPT</div>
+        <div class="vc-note">Acknowledged a CanonPress TUNE-CONVERGE-002 log instead. Did not engage with the ADR. Seat effectively abstained.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1007 — Leo Prescott</div>
+        <div class="vc-name">Gemini</div>
+        <div class="vc-verdict vrev">REVISE</div>
+        <div class="vc-note">Tier vs. weight is "mathematically conflicted." Fact_QueryLog should not appear in the retrieval hierarchy at all. Add dex_decisions to DEFAULT. Proposed dropping tiers entirely — rejected.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1008 — Marcus Grey</div>
+        <div class="vc-name">ChatGPT</div>
+        <div class="vc-verdict vrev">REVISE</div>
+        <div class="vc-note">dex_dave must be relabeled as special conditional authority — the tier implies broader claim than intended. History/archive misfire is the keyword router's fundamental v1.0 limitation. Acceptable.</div>
+      </div>
+      <div class="vc">
+        <div class="vc-seat">1009 — Kai Langford</div>
+        <div class="vc-name">DeepSeek</div>
+        <div class="vc-verdict vrev">REVISE</div>
+        <div class="vc-note">Code-level enforcement on dex_dave gate is mandatory. dex_graveyard must be explicitly excluded from all routes. Add VOICE + PRODUCT compound route.</div>
+      </div>
+    </div>
+
+    <p class="prose"><strong>Verdict tally: 2 LOCK · 7 REVISE · 1 off-prompt.</strong> No REJECT. The path to LOCK was clear — the council found errors, not fundamental flaws. Every REVISE seat stated a minimum change set. All change sets converged on the same six issues.</p>
+  </div>
+
+  <!-- ACT 5 — MARCUS'S COMMENTS -->
+  <div class="act" id="act5">
+    <div class="act-header">
+      <span class="act-num">ACT 05</span>
+      <div class="act-title">Marcus's Comments</div>
+    </div>
+    <div class="act-rule"></div>
+
+    <p class="prose">Synthesizing nine seats across four questions. The convergence map identifies six changes with multi-seat support and separates signal from noise.</p>
+
+    <table class="conv-table">
+      <tr><th>Change</th><th>Description</th><th>Seats</th><th>Action</th></tr>
+      <tr><td class="cn">1</td><td class="cv">Rename Tier 4 to "Special Conditional Authority" — add opt-in sentence</td><td class="cseats">1004, 1007, 1008, 1009</td><td class="cv" style="color:var(--green)">INCORPORATED</td></tr>
+      <tr><td class="cn">2</td><td class="cv">Add implementation contract: tier = pre-filter, weight = post-filter multiplier</td><td class="cseats">1005, 1007, 1008</td><td class="cv" style="color:var(--green)">INCORPORATED</td></tr>
+      <tr><td class="cn">3</td><td class="cv">Code-level dex_dave gate: router_config.json must exist and show active</td><td class="cseats">1002, 1009</td><td class="cv" style="color:var(--green)">INCORPORATED</td></tr>
+      <tr><td class="cn">4</td><td class="cv">Compound routing general principle: merge all triggered collection sets</td><td class="cseats">1002 (mandatory)</td><td class="cv" style="color:var(--green)">INCORPORATED</td></tr>
+      <tr><td class="cn">5</td><td class="cv">Empty collection fallback to WHAT THIS DOES NOT DECIDE</td><td class="cseats">1005, 1007, 1009</td><td class="cv" style="color:var(--green)">INCORPORATED</td></tr>
+      <tr><td class="cn">6</td><td class="cv">Remove Fact_QueryLog from Rule 1 hierarchy — move to deferred section</td><td class="cseats">1007</td><td class="cv" style="color:var(--green)">INCORPORATED</td></tr>
+    </table>
+
+    <p class="prose" style="margin-bottom:12px"><strong>Items rejected as noise:</strong></p>
+
+    <div class="noise-grid">
+      <div class="noise-card">
+        <div class="noise-tag">REJECTED — SCOPE CREEP</div>
+        <div class="noise-body">1005 (Copilot): quarantine store, telemetry system, confidence scoring, 7-day sequencing plan, two-step verification plan. The hard gate is the control. A code check is sufficient. Don't build a quarantine architecture for an ADR that needs one config file check.</div>
+      </div>
+      <div class="noise-card">
+        <div class="noise-tag">REJECTED — BREAKS ARCHITECTURE</div>
+        <div class="noise-body">1004 (Perplexity): move product collections to Tier 4 alongside dex_dave. The tier/routing separation correctly handles this. Product collections already outrank dex_dave for product queries via the routing table.</div>
+      </div>
+      <div class="noise-card">
+        <div class="noise-tag">REJECTED — REMOVES GOVERNANCE STRUCTURE</div>
+        <div class="noise-body">1007 (Gemini): drop tiers entirely, use weights only. Tiers are the governance layer's conceptual structure. They need to exist. The implementation contract makes them explicit in code without sacrificing the mental model.</div>
+      </div>
+      <div class="noise-card">
+        <div class="noise-tag">REJECTED — WRONG CALL</div>
+        <div class="noise-body">1007 (Gemini) + 1005 (Copilot): change DEFAULT to dex_canon only. Three seats disagreed (1002, 1009, others). The archive in DEFAULT is correct — 271K historical chunks, penalized at 0.65 weight. The noise trade-off is acceptable until failure modes are documented.</div>
+      </div>
+      <div class="noise-card">
+        <div class="noise-tag">DEFERRED — SEPARATE STD</div>
+        <div class="noise-body">1003 (Grok): temporal metadata on dex_code. Already in WHAT THIS DOES NOT DECIDE. 1009 (DeepSeek): ext_ collection versioning. Already in WHAT THIS DOES NOT DECIDE. Both acknowledged, neither blocking.</div>
+      </div>
+    </div>
+
+    <p class="prose">The path to LOCK: six surgical changes, no scope expansion. Every REVISE seat has a clear path. The operator decides.</p>
+  </div>
+
+  <!-- ACT 6 — FINAL PRODUCT -->
+  <div class="act" id="act6">
+    <div class="act-header">
+      <span class="act-num">ACT 06</span>
+      <div class="act-title">Final Product</div>
+    </div>
+    <div class="act-rule"></div>
+
+    <p class="prose">ADR-CORPUS-001 v0.3. All six council-driven changes incorporated. Changelog documents every revision with seat attribution. Ratification-ready pending operator signature.</p>
+
+    <div class="final-block">
+      <div class="final-header">
+        <div class="final-header-left">
+          <div class="final-title">ADR-CORPUS-001 — Collection Authority Model</div>
+          <div class="final-sub">v0.3 · 2026-03-15 · Dropdown Logistics</div>
+        </div>
+        <div class="final-badges">
+          <span class="badge bv">v0.3</span>
+          <span class="badge bg">RATIFICATION READY</span>
+        </div>
+      </div>
+      <div class="final-body" id="adrBody">Loading...</div>
+      <div class="final-footer">
+        <div class="ff-left">ADR-CORPUS-001 · v0.3 · The gate is now written.</div>
+        <button class="ratify-btn" onclick="ratify()">RATIFIED →</button>
+      </div>
+    </div>
+
+    <div class="ratify-block" id="ratifyBlock" style="display:none">
+      <div class="rb-title">✓ RATIFIED — ADR-CORPUS-001 is now immovable.</div>
+      <div class="rb-body">Changes require ADR-CORPUS-002 with explicit supersession.<br>First action: ingest this document into dex_decisions as artifact #1.<br>Next: build the query router. Then dex_lore. The gate is open.</div>
+    </div>
+
+    <div class="receipt">
+      One ADR · Three prior council reviews · Nine seats reviewed · Six changes · Zero REJECT · The corpus remembers everything
+    </div>
+  </div>
+
+  <!-- ACT 7 — UNANIMOUS LOCK -->
+  <div class="act" id="act7">
+    <div class="act-header">
+      <span class="act-num" style="background:rgba(74,158,107,.15);border-color:rgba(74,158,107,.3);color:var(--green)">ACT 07</span>
+      <div class="act-title" style="color:var(--green)">Unanimous Lock</div>
+    </div>
+    <div class="act-rule" style="background:linear-gradient(to right,rgba(74,158,107,.5),transparent)"></div>
+
+    <p class="prose">v0.3 went back to every seat that issued REVISE. Every single one flipped to LOCK. No seat held out. No new issues surfaced. The architecture held.</p>
+
+    <div class="verdict-grid">
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1001 — Archer Hawthorne</div>
+        <div class="vc-name">LeChat</div>
+        <div class="vc-verdict vlock">LOCK</div>
+        <div class="vc-note">Was LOCK on v0.2. Confirmed on v0.3.</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1002 — Marcus Caldwell</div>
+        <div class="vc-name">Claude</div>
+        <div class="vc-verdict vlock">LOCK</div>
+        <div class="vc-note">Was LOCK on v0.2. Mandatory compound routing addition incorporated. Confirmed.</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1003 — Elias Mercer</div>
+        <div class="vc-name">Grok</div>
+        <div class="vc-verdict vlock">LOCK ↑</div>
+        <div class="vc-note">Was REVISE. Both surgical changes incorporated. "The architectural debt is paid."</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1004 — Max Sullivan</div>
+        <div class="vc-name">Perplexity</div>
+        <div class="vc-verdict vlock">LOCK ↑</div>
+        <div class="vc-note">Was REVISE. Tier 4 renamed to Special Conditional Authority. dex_dave opt-in framing accepted.</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1005 — Rowan Bennett</div>
+        <div class="vc-name">Copilot</div>
+        <div class="vc-verdict vlock">LOCK ↑</div>
+        <div class="vc-note">Was REVISE. Implementation contract, fallback note, compound routing all present. Scope-creep items correctly excluded.</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1006 — Ava Sinclair</div>
+        <div class="vc-name">Meta AI</div>
+        <div class="vc-verdict voff">ABSTAINED</div>
+        <div class="vc-note">Off-prompt both rounds. Not counted in verdict tally.</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1007 — Leo Prescott</div>
+        <div class="vc-name">Gemini</div>
+        <div class="vc-verdict vlock">LOCK ↑</div>
+        <div class="vc-note">Was REVISE. Fact_QueryLog removed from hierarchy. Implementation contract added. Proposal to drop tiers correctly rejected.</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1008 — Marcus Grey</div>
+        <div class="vc-name">ChatGPT</div>
+        <div class="vc-verdict vlock">LOCK ↑</div>
+        <div class="vc-note">Was REVISE. "Tier 4 is a permission level, not a global ranking. That sentence saves the whole dex_dave design."</div>
+      </div>
+      <div class="vc" style="border-color:rgba(74,158,107,.2)">
+        <div class="vc-seat">1009 — Kai Langford</div>
+        <div class="vc-name">DeepSeek</div>
+        <div class="vc-verdict vlock">LOCK ↑</div>
+        <div class="vc-note">Was REVISE. "The gate is written. The council has spoken. The operator signs."</div>
+      </div>
+    </div>
+
+    <div class="codeblock" style="border-color:rgba(74,158,107,.25)">FINAL TALLY — CR-ADR-CORPUS-001
+
+Round 1 (v0.2):  2 LOCK  ·  7 REVISE  ·  1 off-prompt
+Round 2 (v0.3):  8 LOCK  ·  0 REVISE  ·  1 abstained
+
+Six changes incorporated. Zero scope expansion. No REJECT issued.
+
+STATUS: RATIFICATION READY
+Next action: Operator signs. ADR becomes immovable.
+ADR-CORPUS-002 required for any future change.</div>
+
+    <div style="background:rgba(74,158,107,.06);border:1px solid rgba(74,158,107,.25);border-radius:8px;padding:28px 32px;margin-bottom:16px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--green);margin-bottom:14px;letter-spacing:-.01em">What is now immovable</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(245,241,235,.7);line-height:2.1">
+        — Tier gates first. A Tier 3 chunk at 0.95 does not outrank a Tier 4 chunk at 0.90. Ever.<br>
+        — dex_dave is opt-in only. Exactly one query type. Never in DEFAULT.<br>
+        — No router, no dex_dave. router_config.json: active is the only key.<br>
+        — Build order locked: dex_decisions → Router → dex_lore → products → dex_dave.<br>
+        — dex_graveyard is never automatic. Manual flag only. Router excludes it entirely.
+      </div>
+    </div>
+
+    <div style="background:rgba(138,108,201,.06);border:1px solid rgba(138,108,201,.2);border-radius:8px;padding:28px 32px;margin-bottom:20px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--violet);margin-bottom:12px;letter-spacing:-.01em">What unlocks next</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(245,241,235,.7);line-height:2.1">
+        1. Build dex_decisions. First artifact: this ADR. Source: 01_GOVERNANCE/decisions/<br>
+        2. Build Query Router MVP. One session. Keyword-based. Routing table is in Rule 4.<br>
+        3. Ingest dex_lore. ~50–100 chunks. Safe once router is live.<br>
+        4. Product collections in parallel: dex_auditforge, dex_blindspot, dex_canonpress, dex_site.<br>
+        5. Hold dex_dave until router confirmed active. Then decide which exports go first.
+      </div>
+    </div>
+
+    <div class="receipt">
+      Two rounds · Nine seats · Zero REJECT · Eight LOCK · One abstained · The gate is open
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /content -->
+
+<footer>
+  <div class="fl">DDL Knowledge Vault · ADR-CORPUS-001 · v0.3<br>Dropdown Logistics · Dave Kitchens · CPA</div>
+  <div class="flinks">
+    <a class="flink" href="corpus.html">The Corpus</a>
+    <a class="flink" href="commands.html">Commands</a>
+    <a class="flink" href="https://dropdownlogistics.com" target="_blank">dropdownlogistics.com</a>
+  </div>
+</footer>
+
+<script>
+// Load ADR text into the final block
+var adrText = `=====================================================================
+ADR-CORPUS-001 — COLLECTION AUTHORITY MODEL
+Dropdown Logistics — DDL Knowledge Vault
+v0.3 · 2026-03-15 · Status: RATIFICATION READY
+=====================================================================
+
+RULE 1 — COLLECTION PRECEDENCE HIERARCHY
+
+IMPLEMENTATION CONTRACT:
+Tier is applied as a metadata pre-filter before similarity scoring.
+Weight is a numeric multiplier applied post-filter within the
+eligible set. Higher tier always wins across tiers. Numeric weights
+only compete within a single tier.
+
+  TIER 5 — GOVERNANCE LAYER
+    dex_decisions  0.95  Decision ledger. Ratified ADRs, LOCK verdicts.
+    dex_canon      1.00  Ratified governance. Primary truth source.
+
+  TIER 4 — SPECIAL CONDITIONAL AUTHORITY
+    dex_dave       0.90  Opt-in only. No general precedence over product
+                         collections. Router-conditional — OPERATOR INTENT
+                         queries only. Never in governance or DEFAULT.
+
+  TIER 3 — INTERNAL SCOPED
+    dex_lore       0.95  DexVerse origin documents.
+    dex_code       0.85  All DDL code artifacts. LIVE.
+    dex_canonpress 0.85  CanonPress articles and slates.
+    dex_auditforge 0.85  AuditForge schema and API.
+    dex_blindspot  0.85  BlindSpot schema and analytics.
+    dex_site       0.80  DDL site components and routes.
+
+  TIER 2 — EXTERNAL APPROVED
+    ext_creator    0.85  Approved external creator content. LIVE.
+    ext_reference  0.75  Approved reference texts.
+
+  TIER 1 — INTERNAL ARCHIVE
+    ddl_archive    0.65  Complete historical record. LIVE.
+
+  TIER 0 — SPECIAL COLLECTIONS (non-retrieval)
+    dex_graveyard  0.80  Anti-patterns only. Explicitly excluded from
+                         ALL default routes. Manual access only.
+
+─────────────────────────────────────────────────────────────────
+RULE 3 — dex_dave ISOLATION RULE (HARD GATE)
+
+dex_dave MUST NOT be ingested before the query router is live.
+
+  CODE-LEVEL GATE:
+  dex-ingest.py SHALL reject --collection dex_dave unless
+  router_config.json exists with router_status: "active".
+  --force flag for testing only. Never in production.
+
+  ROUTER LIVE   → dex_dave ingestion approved
+  NO ROUTER     → dex_dave ingestion blocked
+
+─────────────────────────────────────────────────────────────────
+RULE 4 — QUERY ROUTER
+
+COMPOUND ROUTING PRINCIPLE:
+Router checks ALL trigger sets per query. When multiple types
+trigger, merge collection sets. Apply all exclusion rules.
+dex_dave enters merged set only if OPERATOR INTENT triggered.
+
+  GOVERNANCE    dex_canon + dex_decisions (+ product if compound)
+  CODE          dex_code + dex_canon + dex_site + products
+  OPERATOR      dex_dave + dex_canon (only after router live)
+  PRODUCT       product collection + dex_canon
+  HISTORY       ddl_archive + dex_canon
+  LORE          dex_lore + dex_canon
+  DEFAULT       dex_canon + ddl_archive (dex_dave NEVER in default)
+
+─────────────────────────────────────────────────────────────────
+BUILD ORDER
+
+  0. dex_code        COMPLETE (2026-03-14)
+  1. dex_decisions   FIRST — archivist → advisor
+  2. Query Router    SECOND — gates all subsequent collections
+  3. dex_lore        THIRD — safe once router live
+  4. Products        FOURTH — parallel builds
+  5. dex_dave        FIFTH — hard gate (router + decisions required)`;
+
+document.getElementById('adrBody').textContent = adrText;
+
+// Ratify button
+function ratify() {
+  document.getElementById('ratifyBlock').style.display = 'block';
+  var btn = document.querySelector('.ratify-btn');
+  btn.textContent = '✓ RATIFIED';
+  btn.style.background = 'var(--green)';
+  btn.style.cursor = 'default';
+  btn.onclick = null;
+  document.getElementById('ratifyBlock').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Timeline scroll spy
+var acts = ['act1','act2','act3','act4','act5','act6','act7'];
+var items = document.querySelectorAll('.tl-item');
+
+function updateActive() {
+  var scrollY = window.scrollY + 120;
+  var current = 0;
+  acts.forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollY) current = i;
+  });
+  items.forEach(function(item, i) {
+    item.classList.toggle('active', i === current);
+  });
+}
+
+window.addEventListener('scroll', updateActive);
+updateActive();
+</script>
+</body>
+</html>

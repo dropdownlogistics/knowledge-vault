@@ -1,0 +1,516 @@
+=====================================================================
+ADR-CORPUS-001
+COLLECTION AUTHORITY MODEL
+Dropdown Logistics — DDL Knowledge Vault
+=====================================================================
+Status:         RATIFICATION READY — Pending Operator Signature
+Date:           2026-03-15
+Author:         Dave Kitchens (Operator)
+Council Input:  CR-CORPUS-VISION-001, CR-DDL-KV-001,
+                CR-CORPUS-ARCH-001, CR-CORPUS-NOMINATIONS-001,
+                CR-ADR-CORPUS-001 (council review — 9 seats responded)
+Blocks:         Named collection build queue,
+                dex_dave ingestion,
+                Query Router design
+=====================================================================
+
+CONTEXT
+
+The DDL corpus began as two flat collections: dex_canon and ddl_archive.
+dex_code and ext_creator went live 2026-03-14. Nine additional named
+collections are ratified in architecture (SYNTH-DDL-001,
+CR-CORPUS-VISION-001). Before any further named collection goes live,
+the system needs a documented answer to one question:
+
+  When multiple collections return relevant chunks for the same
+  query, which chunks win?
+
+Without this answer, retrieval is non-deterministic. Dex Jr. cannot
+weight evidence correctly. The query router cannot be designed. And
+dex_dave — the operator voice collection — cannot go live without
+rules governing when it is and is not consulted.
+
+This ADR records the decision. Once ratified, it is immovable.
+Changes require a new ADR that explicitly supersedes this one.
+
+=====================================================================
+DECISION
+=====================================================================
+
+The DDL Collection Authority Model operates on four rules applied
+in sequence. Every retrieval query passes through all four rules.
+
+─────────────────────────────────────────────────────────────────
+RULE 1 — COLLECTION PRECEDENCE HIERARCHY
+─────────────────────────────────────────────────────────────────
+
+When chunks from multiple collections compete for the same retrieval
+slot, precedence is determined first by tier, then by weight within
+the eligible set.
+
+  IMPLEMENTATION CONTRACT (binding on all retrieval code):
+  Tier is applied as a metadata pre-filter before similarity scoring.
+  Weight is a numeric multiplier applied post-filter within the
+  eligible set. When candidate chunks span tiers, the higher tier
+  always wins regardless of weight. Numeric weights only compete
+  within a single tier. A Tier 3 chunk at weight 0.95 does not
+  outrank a Tier 4 chunk at weight 0.90 — tier gates first.
+
+  Tie-breaking within the same tier and weight: recency wins
+  (newer chunk wins).
+
+  ─────────────────────────────────────────────────────────
+  TIER 5 — GOVERNANCE LAYER (highest authority)
+  ─────────────────────────────────────────────────────────
+    dex_decisions       0.95    Why DDL built what it built.
+                                Ratified decision ledger.
+                                Not yet built — authority reserved.
+                                Admission criteria: ratified ADRs,
+                                council verdicts with LOCK status,
+                                and operator directives explicitly
+                                designated as decided. Session notes
+                                that mention decisions in passing
+                                do not qualify.
+
+    dex_canon           1.00    Ratified, governed artifacts.
+                                Unconditional trust. Primary source
+                                of truth for all DDL governance.
+
+    Note: dex_canon outweighs dex_decisions within Tier 5.
+    When both return relevant chunks, dex_canon wins.
+
+  ─────────────────────────────────────────────────────────
+  TIER 4 — SPECIAL CONDITIONAL AUTHORITY
+  ─────────────────────────────────────────────────────────
+    dex_dave            0.90    26+ months of operator voice.
+                                High authority on operator intent,
+                                tone, and reasoning.
+
+                                CRITICAL: dex_dave is opt-in only.
+                                It carries no general precedence over
+                                product collections. Its higher tier
+                                position reflects query-conditional
+                                authority granted only when the query
+                                router explicitly routes to it
+                                (OPERATOR INTENT query type).
+                                It is never eligible for governance,
+                                code, product, lore, or default
+                                queries. Tier 4 is a permission level,
+                                not a global ranking.
+
+                                EXCEPTION: Excluded from governance
+                                queries. See Rule 3.
+
+  ─────────────────────────────────────────────────────────
+  TIER 3 — INTERNAL SCOPED
+  ─────────────────────────────────────────────────────────
+    dex_lore            0.95    DexVerse origin documents.
+                                High weight — curated, small volume.
+    dex_code            0.85    All DDL code artifacts. Live.
+    dex_canonpress      0.85    CanonPress articles and slates.
+    dex_auditforge      0.85    AuditForge schema and API.
+    dex_blindspot       0.85    BlindSpot schema and analytics.
+    dex_site            0.80    DDL site components and routes.
+
+    Note on dex_lore vs dex_dave: dex_lore (0.95) carries a higher
+    weight than dex_dave (0.90) but sits in a lower tier. Under the
+    implementation contract, they never compete directly — they
+    appear in different query type routes and are never both eligible
+    for the same query type in the routing table. The only scenario
+    where both could appear is a manually constructed query that
+    explicitly requests both; in that case, post-filter weight
+    applies and dex_lore (0.95) outranks dex_dave (0.90), which
+    is the correct behavior for narrative queries.
+
+  ─────────────────────────────────────────────────────────
+  TIER 2 — EXTERNAL APPROVED
+  ─────────────────────────────────────────────────────────
+    ext_reference       0.75    Council-approved reference texts.
+    ext_creator         0.85    Council-approved creator content.
+                                Live. Weight raised from 0.60 to
+                                0.85 after retrieval testing
+                                confirmed Canon dominance at 0.60.
+
+  ─────────────────────────────────────────────────────────
+  TIER 1 — INTERNAL ARCHIVE
+  ─────────────────────────────────────────────────────────
+    ddl_archive         0.65    Complete historical record.
+                                No decay. Lower confidence than canon.
+                                Consulted when higher tiers return
+                                insufficient results.
+
+  ─────────────────────────────────────────────────────────
+  TIER 0 — SPECIAL COLLECTIONS (meta, non-retrieval)
+  ─────────────────────────────────────────────────────────
+    dex_graveyard       0.80    Failed architectures, dead ends.
+                                Consulted for anti-patterns only.
+                                Never for positive recommendations.
+                                Explicitly excluded from ALL default
+                                routes and all standard query types.
+                                Requires manual --collection flag
+                                to access. Router must never include
+                                this collection automatically.
+
+  Note: Fact_QueryLog is a meta-collection (append-only query log)
+  and is not part of the retrieval hierarchy. It does not compete
+  for retrieval slots and has no assigned weight. See WHAT THIS
+  DOES NOT DECIDE for deferred Fact_QueryLog decisions.
+
+─────────────────────────────────────────────────────────────────
+RULE 2 — ARTIFACT TYPE PRECEDENCE
+─────────────────────────────────────────────────────────────────
+
+When collection tier and weight alone do not resolve a conflict,
+artifact type provides secondary precedence within any collection:
+
+  1. Ratified standards and ADRs       (STD-*, ADR-*)
+  2. Council review verdicts           (CR-*)
+  3. Operator decisions and manifests  (OperatorManifest, ADR)
+  4. Build artifacts and session logs  (dated session outputs)
+  5. Archived / superseded versions    (lowest confidence)
+
+A chunk from ddl_archive that is an STD- artifact outranks a
+chunk from ddl_archive that is a session log, even though both
+are in the same collection.
+
+─────────────────────────────────────────────────────────────────
+RULE 3 — dex_dave ISOLATION RULE
+─────────────────────────────────────────────────────────────────
+
+dex_dave is excluded from governance queries.
+
+A governance query is any query that asks Dex Jr. to:
+  — Interpret, apply, or evaluate a DDL standard or protocol
+  — Determine whether an action complies with DDL governance
+  — Produce a council review or ratification recommendation
+  — Describe what DDL's rules, principles, or standards say
+  — Define architectural boundaries or dimensional modeling
+    principles (e.g., "how should I structure this Fact table")
+
+Rationale: The operator's personal voice (messages, notes, memoir,
+casual writing) reflects how Dave thinks and communicates — not
+what DDL has formally decided. Mixing operator voice into
+governance queries introduces confabulation risk. Dex Jr. may
+return Dave's opinions as if they were ratified governance.
+
+dex_dave IS consulted for:
+  — Operator intent queries ("what did Dave mean by X")
+  — Tone calibration ("write in Dave's voice")
+  — Historical context ("what was Dave thinking about in Feb 2026")
+  — Personal project queries explicitly scoped to Dave's perspective
+  — Governance history/rationale only as secondary context, never
+    as rule authority (e.g., "why did we choose this approach"
+    may draw from dex_dave for context, but dex_canon governs
+    the binding answer)
+
+Pre-router interim rule — HARD GATE:
+  dex_dave MUST NOT be ingested before the query router is live.
+  The isolation rule has no automated enforcement without the
+  router. Ingesting dex_dave into a routerless corpus creates an
+  uncontrolled contamination window where 26 months of operator
+  casual voice enters the retrieval pool at 0.90 weight with no
+  mechanism to exclude it from governance queries.
+
+  This is a code-level gate, not a documentation note:
+
+    dex-ingest.py SHALL reject --collection dex_dave unless a
+    router_config.json exists in the dex-rag root confirming the
+    router is live (router_status: "active"). The --force flag
+    overrides this check for testing purposes only and must never
+    be used in production ingestion.
+
+  Build sequence gate:
+    Router live (router_config.json present and active)
+      → dex_dave ingestion approved
+    No router / router_status != "active"
+      → dex_dave ingestion blocked, regardless of all other
+        collection readiness
+
+Implementation: The query router (see Rule 4) enforces isolation
+at runtime. dex_dave is never in the default collection set for
+governance queries, regardless of its authority weight.
+
+─────────────────────────────────────────────────────────────────
+RULE 4 — QUERY ROUTER DESIGN DECISION
+─────────────────────────────────────────────────────────────────
+
+The query router is a lightweight classifier that fires before
+every retrieval call. It routes queries to 1-3 relevant collections
+based on query type.
+
+Decision: Keyword-based MVP first. Embedding classifier in v2.
+
+Rationale: The keyword-based approach is buildable in one session,
+auditable (the routing decision is visible and explainable),
+reversible, and sufficient for the initial collection set. Build
+the keyword router. Observe its failure modes. Upgrade when those
+modes are documented.
+
+  COMPOUND ROUTING GENERAL PRINCIPLE:
+  The router checks ALL trigger keyword sets for every query —
+  it does not stop at the first match. When multiple query types
+  trigger simultaneously, their collection sets are merged and
+  all exclusion rules are applied to the merged set. dex_dave
+  enters the merged set only if OPERATOR INTENT is one of the
+  triggered types. This principle applies to all compound routes,
+  not only the GOVERNANCE + PRODUCT example below.
+
+Query type routing table (MVP):
+
+  GOVERNANCE QUERY
+  Trigger keywords: standard, protocol, rule, governs, requires,
+    per STD-, per ADR-, according to, compliant, ratified, council
+  Collections: dex_canon, dex_decisions
+  Excluded: dex_dave (Rule 3), all product collections
+  Compound route: GOVERNANCE + PRODUCT — when governance keywords
+    AND a product name both trigger, return dex_canon +
+    dex_decisions + the relevant product collection. Product
+    schema is necessary to answer product-scoped governance
+    questions (e.g., "does AuditForge comply with STD-VAULT-002?").
+
+  CODE / TECHNICAL QUERY
+  Trigger keywords: function, class, import, migration, component,
+    route, API, error, debug, build, deploy
+  Note: "schema" removed from CODE triggers — it is a governance
+    concept in DDL and should not pull CODE routing alone.
+    Schema queries with product names will route via PRODUCT.
+  Collections: dex_code, dex_canon, dex_site, dex_auditforge,
+    dex_blindspot
+
+  OPERATOR INTENT / VOICE QUERY
+  Trigger keywords: Dave, what did I, my reasoning, I was thinking,
+    why did we, in my words, tone, voice
+  Collections: dex_dave, dex_canon
+  Note: Only query type that includes dex_dave.
+        Only active after query router is live (see Rule 3).
+
+  PRODUCT / DOMAIN QUERY
+  Trigger keywords: AuditForge, BlindSpot, schema, Fact_Control,
+    Fact_Bet, control, risk, bet, token
+  Collections: product-specific collection + dex_canon
+
+  HISTORY / ARCHIVE QUERY
+  Trigger keywords: originally, before, prior version, old approach,
+    when we used to, deprecated, was this ever
+  Collections: ddl_archive, dex_canon
+
+  LORE / NARRATIVE QUERY
+  Trigger keywords: DexVerse, Dex Jr., origin, character, universe,
+    persona, DEXLORE
+  Collections: dex_lore, dex_canon
+
+  DEFAULT (no trigger match)
+  Collections: dex_canon + ddl_archive
+  This preserves current behavior for unclassified queries.
+  dex_dave is never in DEFAULT, regardless of query content.
+  Rationale for ddl_archive in DEFAULT: the archive contains
+  271K+ chunks providing necessary historical context for
+  general queries. The 0.65 weight penalizes archive chunks
+  by 35% relative to canon — precision trade-off is acceptable
+  until failure modes are documented.
+
+=====================================================================
+CURRENT STATE RESOLUTION
+=====================================================================
+
+The four live collections resolve without the router:
+
+  dex_canon    — Always consulted. No exceptions.
+  ddl_archive  — Consulted when dex_canon returns insufficient
+                 results (fewer than top-k threshold).
+  dex_code     — Consulted for code/technical queries.
+                 Currently requires manual --collection flag.
+  ext_creator  — Consulted for creator content queries.
+                 Currently requires manual --collection flag.
+
+This is current Dex Jr. behavior and remains valid until the
+router is built.
+
+=====================================================================
+CONSEQUENCES
+=====================================================================
+
+WHAT THIS ENABLES
+─────────────────────────────────────────────────────────────────
+  — Named collection build queue is unblocked.
+    First collection: dex_decisions.
+
+  — dex_dave ingestion scope can be decided.
+    The isolation rule is defined. Build proceeds safely
+    ONLY after router is live (Rule 3 hard gate).
+
+  — Query router MVP can be built.
+    The routing table is specified. One session to implement.
+
+  — Dex Jr. calibration can reference this ADR.
+    Collection isolation behavior is formally documented.
+
+WHAT THIS DOES NOT DECIDE
+─────────────────────────────────────────────────────────────────
+  — Which iMessage/email/TikTok exports go into dex_dave first.
+    (Separate operator decision. PRO-VAULT-001 governs intake.)
+
+  — Empty collection fallback behavior.
+    MVP default: if a routed collection returns zero results
+    above similarity threshold, fall back to dex_canon.
+    Full fallback protocol deferred to a separate STD.
+
+  — When Fact_QueryLog is built or how its weights are derived.
+    (Append-only query log. Not a retrieval source. Deferred.
+    Requires usage data. Will be governed by a separate ADR.)
+
+  — Whether dex_graveyard gets its own ingest pipeline or
+    is populated manually from failed session artifacts.
+    (Separate decision. Not blocking anything immediate.)
+
+  — The embedding classifier upgrade timeline.
+    (Deferred to when keyword router failure modes are documented.)
+
+  — Effective-dating on ext_ collections (valid_from / valid_to).
+    (Raised by Seat 1009. Separate STD required.)
+
+  — Temporal metadata enforcement on dex_code.
+    (version_tag, created_date, framework_version.
+    Raised in CR-CORPUS-VISION-001. Separate STD required.)
+
+  — Cross-collection deduplication policy.
+    (Same artifact may legitimately exist in multiple collections.
+    At current scale, weight system handles retrieval ranking.
+    Policy deferred to when corpus exceeds 1M chunks.)
+
+  — Collection health monitoring protocol.
+    (Stale collection detection, embedding quality tracking.
+    Deferred to a separate STD.)
+
+  — Routing override logging conventions.
+    (Manual --collection flag overrides are intentional, not
+    misfires. Logging policy deferred to router build session.)
+
+=====================================================================
+BUILD ORDER — NAMED COLLECTIONS
+=====================================================================
+
+Rationale from CR-CORPUS-VISION-001 (three unanimous findings) and
+CR-ADR-CORPUS-001 (council review — build order confirmed):
+
+  0. dex_code         COMPLETE (2026-03-14)
+     20,384 chunks. All DDL code artifacts. Live.
+
+  1. dex_decisions    FIRST
+     The decision ledger transforms Dex Jr. from archivist
+     to advisor. Weight 0.95. Contents: ratified ADRs, council
+     LOCK verdicts, explicitly designated operator decisions.
+     This ADR is the first artifact in dex_decisions.
+     Source: 01_GOVERNANCE/decisions/ in the Vault.
+
+  2. Query Router MVP  SECOND (added by CR-ADR-CORPUS-001)
+     The router must be live before dex_lore is ingested.
+     At 0.95 weight, unrouted dex_lore chunks can contaminate
+     non-lore queries. The router prevents this by scoping
+     lore chunks to LORE query types only.
+     Enforcement: router_config.json gates dex_dave ingestion.
+
+  3. dex_lore         THIRD
+     Origin documents. DexVerse. Companion profiles.
+     High-signal, small volume (~50-100 chunks).
+     Enables LORE queries without archive noise.
+     Safe to ingest once router is live.
+
+  4. Product collections FOURTH (parallel builds)
+     dex_auditforge, dex_blindspot, dex_canonpress, dex_site.
+     Each powered by its respective product PM thread.
+
+  5. dex_dave         FIFTH — HARD GATE
+     Build only after:
+       a. Query router is live (router_config.json: active)
+       b. dex_decisions is live (governance queries have a home
+          that doesn't need dex_dave)
+       c. Operator has decided which exports go in first
+
+=====================================================================
+RATIFICATION
+=====================================================================
+
+This ADR becomes immovable upon operator signature below.
+Changes require ADR-CORPUS-002 with explicit supersession.
+
+  Operator:     Dave Kitchens
+  Date:         ____________
+  Signature:    ____________  (or "RATIFIED" in reply to this doc)
+
+Council review: CR-ADR-CORPUS-001 governing review complete.
+Verdict tally: 2 LOCK (1001, 1002) · 7 REVISE (1003–1005,
+1007–1010) · 1 off-prompt (1006).
+All REVISE minimum change sets incorporated in v0.3.
+ADR is ratification-ready pending operator sign-off.
+
+=====================================================================
+CHANGELOG
+=====================================================================
+
+v0.1 — 2026-03-15
+  Initial draft. Based on SYNTH-DDL-001, CR-CORPUS-VISION-001,
+  CR-CORPUS-ARCH-001, CR-CORPUS-NOMINATIONS-001, and the
+  collection registry from CR-DDL-STATUS-003.
+  Author: Marcus Caldwell (Seat 1002) on behalf of operator.
+
+v0.2 — 2026-03-15
+  Pre-council revisions by LLM PM:
+  — Fixed duplicate tier numbering (Tier 1 appeared twice).
+    Tiers renumbered 0–5 with clear labels.
+  — Resolved dex_dave (0.90) vs dex_lore (0.95) weight/tier
+    conflict. Added explicit resolution note.
+  — Elevated dex_dave interim ingestion gate to Rule 3 body
+    as named hard gate: no router = no dex_dave ingestion.
+  — Updated corpus state: 518,499 chunks (was 497,750).
+    dex_code (20,384) and ext_creator (110) now live.
+  — ext_creator weight corrected to 0.85.
+  — Added compound route specification for product-scoped
+    governance queries.
+  — dex_code removed from build order (already built).
+  — Fact_QueryLog weight changed to — (unassigned).
+  — Added effective-dating and temporal metadata to WHAT THIS
+    DOES NOT DECIDE.
+
+v0.3 — 2026-03-15
+  Post-council revisions per CR-ADR-CORPUS-001 (six changes):
+  1. Tier 4 renamed from "OPERATOR VOICE" to "SPECIAL
+     CONDITIONAL AUTHORITY." Added explicit opt-in sentence:
+     dex_dave carries no general precedence over product
+     collections; tier reflects query-conditional authority
+     granted only via router routing. (Seats 1004, 1007,
+     1008, 1009)
+  2. Added IMPLEMENTATION CONTRACT to Rule 1: tier = metadata
+     pre-filter; weight = post-filter multiplier within
+     eligible set. Tiers always win across tiers. (Seats 1005,
+     1007, 1008)
+  3. Added code-level dex_dave ingestion gate to Rule 3:
+     dex-ingest.py SHALL reject --collection dex_dave unless
+     router_config.json exists with router_status: "active."
+     --force flag for testing only. (Seats 1002, 1009)
+  4. Added COMPOUND ROUTING GENERAL PRINCIPLE to Rule 4:
+     router checks all trigger sets per query, merges
+     collection sets when multiple types trigger, applies
+     all exclusion rules to merged set. (Seat 1002, mandatory)
+  5. Added empty collection fallback to WHAT THIS DOES NOT
+     DECIDE: MVP default is fall back to dex_canon; full
+     protocol deferred to separate STD. (Seats 1005, 1007,
+     1009)
+  6. Removed Fact_QueryLog from Tier 0 hierarchy table.
+     Moved to WHAT THIS DOES NOT DECIDE. Meta-collection
+     is not a retrieval source and does not belong in the
+     precedence hierarchy. (Seat 1007)
+  Additional: "schema" removed from CODE trigger keywords
+     (governance concept, not code-only). Architectural
+     queries added to governance exclusion list in Rule 3.
+     dex_decisions admission criteria made explicit. Query
+     Router build step added to build order as Step 2.
+     Cross-collection dedup, health monitoring, and routing
+     override logging added to WHAT THIS DOES NOT DECIDE.
+  Revised by: Marcus Caldwell (Seat 1002) on behalf of operator.
+
+=====================================================================
+Dropdown Logistics — Chaos → Structured → Automated
+ADR-CORPUS-001 | Collection Authority Model | v0.3 | 2026-03-15
+The ADR is the gate. The gate is now written.
+=====================================================================

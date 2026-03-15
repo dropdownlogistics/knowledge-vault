@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Dex Jr. Commands — DDL Knowledge Vault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0D1B2A;--card:#10202f;--card2:#0e1c2a;--term:#060d15;
+  --cream:#F5F1EB;--teal:#2C7A7B;--steel:#6B7B8D;
+  --violet:#8A6CC9;--vlt:#A98FE0;--amber:#C49A3C;--green:#4A9E6B;--crimson:#B23531;
+  --border:rgba(245,241,235,0.07);--bv:rgba(138,108,201,0.2);
+}
+body{background:var(--navy);color:var(--cream);font-family:'Source Serif 4',serif}
+nav{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid var(--border);background:rgba(13,27,42,0.97)}
+.nl{display:flex;align-items:center;gap:12px;text-decoration:none}
+.nn{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--cream)}
+.ns{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--violet);letter-spacing:.1em}
+.nlinks{display:flex;gap:28px}
+.nlink{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);letter-spacing:.08em;text-decoration:none;transition:color .2s}
+.nlink:hover,.nlink.active{color:var(--teal)}
+.hero{padding-top:56px;display:flex;flex-direction:column;align-items:center}
+.tw{width:min(680px,92vw);margin:32px auto 0;border-radius:10px;overflow:hidden;border:1px solid var(--bv);box-shadow:0 0 60px rgba(138,108,201,.08)}
+.tbar{background:var(--term);padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bv)}
+.tdots{display:flex;gap:6px}
+.td{width:10px;height:10px;border-radius:50%}
+.td.r{background:#B23531;opacity:.7}.td.a{background:#C49A3C;opacity:.7}.td.g{background:#4A9E6B;opacity:.7}
+.tmark{display:flex;align-items:center;gap:10px;flex:1;justify-content:center}
+.ttitle{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--steel);letter-spacing:.08em}
+.tbody{background:var(--term);padding:20px 24px;min-height:200px;font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.85;position:relative}
+.tl{display:block;opacity:0;white-space:pre}
+.tl.show{opacity:1}
+.p{color:var(--violet)}.cm{color:var(--cream)}.fl{color:var(--amber)}.vl{color:var(--teal)}.ou{color:rgba(107,123,141,.75)}.ok{color:var(--green)}.hl{color:var(--vlt)}
+.cursor{display:inline-block;width:7px;height:13px;background:var(--violet);margin-left:1px;vertical-align:middle;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hcopy{text-align:center;padding:24px 24px 36px;max-width:640px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.headline{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-bottom:14px}
+.headline em{font-style:italic;font-family:'Source Serif 4',serif;color:var(--violet);font-weight:400}
+.hsub{font-size:.95rem;line-height:1.7;color:rgba(245,241,235,.6);margin-bottom:26px}
+.hacts{display:flex;align-items:center;justify-content:center;gap:16px}
+.btn1{display:inline-block;padding:12px 24px;background:var(--violet);color:var(--cream);font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;text-decoration:none;border-radius:4px;transition:opacity .2s}
+.btn1:hover{opacity:.85}
+.btn2{display:inline-block;padding:12px 24px;border:1px solid rgba(138,108,201,.4);color:var(--violet);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-decoration:none;border-radius:4px;transition:all .2s}
+.btn2:hover{background:rgba(138,108,201,.1);border-color:rgba(138,108,201,.7)}
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0;overflow:hidden}
+.ti-inner{display:flex;gap:48px;animation:tick 40s linear infinite;width:max-content}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.08em;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tv{color:var(--violet);font-weight:500}.tla{color:var(--steel)}
+.content{padding:56px 48px 80px;max-width:1100px;margin:0 auto}
+.sl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.sl::before{content:'';display:block;width:24px;height:1px;background:var(--violet)}
+.sl.t{color:var(--teal)}.sl.t::before{background:var(--teal)}
+.qg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:56px}
+.qc{background:var(--card);border:1px solid var(--border);padding:18px 20px}
+.qc:first-child{border-radius:8px 0 0 8px}.qc:last-child{border-radius:0 8px 8px 0}
+.qt{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);margin-bottom:10px;font-weight:500;letter-spacing:.06em}
+.qcmd{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--cream);line-height:2}
+.qcmd .f{color:var(--amber)}.qcmd .v{color:var(--teal)}
+.sg{display:flex;flex-direction:column;gap:2px;margin-bottom:56px}
+.sc{background:var(--card);border:1px solid var(--border);overflow:hidden;transition:border-color .2s}
+.sc:first-child{border-radius:8px 8px 0 0}.sc:last-child{border-radius:0 0 8px 8px}
+.sc:hover{border-color:var(--bv)}
+.sh{padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;cursor:pointer;user-select:none}
+.shl{flex:1}
+.sn{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:500;color:var(--violet);margin-bottom:3px}
+.sd{font-family:'Source Serif 4',serif;font-size:.85rem;color:rgba(245,241,235,.6);line-height:1.5}
+.sm{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;padding:3px 7px;border-radius:3px;white-space:nowrap}
+.bl{background:rgba(74,158,107,.15);border:1px solid rgba(74,158,107,.3);color:var(--green)}
+.bv{background:rgba(138,108,201,.12);border:1px solid rgba(138,108,201,.25);color:var(--violet)}
+.ba{background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.25);color:var(--amber)}
+.ei{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);transition:transform .25s,color .2s}
+.sc.open .ei{transform:rotate(180deg);color:var(--violet)}
+.sb{padding:0 24px 0;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .2s}
+.sb.open{max-height:2400px;padding:0 24px 18px}
+.ft{width:100%;border-collapse:collapse;margin-bottom:14px}
+.ft th{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:7px 10px;border-bottom:1px solid var(--border)}
+.ft td{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:9px 10px;border-bottom:1px solid rgba(245,241,235,.04);vertical-align:top}
+.ft tr:last-child td{border-bottom:none}
+.fn{color:var(--amber);white-space:nowrap}.fd{color:rgba(245,241,235,.65);line-height:1.6}
+.fr{color:var(--green);font-size:.57rem}.fo{color:var(--steel);font-size:.57rem}
+.exw{position:relative}
+.ex{background:var(--term);border:1px solid var(--bv);border-radius:6px;padding:12px 16px;margin-bottom:10px}
+.exl{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--steel);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+.exc{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cream);line-height:1.75}
+.exc .p{color:var(--violet)}.exc .f{color:var(--amber)}.exc .v{color:var(--teal)}.exc .c{color:rgba(107,123,141,.7)}
+.cbtn{position:absolute;top:8px;right:8px;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--steel);background:rgba(13,27,42,.8);border:1px solid var(--border);border-radius:3px;padding:3px 7px;cursor:pointer;letter-spacing:.08em;transition:all .2s}
+.cbtn:hover{color:var(--violet);border-color:var(--bv)}.cbtn.ok2{color:var(--green);border-color:rgba(74,158,107,.3)}
+.snote{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:rgba(107,123,141,.8);line-height:1.7;padding:9px 12px;background:rgba(138,108,201,.05);border-left:2px solid rgba(138,108,201,.25);border-radius:0 4px 4px 0;margin-top:10px}
+.mft{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:56px}
+.mft th{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:10px 14px;border-bottom:1px solid var(--border)}
+.mft td{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:11px 14px;border-bottom:1px solid rgba(245,241,235,.04);vertical-align:top}
+.mft tr:last-child td{border-bottom:none}
+.mft tr.cur td{background:rgba(138,108,201,.06)}
+.mv{color:var(--violet)}.md{color:var(--steel)}.ms{color:rgba(107,123,141,.5)}.ml{color:var(--green)}.mc{color:var(--crimson)}
+.mnote{color:rgba(245,241,235,.65);line-height:1.6}
+.ct{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:56px}
+.ct th{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:10px 14px;border-bottom:1px solid var(--border)}
+.ct td{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:11px 14px;border-bottom:1px solid rgba(245,241,235,.04);vertical-align:top}
+.ct tr:last-child td{border-bottom:none}
+.cn{color:var(--violet)}.cw{color:var(--amber)}.clive{color:var(--green)}.cbuild{color:rgba(107,123,141,.5)}.cdesc{color:rgba(245,241,235,.6);line-height:1.5}
+.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:56px}
+.ic{background:var(--card);border:1px solid var(--border);padding:18px 20px}
+.ic:first-child{border-radius:8px 0 0 8px}.ic:last-child{border-radius:0 8px 8px 0}
+.it{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--violet);margin-bottom:10px;font-weight:500;letter-spacing:.06em}
+.ir{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--steel);line-height:2;display:flex;gap:6px}
+.ir span{color:var(--cream)}.ir .hl{color:var(--vlt)}.ir .tl{color:var(--teal)}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:56px}
+.pc{background:var(--card);border:1px solid var(--border);padding:16px 18px}
+.pc:nth-child(1){border-radius:8px 0 0 0}.pc:nth-child(2){border-radius:0 8px 0 0}
+.pc:nth-last-child(2){border-radius:0 0 0 8px}.pc:last-child{border-radius:0 0 8px 0}
+.pl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.pv{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--violet);word-break:break-all;line-height:1.5}
+.ng{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
+.nc{background:var(--card);border:1px solid var(--border);padding:28px 32px;text-decoration:none;transition:all .25s;position:relative;overflow:hidden}
+.nc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+.nc:hover{background:var(--card2);border-color:rgba(44,122,123,.2)}.nc:hover::after{transform:scaleX(1)}
+.ncn{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--teal);letter-spacing:.1em;margin-bottom:10px;opacity:.7}
+.nct{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-.02em;color:var(--cream);margin-bottom:6px}
+.ncb{font-size:.85rem;line-height:1.6;color:rgba(245,241,235,.5);margin-bottom:14px}
+.nca{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--teal);letter-spacing:.08em;opacity:0;transition:opacity .2s}
+.nc:hover .nca{opacity:1}
+footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.fl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);letter-spacing:.06em;line-height:1.8}
+.flinks{display:flex;gap:20px}
+.flink{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--steel);text-decoration:none;letter-spacing:.06em;transition:color .2s}
+.flink:hover{color:var(--teal)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nl" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
+      <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
+      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+    </svg>
+    <div><div class="nn">Knowledge Vault</div><div class="ns">DEX JR. · SEAT 1010</div></div>
+  </a>
+  <div class="nlinks">
+    <a class="nlink" href="index.html">Vault</a>
+    <a class="nlink" href="corpus.html">Corpus</a>
+    <a class="nlink" href="council.html">Council</a>
+    <a class="nlink" href="method.html">Method</a>
+    <a class="nlink" href="products.html">Products</a>
+    <a class="nlink active" href="commands.html">Commands</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="tw">
+    <div class="tbar">
+      <div class="tdots"><div class="td r"></div><div class="td a"></div><div class="td g"></div></div>
+      <div class="tmark">
+        <svg width="22" height="22" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="66" fill="none" stroke="#8A6CC9" stroke-width="2.5"/>
+          <circle cx="70" cy="70" r="57" fill="none" stroke="#8A6CC9" stroke-width="0.75" stroke-dasharray="3 4"/>
+          <circle cx="70" cy="70" r="46" fill="none" stroke="#8A6CC9" stroke-width="0.75" opacity="0.35"/>
+          <circle cx="70" cy="70" r="62" fill="#060d15"/>
+          <line x1="70" y1="36" x2="70" y2="4" stroke="#8A6CC9" stroke-width="1" opacity="0.25"/>
+          <line x1="70" y1="104" x2="70" y2="136" stroke="#8A6CC9" stroke-width="1" opacity="0.25"/>
+          <line x1="36" y1="70" x2="4" y2="70" stroke="#8A6CC9" stroke-width="1" opacity="0.25"/>
+          <line x1="104" y1="70" x2="136" y2="70" stroke="#8A6CC9" stroke-width="1" opacity="0.25"/>
+          <circle cx="70.0" cy="24.0" r="2.5" fill="#8A6CC9" opacity="0.9"/>
+          <circle cx="97.0" cy="32.8" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="113.7" cy="55.8" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="113.7" cy="84.2" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="97.0" cy="107.2" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="70.0" cy="116.0" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="43.0" cy="107.2" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="26.3" cy="84.2" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="26.3" cy="55.8" r="2.5" fill="#8A6CC9" opacity="0.7"/>
+          <circle cx="43.0" cy="32.8" r="2.5" fill="#A98FE0"/>
+          <circle cx="70" cy="70" r="6" fill="#8A6CC9" opacity="0.85"/>
+          <text x="70" y="68" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="22" fill="#8A6CC9" letter-spacing="-1.5">DV</text>
+        </svg>
+        <div class="ttitle">dexjr@reborn · 100.117.38.55 · qwen2.5-coder:7b · v4.6</div>
+      </div>
+    </div>
+    <div class="tbody" id="termBody"></div>
+  </div>
+
+  <div class="hcopy">
+    <div class="eyebrow">Council Constellation · Seat 1010 · RTX 3070 · Modelfile v4.6</div>
+    <h1 class="headline">The rig has<br><em>commands.</em></h1>
+    <p class="hsub">Every script, every flag, every path that keeps 518,499 chunks governed, ingested, and retrievable. The reference that lives in the Vault.</p>
+    <div class="hacts">
+      <a class="btn1" href="corpus.html">The Corpus</a>
+      <a class="btn2" href="#scripts">Jump to Scripts ↓</a>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ti-inner">
+    <span class="ti"><span class="tv">dex-bridge.py</span><span class="tla">RAG QUERY ENGINE</span></span>
+    <span class="ti"><span class="tv">dex-ingest.py</span><span class="tla">CORPUS BUILDER</span></span>
+    <span class="ti"><span class="tv">dex-council.py</span><span class="tla">AUTOCOUNCIL v3.0</span></span>
+    <span class="ti"><span class="tv">dex-deliberate.py</span><span class="tla">DELIBERATION ENGINE</span></span>
+    <span class="ti"><span class="tv">dex_weights.py</span><span class="tla">WEIGHTED QUERY</span></span>
+    <span class="ti"><span class="tv">dex-sweep.py</span><span class="tla">NIGHTLY SWEEP</span></span>
+    <span class="ti"><span class="tv">--build-canon</span><span class="tla">CANON INGEST</span></span>
+    <span class="ti"><span class="tv">--collection</span><span class="tla">NAMED ROUTING</span></span>
+    <span class="ti"><span class="tv">--no-ingest</span><span class="tla">CALIBRATION MODE</span></span>
+    <span class="ti"><span class="tv">100.117.38.55</span><span class="tla">REBORN TAILSCALE</span></span>
+    <span class="ti"><span class="tv">518,499</span><span class="tla">CHUNKS INDEXED</span></span>
+    <span class="ti"><span class="tv">Seat 1010</span><span class="tla">DEX JR. LOCAL NODE</span></span>
+    <span class="ti"><span class="tv">dex-bridge.py</span><span class="tla">RAG QUERY ENGINE</span></span>
+    <span class="ti"><span class="tv">dex-ingest.py</span><span class="tla">CORPUS BUILDER</span></span>
+    <span class="ti"><span class="tv">dex-council.py</span><span class="tla">AUTOCOUNCIL v3.0</span></span>
+    <span class="ti"><span class="tv">dex-deliberate.py</span><span class="tla">DELIBERATION ENGINE</span></span>
+    <span class="ti"><span class="tv">dex_weights.py</span><span class="tla">WEIGHTED QUERY</span></span>
+    <span class="ti"><span class="tv">dex-sweep.py</span><span class="tla">NIGHTLY SWEEP</span></span>
+    <span class="ti"><span class="tv">--build-canon</span><span class="tla">CANON INGEST</span></span>
+    <span class="ti"><span class="tv">--collection</span><span class="tla">NAMED ROUTING</span></span>
+    <span class="ti"><span class="tv">518,499</span><span class="tla">CHUNKS INDEXED</span></span>
+    <span class="ti"><span class="tv">Seat 1010</span><span class="tla">DEX JR. LOCAL NODE</span></span>
+  </div>
+</div>
+
+<section class="content" id="scripts">
+
+  <div class="sl">Quick Reference</div>
+  <div class="qg">
+    <div class="qc"><div class="qt">REBUILD DEX JR.</div><div class="qcmd">ollama create dexjr<br><span class="f">-f</span> <span class="v">Modelfile.dexjr-v4.6</span></div></div>
+    <div class="qc"><div class="qt">CORPUS COUNT</div><div class="qcmd">python -c <span class="f">"import chromadb; c=</span><br><span class="f">chromadb.PersistentClient(path=</span><br><span class="v">r'C:\...\.dex-jr\chromadb'</span><span class="f">);</span><br><span class="f">print(col.count())"</span></div></div>
+    <div class="qc"><div class="qt">STANDARD RAG QUERY</div><div class="qcmd">python dex-bridge.py<br><span class="v">"your query here"</span><br><span class="f">--top</span> <span class="v">8</span></div></div>
+    <div class="qc"><div class="qt">CANON INGEST</div><div class="qcmd">python dex-ingest.py<br><span class="f">--path</span> <span class="v">"C:\path\to\folder"</span><br><span class="f">--build-canon --fast</span></div></div>
+    <div class="qc"><div class="qt">COUNCIL RUN (FULL)</div><div class="qcmd">python dex-council.py<br><span class="f">--from-file</span> <span class="v">"PROMPT.txt"</span><br><span class="f">--all --rag --save</span> <span class="v">council-runs/NAME</span> <span class="f">--ingest</span></div></div>
+    <div class="qc"><div class="qt">CHROMADB BACKUP</div><div class="qcmd">xcopy <span class="v">"C:\...\.dex-jr\chromadb"</span><br><span class="v">"D:\DDL_Backup\chromadb"</span><br><span class="f">/E /H /Y</span></div></div>
+  </div>
+
+  <div class="sl">Scripts</div>
+  <div class="sg">
+
+    <div class="sc" id="sc1">
+      <div class="sh" onclick="tog('sc1')">
+        <div class="shl"><div class="sn">dex-bridge.py</div><div class="sd">Primary query interface. RAG retrieval, generation, auto-ingest back to corpus.</div></div>
+        <div class="sm"><span class="badge bl">LIVE v1.2</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc1">
+        <table class="ft">
+          <tr><th>Flag</th><th>Description</th><th>Type</th></tr>
+          <tr><td class="fn">"query"</td><td class="fd">Positional query string. No flag needed. python dex-bridge.py "question"</td><td class="fr">required</td></tr>
+          <tr><td class="fn">--top N</td><td class="fd">Chunks to retrieve. Default: 5. Use 10–15 for complex cross-artifact queries.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--raw</td><td class="fd">Search ddl_archive (unweighted) instead of dex_canon. For historical/pre-governance queries.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--external</td><td class="fd">Include ext_ collections (ext_creator, ext_reference) in retrieval.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--model</td><td class="fd">Override default model. Default: dexjr. e.g. --model llama3.1:8b</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--verbose</td><td class="fd">Show retrieved chunks with similarity scores. Essential for debugging retrieval quality.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--node</td><td class="fd">Route to compute node. Options: local (default), laptop (GAMINGLAPTOP 192.168.0.210)</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--no-ingest</td><td class="fd">Skip auto-ingest. Use for calibration runs and testing.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--interactive</td><td class="fd">Persistent session — query multiple times without reloading the model.</td><td class="fo">optional</td></tr>
+        </table>
+        <div class="exw"><div class="ex"><div class="exl">Governance query</div><div class="exc"><span class="p">$</span> python dex-bridge.py <span class="v">"What does STD-VAULT-002 say about intake classification?"</span> <span class="f">--top</span> <span class="v">8</span></div></div><button class="cbtn" onclick="cp(this,'python dex-bridge.py &quot;What does STD-VAULT-002 say about intake classification?&quot; --top 8')">COPY</button></div>
+        <div class="exw"><div class="ex"><div class="exl">Calibration run (no corpus pollution)</div><div class="exc"><span class="p">$</span> python dex-bridge.py <span class="v">"Summarize your Modelfile constraints"</span> <span class="f">--no-ingest --verbose</span></div></div><button class="cbtn" onclick="cp(this,'python dex-bridge.py &quot;Summarize your Modelfile constraints&quot; --no-ingest --verbose')">COPY</button></div>
+        <div class="snote">Auto-ingest: every query+response → bridge-ingest/ → swept to corpus. Bug fixed v1.2: stray chat_url arg in get_embedding() caused latent crash.</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc2">
+      <div class="sh" onclick="tog('sc2')">
+        <div class="shl"><div class="sn">dex_weights.py</div><div class="sd">Weighted query engine. Applies collection authority hierarchy per ADR-CORPUS-001.</div></div>
+        <div class="sm"><span class="badge bv">WEIGHTED</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc2">
+        <table class="ft">
+          <tr><th>Flag</th><th>Description</th><th>Type</th></tr>
+          <tr><td class="fn">"query"</td><td class="fd">Positional query string.</td><td class="fr">required</td></tr>
+          <tr><td class="fn">--n N</td><td class="fd">Weighted results to return. Default: 5.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--external</td><td class="fd">Include ext_ collections with assigned weights.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--stats</td><td class="fd">Display full COLLECTIONS weight table and FILE_TYPE_WEIGHTS. Diagnostic mode — no query needed.</td><td class="fo">optional</td></tr>
+        </table>
+        <div class="exw"><div class="ex"><div class="exl">Weighted query</div><div class="exc"><span class="p">$</span> python dex_weights.py <span class="v">"How does the corpus authority model work?"</span> <span class="f">--n</span> <span class="v">10</span></div></div><button class="cbtn" onclick="cp(this,'python dex_weights.py &quot;How does the corpus authority model work?&quot; --n 10')">COPY</button></div>
+        <div class="exw"><div class="ex"><div class="exl">Show weight table</div><div class="exc"><span class="p">$</span> python dex_weights.py <span class="f">--stats</span></div></div><button class="cbtn" onclick="cp(this,'python dex_weights.py --stats')">COPY</button></div>
+        <div class="snote">Weights per ADR-CORPUS-001: dex_canon 1.00 · dex_decisions 0.95 · dex_dave 0.90 · code/canonpress/products 0.85 · dex_site 0.80 · ext_reference 0.75 · ddl_archive 0.65</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc3">
+      <div class="sh" onclick="tog('sc3')">
+        <div class="shl"><div class="sn">dex-ingest.py</div><div class="sd">Corpus builder. 23 file types, nomic-embed-text embeddings, ChromaDB writes. Produced 518K chunks from 12,134 files.</div></div>
+        <div class="sm"><span class="badge bl">LIVE v2.1</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc3">
+        <table class="ft">
+          <tr><th>Flag</th><th>Description</th><th>Type</th></tr>
+          <tr><td class="fn">--path</td><td class="fd">Source directory to scan.</td><td class="fr">required</td></tr>
+          <tr><td class="fn">--build-canon</td><td class="fd">Canon-only ingest → dex_canon. Does not expand RAW archive.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--collection</td><td class="fd">Route to named collection. e.g. --collection dex_code · Governed by ADR-CORPUS-001.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--ext-filter</td><td class="fd">Limit to specific extensions. Space separated. e.g. --ext-filter .py .ts .tsx .js .cs .sql</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--nominated-by</td><td class="fd">Provenance tag for ext_ chunks. Records nominating seat(s). e.g. --nominated-by "1002,1004"</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--fast</td><td class="fd">Skip existing ID load. Use on append-only sources or auto-ingest paths.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--reset</td><td class="fd">DESTRUCTIVE — delete and rebuild collection. Requires explicit confirmation.</td><td class="fo">optional</td></tr>
+        </table>
+        <div class="exw"><div class="ex"><div class="exl">Daily canon ingest</div><div class="exc"><span class="p">$</span> python dex-ingest.py <span class="f">--path</span> <span class="v">"C:\path\to\folder"</span> <span class="f">--build-canon --fast</span></div></div><button class="cbtn" onclick="cp(this,'python dex-ingest.py --path &quot;C:\\path\\to\\folder&quot; --build-canon --fast')">COPY</button></div>
+        <div class="exw"><div class="ex"><div class="exl">Named collection — code corpus</div><div class="exc"><span class="p">$</span> python dex-ingest.py <span class="f">--path</span> <span class="v">"C:\Users\dexjr\99_DexUniverseArchive"</span> <span class="f">--collection</span> <span class="v">dex_code</span> <span class="f">--ext-filter</span> <span class="v">.py .ts .tsx .jsx .js .cs .sql</span> <span class="f">--fast</span></div></div><button class="cbtn" onclick="cp(this,'python dex-ingest.py --path &quot;C:\\Users\\dexjr\\99_DexUniverseArchive&quot; --collection dex_code --ext-filter .py .ts .tsx .jsx .js .cs .sql --fast')">COPY</button></div>
+        <div class="exw"><div class="ex"><div class="exl">External source with provenance</div><div class="exc"><span class="p">$</span> python dex-ingest.py <span class="f">--path</span> <span class="v">"C:\ext-sources\kimball"</span> <span class="f">--collection</span> <span class="v">ext_reference</span> <span class="f">--ext-filter</span> <span class="v">.txt .md</span> <span class="f">--nominated-by</span> <span class="v">"1002,1004"</span> <span class="f">--fast</span></div></div><button class="cbtn" onclick="cp(this,'python dex-ingest.py --path &quot;C:\\ext-sources\\kimball&quot; --collection ext_reference --ext-filter .txt .md --nominated-by &quot;1002,1004&quot; --fast')">COPY</button></div>
+        <div class="snote">23 extensions: .bas .bat .cs .css .csv .html .ipynb .js .json .jsx .md .mjs .prisma .ps1 .py .sh .sql .toml .ts .tsx .txt .yaml .yml · Phantom chunk count bug fixed · SyntaxWarning fixed v2.1</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc4">
+      <div class="sh" onclick="tog('sc4')">
+        <div class="shl"><div class="sn">dex-council.py</div><div class="sd">AutoCouncil v3.0. Six-model async deliberation with RAG injection, governance context, and auto-ingest.</div></div>
+        <div class="sm"><span class="badge bv">AUTOCOUNCIL v3.0</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc4">
+        <table class="ft">
+          <tr><th>Flag</th><th>Description</th><th>Type</th></tr>
+          <tr><td class="fn">--from-file</td><td class="fd">Path to .txt prompt file. Preferred for council reviews.</td><td class="fr">required*</td></tr>
+          <tr><td class="fn">"prompt"</td><td class="fd">Inline prompt string. Alternative to --from-file.</td><td class="fr">required*</td></tr>
+          <tr><td class="fn">--all</td><td class="fd">All available models — local + cloud.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--local-only</td><td class="fd">Local models only. No API cost. Offline capable.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--cloud-only</td><td class="fd">Cloud only (Gemini 2.5 Flash, Mistral Small). Requires .env API keys.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--rag</td><td class="fd">Enable RAG — injects top-k canon chunks into council context.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--save</td><td class="fd">Save responses to folder. e.g. --save council-runs/CR-ADR-001</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--ingest</td><td class="fd">Auto-ingest saved run into AutoCouncil-Live after completion.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--synthesize</td><td class="fd">Re-synthesize from saved folder. e.g. --synthesize council-runs/CR-ADR-001</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--retry</td><td class="fd">Retry failed models once. Handles transient API timeouts.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--timeout</td><td class="fd">Seconds per model. Default: 180. e.g. --timeout 300</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--verbose</td><td class="fd">Full responses instead of previews during run.</td><td class="fo">optional</td></tr>
+        </table>
+        <div class="exw"><div class="ex"><div class="exl">Full council review (canonical)</div><div class="exc"><span class="p">$</span> python dex-council.py <span class="f">--from-file</span> <span class="v">"C:\Users\dexjr\dex-rag\prompts\CR-ADR-CORPUS-001.txt"</span> <span class="f">--all --rag --save</span> <span class="v">council-runs/CR-ADR-001</span> <span class="f">--ingest</span></div></div><button class="cbtn" onclick="cp(this,'python dex-council.py --from-file &quot;prompts\\CR-ADR-CORPUS-001.txt&quot; --all --rag --save council-runs/CR-ADR-001 --ingest')">COPY</button></div>
+        <div class="exw"><div class="ex"><div class="exl">Re-synthesize from saved folder</div><div class="exc"><span class="p">$</span> python dex-council.py <span class="f">--synthesize</span> <span class="v">council-runs/CR-ADR-001</span></div></div><button class="cbtn" onclick="cp(this,'python dex-council.py --synthesize council-runs/CR-ADR-001')">COPY</button></div>
+        <div class="snote">Local models: qwen2.5-coder:7b, llama3.1:8b, deepseek-r1:8b · Cloud: Gemini 2.5 Flash, Mistral Small · Synthesizer: dexjr · API keys: C:\Users\dexjr\dex-rag\.env · Auto-ingest target: AutoCouncil-Live (not DDL-Standards-Canon) · Timeout 300s in v3.0</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc5">
+      <div class="sh" onclick="tog('sc5')">
+        <div class="shl"><div class="sn">dex-deliberate.py</div><div class="sd">Deliberation engine. Multi-round — models read each other's positions and revise. For contested architecture decisions.</div></div>
+        <div class="sm"><span class="badge bv">DELIBERATION</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc5">
+        <div class="exw"><div class="ex"><div class="exl">Standard deliberation</div><div class="exc"><span class="p">$</span> python dex-deliberate.py <span class="v">"Should dex_dave outrank product collections in the authority hierarchy?"</span></div></div><button class="cbtn" onclick="cp(this,'python dex-deliberate.py &quot;debate topic here&quot;')">COPY</button></div>
+        <div class="snote">Differs from dex-council.py — models see each other's initial positions before round 2. Produces genuine position revision. Use for contested decisions where convergence matters.</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc6">
+      <div class="sh" onclick="tog('sc6')">
+        <div class="shl"><div class="sn">dex-sweep.py</div><div class="sd">Nightly corpus sweep. Watches source folders, copies new files, runs ingest, writes timestamped JSON reports.</div></div>
+        <div class="sm"><span class="badge bl">LIVE</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc6">
+        <table class="ft">
+          <tr><th>Flag</th><th>Description</th><th>Type</th></tr>
+          <tr><td class="fn">(none)</td><td class="fd">Run once. Scan, copy, ingest. Standard nightly run.</td><td class="fo">default</td></tr>
+          <tr><td class="fn">--dry-run</td><td class="fd">Scan and report without acting. Preview before a major run.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--watch</td><td class="fd">Continuous watch mode on interval.</td><td class="fo">optional</td></tr>
+          <tr><td class="fn">--interval N</td><td class="fd">Minutes between watch-mode sweeps. Default: 60.</td><td class="fo">optional</td></tr>
+        </table>
+        <div class="exw"><div class="ex"><div class="exl">Nightly sweep (Task Scheduler target)</div><div class="exc"><span class="p">$</span> python dex-sweep.py<br><span class="c"># → sweep-reports/sweep_2026-03-15_0300.json</span></div></div><button class="cbtn" onclick="cp(this,'python dex-sweep.py')">COPY</button></div>
+        <div class="snote">Full 23-type extension set · Indentation bug fixed (copy_to_corpus was silently broken) · Timeout 600s · JSON reports: files_found, files_copied, files_skipped, source_folders, sizes, ingestion_status</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODELFILE VERSIONS -->
+  <div class="sl">Modelfile Version History</div>
+  <table class="mft">
+    <tr><th>Version</th><th>Deployed</th><th>Status</th><th>Summary</th></tr>
+    <tr><td class="mv">v4.1</td><td class="md">2026-03-09</td><td class="ms">Superseded</td><td class="mnote">Baseline. Timeout + persona fixes. Both fix targets open.</td></tr>
+    <tr><td class="mv">v4.2</td><td class="md">2026-03-13</td><td class="ms">Superseded</td><td class="mnote">CR- posture over-trigger hardened — prefix-only trigger. <strong style="color:var(--green)">Fix 1: PASS</strong></td></tr>
+    <tr><td class="mv">v4.3</td><td class="md">2026-03-13</td><td class="mc">DISCARDED</td><td class="mnote">Category scaffold attempted. Fix 1 regressed. Rolled back immediately.</td></tr>
+    <tr><td class="mv">v4.4</td><td class="md">2026-03-13</td><td class="ms">Superseded</td><td class="mnote">Binary gate added. Fix 1 holds. Fix 2: partial pass only.</td></tr>
+    <tr><td class="mv">v4.5</td><td class="md">2026-03-13</td><td class="ms">Superseded</td><td class="mnote">Hard stop on Step 3b. <strong style="color:var(--green)">Fix 1: PASS · Fix 2: PASS</strong></td></tr>
+    <tr class="cur"><td class="mv" style="color:var(--vlt)">v4.6 ★</td><td class="md">2026-03-14</td><td class="ml">CURRENT</td><td class="mnote">Search query over-trigger fixed. <strong style="color:var(--green)">Fix 3: PASS</strong> · OBS-DJ-004 (synthesis confabulation) open → v4.7</td></tr>
+  </table>
+
+  <!-- COLLECTIONS -->
+  <div class="sl">Corpus Collections</div>
+  <table class="ct">
+    <tr><th>Collection</th><th>Weight</th><th>Status</th><th>Contents</th></tr>
+    <tr><td class="cn">dex_canon</td><td class="cw">1.00</td><td class="clive">LIVE</td><td class="cdesc">Ratified governance — standards, protocols, council verdicts, ADRs</td></tr>
+    <tr><td class="cn">ddl_archive</td><td class="cw">0.65</td><td class="clive">LIVE</td><td class="cdesc">Full historical RAW — threads, messages, session logs</td></tr>
+    <tr><td class="cn">dex_code</td><td class="cw">0.85</td><td class="clive">LIVE</td><td class="cdesc">All DDL code files — .py .ts .tsx .jsx .js .cs .sql and more</td></tr>
+    <tr><td class="cn">ext_creator</td><td class="cw">0.85</td><td class="clive">LIVE (partial)</td><td class="cdesc">Approved external creator voices — 1 live, 8 approved in queue</td></tr>
+    <tr><td class="cn">dex_decisions</td><td class="cw">0.95</td><td class="cbuild">BUILDING</td><td class="cdesc">Decision ledger — ADR-CORPUS-001 is the first artifact. Highest build priority.</td></tr>
+    <tr><td class="cn">dex_lore</td><td class="cw">0.95</td><td class="cbuild">PENDING</td><td class="cdesc">DexVerse origin docs, council profiles, DEXLORE narrative</td></tr>
+    <tr><td class="cn">dex_canonpress</td><td class="cw">0.85</td><td class="cbuild">PENDING</td><td class="cdesc">CanonPress articles across all six series</td></tr>
+    <tr><td class="cn">dex_auditforge</td><td class="cw">0.85</td><td class="cbuild">PENDING</td><td class="cdesc">AuditForge schema, API routes, council reviews</td></tr>
+    <tr><td class="cn">dex_blindspot</td><td class="cw">0.85</td><td class="cbuild">PENDING</td><td class="cdesc">BlindSpot schema and behavioral analytics content</td></tr>
+    <tr><td class="cn">dex_site</td><td class="cw">0.80</td><td class="cbuild">PENDING</td><td class="cdesc">DDL site JSX/TSX components and routes</td></tr>
+    <tr><td class="cn" style="color:var(--vlt)">dex_dave</td><td class="cw">0.90</td><td class="cbuild">GATED</td><td class="cdesc">Operator voice — iMessages, emails, notes, memoir. Isolated from governance queries per ADR-CORPUS-001 Rule 3.</td></tr>
+    <tr><td class="cn">ext_reference</td><td class="cw">0.75</td><td class="cbuild">PENDING</td><td class="cdesc">6 council-approved texts — Kimball, NIST SP 800-53, PCAOB AS 2201/2301</td></tr>
+  </table>
+
+  <!-- INFRASTRUCTURE -->
+  <div class="sl t">Infrastructure</div>
+  <div class="ig">
+    <div class="ic"><div class="it">REBORN (Primary)</div><div class="ir">Local: <span>192.168.0.198</span></div><div class="ir">Tailscale: <span class="tl">100.117.38.55</span></div><div class="ir">User: <span>dexjr</span></div><div class="ir">GPU: <span>RTX 3070 8GB</span></div><div class="ir">Ollama: <span>8 models · :11434</span></div></div>
+    <div class="ic"><div class="it">GAMINGLAPTOP (Node 2)</div><div class="ir">Local: <span>192.168.0.210</span></div><div class="ir">Tailscale: <span style="color:rgba(107,123,141,.4)">pending</span></div><div class="ir">GPU: <span>RTX 3060</span></div><div class="ir">Route: <span class="tl">--node laptop</span></div><div class="ir">Env: <span>OLLAMA_CHAT_URL_LAPTOP</span></div></div>
+    <div class="ic"><div class="it">WORKINGSURFACE</div><div class="ir">Tailscale: <span class="tl">100.92.99.115</span></div><div class="ir">User: <span>dkitc</span></div><div class="ir">Role: <span>operator terminal</span></div><div class="ir">Git push: <span>primary machine</span></div></div>
+    <div class="ic"><div class="it">DEX JR. (Seat 1010)</div><div class="ir">Model: <span class="hl">qwen2.5-coder:7b</span></div><div class="ir">Modelfile: <span class="hl">v4.6 CURRENT</span></div><div class="ir">Judgment: <span>~92%</span></div><div class="ir">Next: <span>v4.7 OBS-DJ-004</span></div></div>
+    <div class="ic"><div class="it">CHROMADB</div><div class="ir">dex_canon: <span>226,123</span></div><div class="ir">ddl_archive: <span>271,627</span></div><div class="ir">dex_code: <span>~20,384</span></div><div class="ir">Total: <span class="hl">518,499</span></div></div>
+    <div class="ic"><div class="it">GIT WORKFLOW</div><div class="ir" style="flex-direction:column;gap:2px"><span style="color:var(--teal);font-size:.6rem">cd C:\Users\dexjr\dex-rag</span><span style="color:var(--teal);font-size:.6rem">git pull</span><span style="color:var(--steel);font-size:.58rem;margin-top:4px">Push from Surface (dkitc)</span><span style="color:var(--teal);font-size:.6rem">git add . &amp;&amp; git commit -m "msg"</span><span style="color:var(--teal);font-size:.6rem">git push</span></div></div>
+  </div>
+
+  <!-- PATHS -->
+  <div class="sl t">Path Reference</div>
+  <div class="pg">
+    <div class="pc"><div class="pl">Scripts</div><div class="pv">C:\Users\dexjr\dex-rag\</div></div>
+    <div class="pc"><div class="pl">Prompts</div><div class="pv">C:\Users\dexjr\dex-rag\prompts\</div></div>
+    <div class="pc"><div class="pl">Council Runs</div><div class="pv">C:\Users\dexjr\dex-rag\council-runs\</div></div>
+    <div class="pc"><div class="pl">Sweep Reports</div><div class="pv">C:\Users\dexjr\dex-rag\sweep-reports\</div></div>
+    <div class="pc"><div class="pl">Bridge Ingest</div><div class="pv">C:\Users\dexjr\dex-rag\bridge-ingest\</div></div>
+    <div class="pc"><div class="pl">ChromaDB</div><div class="pv">C:\Users\dkitc\.dex-jr\chromadb\</div></div>
+    <div class="pc"><div class="pl">Backup</div><div class="pv">D:\DDL_Backup\chromadb\</div></div>
+    <div class="pc"><div class="pl">Archive</div><div class="pv">C:\Users\dexjr\99_DexUniverseArchive\</div></div>
+    <div class="pc"><div class="pl">AutoCouncil Live</div><div class="pv">C:\...\00_Archive\AutoCouncil-Live\</div></div>
+    <div class="pc"><div class="pl">Canon Dir</div><div class="pv">C:\...\00_Archive\DDL-Standards-Canon\</div></div>
+    <div class="pc"><div class="pl">Ingest Drop</div><div class="pv">C:\Users\dkitc\Downloads\DDL_Ingest\</div></div>
+    <div class="pc"><div class="pl">GitHub Repo</div><div class="pv">github.com/dropdownlogistics/dex-rag</div></div>
+  </div>
+
+  <!-- NAV -->
+  <div class="sl">Navigate the Vault</div>
+  <div class="ng">
+    <a class="nc" href="corpus.html"><div class="ncn">01 — THE CORPUS</div><div class="nct">Half a Million Chunks</div><div class="ncb">What these scripts built. 518,499 chunks. Every command on this page feeds into it.</div><div class="nca">Explore the Corpus →</div></a>
+    <a class="nc" href="council.html"><div class="ncn">02 — THE COUNCIL</div><div class="nct">Ten Seats. Three Verdicts.</div><div class="ncb">dex-council.py runs the local version. Seat 1010 synthesizes. Nine cloud seats deliberate in parallel.</div><div class="nca">Meet the Council →</div></a>
+    <a class="nc" href="method.html"><div class="ncn">03 — THE METHOD</div><div class="nct">Chaos → Structured → Automated</div><div class="ncb">These scripts are the Automated phase. The corpus is Structured. The raw archives were Chaos.</div><div class="nca">Understand the Method →</div></a>
+    <a class="nc" href="products.html"><div class="ncn">04 — THE PRODUCTS</div><div class="nct">Three Products. One Rig.</div><div class="ncb">All three feed the corpus. The corpus feeds Dex Jr. The loop is the architecture.</div><div class="nca">See the Products →</div></a>
+  </div>
+
+</section>
+
+<footer>
+  <div class="fl">DDL Knowledge Vault · Dex Jr. Commands · Modelfile v4.6<br>Dropdown Logistics · Dave Kitchens · CPA · The rig stays awake.</div>
+  <div class="flinks">
+    <a class="flink" href="https://dropdownlogistics.com" target="_blank">dropdownlogistics.com</a>
+    <a class="flink" href="https://github.com/dropdownlogistics/dex-rag" target="_blank">dex-rag repo</a>
+  </div>
+</footer>
+
+<script>
+var lines=[
+  {t:'p',s:'dexjr@reborn:~$ ollama create dexjr -f Modelfile.dexjr-v4.6'},
+  {t:'o',s:'[INFO] Reading modelfile...'},
+  {t:'k',s:'[OK]   Model created: dexjr · v4.6 · qwen2.5-coder:7b'},
+  {t:'b'},
+  {t:'p',s:'dexjr@reborn:~$ python dex-bridge.py "What does ADR-CORPUS-001 say about dex_dave?" --top 8'},
+  {t:'o',s:'[RAG]  Retrieving top-8 from dex_canon...'},
+  {t:'o',s:'[DJ]   Rule 3 — dex_dave excluded from governance queries...'},
+  {t:'k',s:'[AUTO] Response ingested to bridge-ingest/'},
+  {t:'b'},
+  {t:'p',s:'dexjr@reborn:~$ python dex-ingest.py --path "DDL-Standards-Canon" --build-canon --fast'},
+  {t:'o',s:'[SCAN] 491 new chunks queued · 23 file types'},
+  {t:'k',s:'[DONE] dex_canon: 226,123 total chunks'},
+  {t:'b'},
+  {t:'p',s:'dexjr@reborn:~$ python dex-sweep.py'},
+  {t:'o',s:'[SWEEP] 4 source folders · nightly run'},
+  {t:'k',s:'[DONE] sweep_2026-03-15_0300.json written'},
+];
+var body=document.getElementById('termBody');
+var cur=document.createElement('span');cur.className='cursor';
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function rl(l){
+  var el=document.createElement('span');el.className='tl';
+  if(!l.t||l.t==='b'){el.innerHTML='&nbsp;';return el;}
+  var s=esc(l.s||'');
+  if(l.t==='p') el.innerHTML='<span class="p">$ </span><span class="cm">'+s.replace(/^.*\$ /,'')+'</span>';
+  else if(l.t==='o') el.innerHTML='<span class="ou">'+s+'</span>';
+  else el.innerHTML='<span class="ok">'+s+'</span>';
+  return el;
+}
+var idx=0;
+function sn(){
+  if(cur.parentNode)cur.parentNode.removeChild(cur);
+  if(idx>=lines.length){var lc=body.lastChild;if(lc)lc.appendChild(cur);return;}
+  var el=rl(lines[idx]);body.appendChild(el);
+  setTimeout(function(){
+    el.classList.add('show');
+    if(lines[idx]&&lines[idx].t==='p')el.appendChild(cur);
+    idx++;
+    var d=lines[idx-1]&&!lines[idx-1].t?180:lines[idx-1]&&lines[idx-1].t==='p'?500:250;
+    setTimeout(sn,d);
+  },30);
+}
+sn();
+function tog(id){
+  var c=document.getElementById(id),b=document.getElementById('b-'+id);
+  var o=c.classList.contains('open');
+  document.querySelectorAll('.sc').forEach(function(x){x.classList.remove('open');var y=document.getElementById('b-'+x.id);if(y)y.classList.remove('open');});
+  if(!o){c.classList.add('open');b.classList.add('open');}
+}
+function cp(btn,text){
+  var t=text.replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+  navigator.clipboard.writeText(t).then(function(){
+    btn.textContent='COPIED';btn.classList.add('ok2');
+    setTimeout(function(){btn.textContent='COPY';btn.classList.remove('ok2');},1500);
+  });
+}
+</script>
+</body>
+</html>
