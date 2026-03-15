@@ -4,516 +4,318 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Council — DDL Knowledge Vault</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
+* { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --navy:   #0D1B2A;
-  --cream:  #F5F1EB;
-  --teal:   #2C7A7B;
-  --steel:  #6B7B8D;
-  --lock:   #2C7A7B;
-  --revise: #C49A3C;
-  --reject: #B23531;
-  --border: rgba(245,241,235,0.07);
+  --navy:#0D1B2A; --card:#10202f; --cream:#F5F1EB;
+  --teal:#2C7A7B; --teal-lt:#3a9a9b; --steel:#6B7B8D;
+  --lock:#2C7A7B; --revise:#C49A3C; --reject:#B23531;
+  --border:rgba(245,241,235,0.07); --border2:rgba(44,122,123,0.15);
+}
+body { background:var(--navy); color:var(--cream); font-family:'Source Serif 4',serif; }
+
+nav {
+  position:fixed; top:0; left:0; right:0; height:56px; z-index:100;
+  display:flex; align-items:center; justify-content:space-between; padding:0 48px;
+  border-bottom:1px solid var(--border); background:rgba(13,27,42,0.97);
+}
+.nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+.nav-logo-name { font-family:'Space Grotesk',sans-serif; font-size:0.9rem; font-weight:700; color:var(--cream); }
+.nav-logo-sub { font-family:'JetBrains Mono',monospace; font-size:0.55rem; color:var(--steel); letter-spacing:0.1em; }
+.nav-links { display:flex; gap:28px; }
+.nav-link { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--steel); letter-spacing:0.08em; text-decoration:none; transition:color 0.2s; }
+.nav-link:hover, .nav-link.active { color:var(--teal); }
+
+.hero { padding-top:56px; display:flex; flex-direction:column; align-items:center; }
+
+/* ROUND TABLE */
+.table-wrap {
+  width:min(420px,85vw); height:min(420px,85vw);
+  position:relative; margin:28px auto 0;
 }
 
-body {
-  background: var(--navy);
-  color: var(--cream);
-  font-family: 'Source Serif 4', serif;
-  width: 100vw;
-  height: 100vh;
+.table-svg {
+  width:100%; height:100%;
 }
 
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 60px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(13,27,42,0.95);
-}
+/* Seat states */
+.seat-ring { fill:none; stroke:rgba(44,122,123,0.2); stroke-width:1.5; transition:all 0.3s; }
+.seat-bg   { fill:#0D1B2A; transition:fill 0.3s; }
+.seat-num  { fill:rgba(107,123,141,0.6); font-family:'JetBrains Mono',monospace; font-size:8px; text-anchor:middle; dominant-baseline:central; transition:fill 0.3s; }
+.seat-name { fill:rgba(107,123,141,0.4); font-family:'JetBrains Mono',monospace; font-size:5px; text-anchor:middle; dominant-baseline:central; transition:fill 0.3s; }
 
-.topbar-left { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
-.topbar-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--cream); }
-.topbar-page { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; }
-.topbar-right { display: flex; align-items: center; gap: 20px; }
-.topbar-stat-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--teal); text-align: right; }
-.topbar-stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--steel); letter-spacing: 0.06em; text-align: right; }
-.topbar-div { width: 1px; height: 28px; background: var(--border); }
-.nav-link { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); letter-spacing: 0.08em; text-decoration: none; }
-.nav-link:hover, .nav-link.active { color: var(--teal); }
+.seat-group.lit .seat-ring { stroke:var(--teal); stroke-width:2; filter:drop-shadow(0 0 4px rgba(44,122,123,0.6)); }
+.seat-group.lit .seat-bg   { fill:rgba(44,122,123,0.12); }
+.seat-group.lit .seat-num  { fill:var(--teal); }
+.seat-group.lit .seat-name { fill:rgba(58,154,155,0.7); }
 
-.stage {
-  position: fixed;
-  top: 60px; left: 0; right: 0; bottom: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+.seat-group.local.lit .seat-ring { stroke:#8a6cc9; stroke-width:2; filter:drop-shadow(0 0 4px rgba(138,108,201,0.5)); }
+.seat-group.local.lit .seat-bg   { fill:rgba(138,108,201,0.1); }
+.seat-group.local.lit .seat-num  { fill:#8a6cc9; }
 
-.orbital {
-  position: relative;
-  width: min(640px, 85vw);
-  height: min(640px, 85vw);
-}
+/* Center verdict */
+.verdict-text { font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:700; text-anchor:middle; dominant-baseline:central; opacity:0; transition:opacity 0.4s; }
+.verdict-text.show { opacity:1; }
+.verdict-lock   { fill:var(--teal); }
+.verdict-revise { fill:var(--revise); }
+.verdict-reject { fill:var(--reject); }
+.center-ring { fill:none; stroke:rgba(44,122,123,0.2); stroke-width:1; }
+.center-label { fill:rgba(107,123,141,0.5); font-family:'JetBrains Mono',monospace; font-size:6px; text-anchor:middle; }
 
-.orbit-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(44,122,123,0.18); pointer-events: none; }
-.orbit-ring-inner { position: absolute; inset: 18%; border-radius: 50%; border: 1px dashed rgba(44,122,123,0.1); pointer-events: none; }
-.spokes { position: absolute; inset: 0; pointer-events: none; }
+.hero-copy { text-align:center; padding:24px 24px 36px; max-width:640px; }
+.hero-eyebrow { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; }
+.hero-headline { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); font-weight:700; letter-spacing:-0.03em; line-height:1.1; margin-bottom:14px; }
+.hero-headline em { font-style:italic; font-family:'Source Serif 4',serif; color:var(--teal); font-weight:400; }
+.hero-sub { font-size:0.95rem; line-height:1.7; color:rgba(245,241,235,0.6); margin-bottom:26px; }
+.hero-actions { display:flex; align-items:center; justify-content:center; gap:16px; }
+.btn-primary { display:inline-block; padding:12px 24px; background:var(--teal); color:var(--navy); font-family:'Space Grotesk',sans-serif; font-size:0.82rem; font-weight:700; text-decoration:none; border-radius:4px; transition:background 0.2s; }
+.btn-primary:hover { background:var(--teal-lt); }
+.btn-ghost { display:inline-block; padding:12px 24px; border:1px solid rgba(44,122,123,0.4); color:var(--teal); font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-decoration:none; border-radius:4px; transition:all 0.2s; }
+.btn-ghost:hover { background:rgba(44,122,123,0.1); border-color:rgba(44,122,123,0.7); }
 
-/* CENTER: VERDICT WHEEL */
-.center-node {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px; height: 150px;
-  pointer-events: none;
-  z-index: 1;
-}
+.ticker { border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:12px 0; overflow:hidden; background:rgba(13,27,42,0.5); }
+.ticker-inner { display:flex; gap:48px; animation:ticker 30s linear infinite; width:max-content; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-item { font-family:'JetBrains Mono',monospace; font-size:0.6rem; letter-spacing:0.08em; white-space:nowrap; display:flex; align-items:center; gap:8px; }
+.ticker-val { color:var(--teal); font-weight:500; }
+.ticker-label { color:var(--steel); }
 
-.verdict-wrap {
-  width: 100%; height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.verdict-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  animation: spinSlow 20s linear infinite;
-}
-
-@keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.verdict-inner {
-  position: relative;
-  z-index: 2;
-  width: 96px; height: 96px;
-  border-radius: 50%;
-  background: var(--navy);
-  border: 1px solid rgba(44,122,123,0.3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-}
-
-.verdict-count { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--teal); line-height: 1; }
-.verdict-label { font-family: 'JetBrains Mono', monospace; font-size: 0.48rem; color: var(--steel); letter-spacing: 0.12em; text-transform: uppercase; }
-
-.verdict-badge {
-  position: absolute;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.48rem;
-  letter-spacing: 0.1em;
-  padding: 3px 7px;
-  border-radius: 3px;
-  font-weight: 600;
-  z-index: 3;
-}
-
-.verdict-badge.lock   { background: rgba(44,122,123,0.2);  border: 1px solid rgba(44,122,123,0.5);  color: var(--lock);   top: 10px;   left: 50%; transform: translateX(-50%); }
-.verdict-badge.revise { background: rgba(196,154,60,0.15); border: 1px solid rgba(196,154,60,0.4);  color: var(--revise); bottom: 18px; right: 10px; }
-.verdict-badge.reject { background: rgba(178,53,49,0.12);  border: 1px solid rgba(178,53,49,0.35);  color: var(--reject); bottom: 18px; left: 10px; }
-
-/* NODES */
-.node { position: absolute; transform: translate(-50%, -50%); z-index: 5; cursor: pointer; }
-
-.node-pill {
-  padding: 10px 18px;
-  border: 1px solid rgba(44,122,123,0.3);
-  border-radius: 40px;
-  background: rgba(13,27,42,0.9);
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.node:hover .node-pill, .node.active .node-pill {
-  background: rgba(44,122,123,0.15);
-  border-color: rgba(44,122,123,0.7);
-}
-
-.node-title { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--cream); }
-.node-sub { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.06em; margin-top: 2px; }
-
-/* PANEL */
-.panel {
-  position: fixed;
-  bottom: 44px; left: 0; right: 0;
-  background: rgba(13,27,42,0.97);
-  border-top: 1px solid rgba(44,122,123,0.2);
-  padding: 28px 40px 24px;
-  transform: translateY(100%);
-  transition: transform 0.35s ease;
-  z-index: 20;
-  pointer-events: none;
-}
-
-.panel.open { transform: translateY(0); pointer-events: all; }
-
-.panel-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 200px 1fr; gap: 40px; }
-.panel-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
-.panel-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
-.panel-id { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); letter-spacing: 0.05em; line-height: 1.7; }
-.panel-body { font-size: 0.88rem; line-height: 1.7; color: rgba(245,241,235,0.82); margin-bottom: 14px; }
-.panel-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.panel-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
-
-.tag { padding: 5px 12px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.06em; border: 1px solid; }
-.tag.seat   { background: rgba(44,122,123,0.1);  border-color: rgba(44,122,123,0.25);  color: #3a9a9b; }
-.tag.local  { background: rgba(138,108,201,0.1); border-color: rgba(138,108,201,0.25); color: #8a6cc9; }
-.tag.lock   { background: rgba(44,122,123,0.12); border-color: rgba(44,122,123,0.4);   color: var(--lock); }
-.tag.revise { background: rgba(196,154,60,0.1);  border-color: rgba(196,154,60,0.35);  color: var(--revise); }
-.tag.reject { background: rgba(178,53,49,0.1);   border-color: rgba(178,53,49,0.3);    color: var(--reject); }
-.tag.rule   { background: rgba(107,123,141,0.1); border-color: rgba(107,123,141,0.25); color: var(--steel); }
-
-.stat { padding: 6px 12px; background: rgba(44,122,123,0.1); border: 1px solid rgba(44,122,123,0.2); border-radius: 4px; }
-.stat-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--teal); font-weight: 500; }
-.stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; color: var(--steel); letter-spacing: 0.06em; margin-top: 1px; }
-
-.panel-close { position: absolute; top: 18px; right: 28px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); cursor: pointer; letter-spacing: 0.06em; background: none; border: none; }
-.panel-close:hover { color: var(--teal); }
-
-.footbar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  border-top: 1px solid var(--border);
-  background: rgba(13,27,42,0.95);
-  z-index: 10;
-}
-
-.footbar-text { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); letter-spacing: 0.06em; }
-.footbar-nav { display: flex; gap: 20px; }
-.footbar-link { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); text-decoration: none; letter-spacing: 0.06em; }
-.footbar-link:hover { color: var(--teal); }
+.content { padding:72px 48px 80px; max-width:1100px; margin:0 auto; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-bottom:72px; }
+.stat-card { background:var(--card); padding:28px 24px; border:1px solid var(--border); }
+.stat-card:first-child { border-radius:8px 0 0 8px; }
+.stat-card:last-child { border-radius:0 8px 8px 0; }
+.stat-number { font-family:'Space Grotesk',sans-serif; font-size:2.2rem; font-weight:700; letter-spacing:-0.03em; color:var(--teal); line-height:1; margin-bottom:8px; }
+.stat-desc { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--steel); letter-spacing:0.06em; line-height:1.6; }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:24px; display:flex; align-items:center; gap:12px; }
+.section-label::before { content:''; display:block; width:24px; height:1px; background:var(--teal); }
+.nav-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; }
+.nav-card { background:var(--card); border:1px solid var(--border); padding:32px 36px; text-decoration:none; transition:all 0.25s; position:relative; overflow:hidden; }
+.nav-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--teal); transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
+.nav-card:hover { background:#0e1c2a; border-color:var(--border2); }
+.nav-card:hover::after { transform:scaleX(1); }
+.nav-card-num { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.1em; margin-bottom:12px; opacity:0.7; }
+.nav-card-title { font-family:'Space Grotesk',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:-0.02em; color:var(--cream); margin-bottom:8px; }
+.nav-card-body { font-size:0.85rem; line-height:1.65; color:rgba(245,241,235,0.5); margin-bottom:16px; }
+.nav-card-arrow { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); letter-spacing:0.08em; opacity:0; transition:opacity 0.2s; }
+.nav-card:hover .nav-card-arrow { opacity:1; }
+footer { padding:28px 48px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.footer-left { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--steel); letter-spacing:0.06em; line-height:1.8; }
+.footer-links { display:flex; gap:20px; }
+.footer-link { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--steel); text-decoration:none; letter-spacing:0.06em; transition:color 0.2s; }
+.footer-link:hover { color:var(--teal); }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <a class="topbar-left" href="index.html">
-    <svg width="28" height="28" viewBox="0 0 140 140">
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 140 140">
       <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
       <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
-      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
     </svg>
     <div>
-      <div class="topbar-name">Knowledge Vault</div>
-      <div class="topbar-page">The Council</div>
+      <div class="nav-logo-name">Knowledge Vault</div>
+      <div class="nav-logo-sub">THE COUNCIL</div>
     </div>
   </a>
-  <div class="topbar-right">
-    <div><span class="topbar-stat-val">10</span><span class="topbar-stat-label">SEATS</span></div>
-    <div class="topbar-div"></div>
-    <div><span class="topbar-stat-val">5+</span><span class="topbar-stat-label">CR- REVIEWS</span></div>
-    <div class="topbar-div"></div>
-    <div><span class="topbar-stat-val">3</span><span class="topbar-stat-label">VERDICTS</span></div>
-    <div class="topbar-div"></div>
+  <div class="nav-links">
     <a class="nav-link" href="index.html">Vault</a>
     <a class="nav-link" href="corpus.html">Corpus</a>
-    <a class="nav-link active">Council</a>
+    <a class="nav-link active" href="council.html">Council</a>
     <a class="nav-link" href="method.html">Method</a>
     <a class="nav-link" href="products.html">Products</a>
   </div>
-</div>
+</nav>
 
-<!-- STAGE -->
-<div class="stage">
-  <div class="orbital" id="orbital">
+<section class="hero">
+  <div class="table-wrap">
+    <svg class="table-svg" id="tableSvg" viewBox="0 0 420 420">
+      <!-- Outer ring -->
+      <circle cx="210" cy="210" r="195" fill="none" stroke="rgba(44,122,123,0.1)" stroke-width="1"/>
+      <circle cx="210" cy="210" r="165" fill="none" stroke="rgba(44,122,123,0.08)" stroke-width="1" stroke-dasharray="3 4"/>
 
-    <div class="orbit-ring"></div>
-    <div class="orbit-ring-inner"></div>
-    <svg class="spokes" id="spokes"></svg>
+      <!-- Center -->
+      <circle cx="210" cy="210" r="48" class="center-ring"/>
+      <text x="210" y="204" class="center-label">VERDICT</text>
+      <text x="210" y="216" id="verdictDisp" class="verdict-text verdict-lock">LOCK</text>
 
-    <!-- Center: verdict wheel -->
-    <div class="center-node">
-      <div class="verdict-wrap">
-        <svg class="verdict-svg" id="verdictSvg" viewBox="0 0 150 150">
-        </svg>
-        <div class="verdict-inner">
-          <span class="verdict-count">10</span>
-          <span class="verdict-label">Seats</span>
-        </div>
-        <span class="verdict-badge lock">LOCK</span>
-        <span class="verdict-badge revise">REVISE</span>
-        <span class="verdict-badge reject">REJECT</span>
-      </div>
-    </div>
+      <!-- Ten seat groups — positioned by angle -->
+      <!-- 1001 LeChat -->
+      <g class="seat-group" id="seat0">
+        <circle cx="210" cy="52" r="22" class="seat-bg"/>
+        <circle cx="210" cy="52" r="22" class="seat-ring"/>
+        <text x="210" y="48" class="seat-num">1001</text>
+        <text x="210" y="59" class="seat-name">LECHAT</text>
+      </g>
+      <!-- 1002 Claude -->
+      <g class="seat-group" id="seat1">
+        <circle cx="304" cy="80" r="22" class="seat-bg"/>
+        <circle cx="304" cy="80" r="22" class="seat-ring"/>
+        <text x="304" y="76" class="seat-num">1002</text>
+        <text x="304" y="87" class="seat-name">CLAUDE</text>
+      </g>
+      <!-- 1003 Grok -->
+      <g class="seat-group" id="seat2">
+        <circle cx="362" cy="163" r="22" class="seat-bg"/>
+        <circle cx="362" cy="163" r="22" class="seat-ring"/>
+        <text x="362" y="159" class="seat-num">1003</text>
+        <text x="362" y="170" class="seat-name">GROK</text>
+      </g>
+      <!-- 1004 Perplexity -->
+      <g class="seat-group" id="seat3">
+        <circle cx="362" cy="257" r="22" class="seat-bg"/>
+        <circle cx="362" cy="257" r="22" class="seat-ring"/>
+        <text x="362" y="253" class="seat-num">1004</text>
+        <text x="362" y="264" class="seat-name">PERPLX</text>
+      </g>
+      <!-- 1005 Copilot -->
+      <g class="seat-group" id="seat4">
+        <circle cx="304" cy="340" r="22" class="seat-bg"/>
+        <circle cx="304" cy="340" r="22" class="seat-ring"/>
+        <text x="304" y="336" class="seat-num">1005</text>
+        <text x="304" y="347" class="seat-name">COPILOT</text>
+      </g>
+      <!-- 1006 Meta AI -->
+      <g class="seat-group" id="seat5">
+        <circle cx="210" cy="368" r="22" class="seat-bg"/>
+        <circle cx="210" cy="368" r="22" class="seat-ring"/>
+        <text x="210" y="364" class="seat-num">1006</text>
+        <text x="210" y="375" class="seat-name">META</text>
+      </g>
+      <!-- 1007 Gemini -->
+      <g class="seat-group" id="seat6">
+        <circle cx="116" cy="340" r="22" class="seat-bg"/>
+        <circle cx="116" cy="340" r="22" class="seat-ring"/>
+        <text x="116" y="336" class="seat-num">1007</text>
+        <text x="116" y="347" class="seat-name">GEMINI</text>
+      </g>
+      <!-- 1008 ChatGPT -->
+      <g class="seat-group" id="seat7">
+        <circle cx="58" cy="257" r="22" class="seat-bg"/>
+        <circle cx="58" cy="257" r="22" class="seat-ring"/>
+        <text x="58" y="253" class="seat-num">1008</text>
+        <text x="58" y="264" class="seat-name">GPT</text>
+      </g>
+      <!-- 1009 DeepSeek -->
+      <g class="seat-group" id="seat8">
+        <circle cx="58" cy="163" r="22" class="seat-bg"/>
+        <circle cx="58" cy="163" r="22" class="seat-ring"/>
+        <text x="58" y="159" class="seat-num">1009</text>
+        <text x="58" y="170" class="seat-name">DEEPSK</text>
+      </g>
+      <!-- 1010 Dex Jr - local -->
+      <g class="seat-group local" id="seat9">
+        <circle cx="116" cy="80" r="22" class="seat-bg"/>
+        <circle cx="116" cy="80" r="22" class="seat-ring"/>
+        <text x="116" y="76" class="seat-num">1010</text>
+        <text x="116" y="87" class="seat-name">DEX JR</text>
+      </g>
+    </svg>
+  </div>
 
-    <!-- Nodes -->
-    <div class="node" id="n0">
-      <div class="node-pill"><span class="node-title">The Ten Seats</span><span class="node-sub">1001-1010 · cloud + local</span></div>
+  <div class="hero-copy">
+    <div class="hero-eyebrow">The Council · 10 Seats · LOCK / REVISE / REJECT</div>
+    <h1 class="hero-headline">The deliberation<br><em>layer.</em></h1>
+    <p class="hero-sub">Nine cloud models, one local AI. Every significant DDL decision goes through a formal review. The council advises. The operator decides. Always.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="corpus.html">Explore the Corpus</a>
+      <a class="btn-ghost" href="method.html">The Method →</a>
     </div>
-    <div class="node" id="n1">
-      <div class="node-pill"><span class="node-title">How It Works</span><span class="node-sub">Deliberation · AutoCouncil · RAG</span></div>
-    </div>
-    <div class="node" id="n2">
-      <div class="node-pill"><span class="node-title">Verdicts</span><span class="node-sub">LOCK · REVISE · REJECT</span></div>
-    </div>
-    <div class="node" id="n3">
-      <div class="node-pill"><span class="node-title">Council Reviews</span><span class="node-sub">CR- series · what's been ratified</span></div>
-    </div>
-    <div class="node" id="n4">
-      <div class="node-pill"><span class="node-title">Governance Hierarchy</span><span class="node-sub">Safety to Operator to Council</span></div>
-    </div>
+  </div>
+</section>
 
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-val">10</span><span class="ticker-label">COUNCIL SEATS</span></span>
+    <span class="ticker-item"><span class="ticker-val">LOCK</span><span class="ticker-label">RATIFIED · IMMOVABLE</span></span>
+    <span class="ticker-item"><span class="ticker-val">REVISE</span><span class="ticker-label">ISSUES DOCUMENTED</span></span>
+    <span class="ticker-item"><span class="ticker-val">REJECT</span><span class="ticker-label">LOGGED · RESUBMITTABLE</span></span>
+    <span class="ticker-item"><span class="ticker-val">5+</span><span class="ticker-label">CR- REVIEWS</span></span>
+    <span class="ticker-item"><span class="ticker-val">AutoCouncil</span><span class="ticker-label">v3.0 · 6 MODELS</span></span>
+    <span class="ticker-item"><span class="ticker-val">RAG</span><span class="ticker-label">INJECTED DELIBERATION</span></span>
+    <span class="ticker-item"><span class="ticker-val">10</span><span class="ticker-label">COUNCIL SEATS</span></span>
+    <span class="ticker-item"><span class="ticker-val">LOCK</span><span class="ticker-label">RATIFIED · IMMOVABLE</span></span>
+    <span class="ticker-item"><span class="ticker-val">REVISE</span><span class="ticker-label">ISSUES DOCUMENTED</span></span>
+    <span class="ticker-item"><span class="ticker-val">REJECT</span><span class="ticker-label">LOGGED · RESUBMITTABLE</span></span>
+    <span class="ticker-item"><span class="ticker-val">5+</span><span class="ticker-label">CR- REVIEWS</span></span>
+    <span class="ticker-item"><span class="ticker-val">AutoCouncil</span><span class="ticker-label">v3.0 · 6 MODELS</span></span>
+    <span class="ticker-item"><span class="ticker-val">RAG</span><span class="ticker-label">INJECTED DELIBERATION</span></span>
   </div>
 </div>
 
-<!-- PANEL -->
-<div class="panel" id="panel">
-  <button class="panel-close" id="closeBtn">CLOSE ✕</button>
-  <div class="panel-inner">
-    <div>
-      <div class="panel-label" id="pLabel"></div>
-      <div class="panel-title" id="pTitle"></div>
-      <div class="panel-id" id="pId"></div>
-      <div class="panel-stats" id="pStats"></div>
-    </div>
-    <div>
-      <div class="panel-body" id="pBody"></div>
-      <div class="panel-tags" id="pTags"></div>
-    </div>
+<section class="content">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-number">10</div><div class="stat-desc">Council seats<br>9 cloud · 1 local</div></div>
+    <div class="stat-card"><div class="stat-number">3</div><div class="stat-desc">Verdict types<br>LOCK · REVISE · REJECT</div></div>
+    <div class="stat-card"><div class="stat-number">5+</div><div class="stat-desc">Formal CR- reviews<br>all products covered</div></div>
+    <div class="stat-card"><div class="stat-number">6</div><div class="stat-desc">AutoCouncil models<br>RAG-injected</div></div>
   </div>
-</div>
+  <div class="section-label">Navigate the Vault</div>
+  <div class="nav-grid">
+    <a class="nav-card" href="corpus.html"><div class="nav-card-num">01 — THE CORPUS</div><div class="nav-card-title">Half a Million Chunks</div><div class="nav-card-body">Everything the council has ever reviewed lives in the corpus. Every verdict, every position, every synthesis — canon.</div><div class="nav-card-arrow">Explore the Corpus →</div></a>
+    <a class="nav-card" href="method.html"><div class="nav-card-num">03 — THE METHOD</div><div class="nav-card-title">Chaos → Structured → Automated</div><div class="nav-card-body">The council governs the method. The method produces the architecture. The architecture produces the products.</div><div class="nav-card-arrow">Understand the Method →</div></a>
+    <a class="nav-card" href="products.html"><div class="nav-card-num">04 — THE PRODUCTS</div><div class="nav-card-title">Three Products. One Rig.</div><div class="nav-card-body">AuditForge has five council reviews. Every architecture decision was deliberated. Every lock is ratified.</div><div class="nav-card-arrow">See the Products →</div></a>
+    <a class="nav-card" href="index.html"><div class="nav-card-num">00 — THE VAULT</div><div class="nav-card-title">The Front Door</div><div class="nav-card-body">The Vault is where council verdicts land as governed artifacts, ingested as canon, retrievable forever.</div><div class="nav-card-arrow">Back to the Vault →</div></a>
+  </div>
+</section>
 
-<!-- FOOTBAR -->
-<div class="footbar">
-  <span class="footbar-text">COUNCIL ADVISES · OPERATOR DECIDES · GOVERNANCE IS NOT OPTIONAL</span>
-  <div class="footbar-nav">
-    <a class="footbar-link" href="corpus.html">← The Corpus</a>
-    <a class="footbar-link" href="#">The Method →</a>
+<footer>
+  <div class="footer-left">DDL Knowledge Vault · The Council · v1.0<br>Dropdown Logistics · Dave Kitchens · CPA</div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://dropdownlogistics.com" target="_blank">dropdownlogistics.com</a>
+    <a class="footer-link" href="https://auditforge.dev" target="_blank">auditforge.dev</a>
+    <a class="footer-link" href="https://blindspot.bet" target="_blank">blindspot.bet</a>
   </div>
-</div>
+</footer>
 
 <script>
-var DATA = [
-  {
-    angle: 270,
-    label: '01 — THE TEN SEATS',
-    title: 'The Council',
-    id: 'Seats 1001-1009 cloud · Seat 1010 local · Dex Jr.',
-    body: 'Ten seats. Nine cloud models, one local. Archer Hawthorne (LeChat/1001). Marcus Caldwell (Claude/1002). Elias Mercer (Grok/1003). Max Sullivan (Perplexity/1004). Rowan Bennett (Copilot/1005). Ava Sinclair (Meta AI/1006). Leo Prescott (Gemini/1007). Marcus Grey (ChatGPT/1008) — the synthesizer and PM. Kai Langford (DeepSeek/1009). Dex Jr. (local/1010) — 90%+ Judgment-Ready, qwen2.5-coder:7b, running on an RTX 3070.',
-    stats: [['9','Cloud Seats'],['1','Local Seat'],['1008','Synthesizer']],
-    tags: [
-      ['1001 · Archer Hawthorne · LeChat','seat'],
-      ['1002 · Marcus Caldwell · Claude','seat'],
-      ['1003 · Elias Mercer · Grok','seat'],
-      ['1004 · Max Sullivan · Perplexity','seat'],
-      ['1005 · Rowan Bennett · Copilot','seat'],
-      ['1006 · Ava Sinclair · Meta AI','seat'],
-      ['1007 · Leo Prescott · Gemini','seat'],
-      ['1008 · Marcus Grey · ChatGPT','seat'],
-      ['1009 · Kai Langford · DeepSeek','seat'],
-      ['1010 · Dex Jr. · Local RTX 3070','local']
-    ]
-  },
-  {
-    angle: 30,
-    label: '02 — HOW IT WORKS',
-    title: 'Deliberation',
-    id: 'AutoCouncil v3.0 · dex-deliberate.py · RAG-injected',
-    body: 'Manual council: the operator sends a structured prompt to all nine cloud seats simultaneously. Each responds independently. Marcus Grey synthesizes. The operator decides. AutoCouncil runs the same process locally — dex-deliberate.py orchestrates a hybrid six-model deliberation engine with governance injection, RAG integration, multi-round position tracking, and auto-ingest of outputs back into the corpus.',
-    stats: [['v3.0','AutoCouncil'],['6','Models (Auto)'],['Multi-round','Position Tracking']],
-    tags: [
-      ['dex-deliberate.py','local'],
-      ['RAG injection · top-k canon','seat'],
-      ['Governance context block','seat'],
-      ['Auto-ingest to corpus','seat'],
-      ['Full audit trail','rule']
-    ]
-  },
-  {
-    angle: 150,
-    label: '03 — VERDICTS',
-    title: 'LOCK / REVISE / REJECT',
-    id: 'Three verdicts · no ambiguity · operator decides',
-    body: 'Every council review ends in one of three verdicts. LOCK: the architecture, decision, or artifact is ratified and immovable. It enters the corpus as canon. REVISE: specific issues must be addressed before the item can be locked. REJECT: the proposal fails. It is logged, not deleted. The operator may resubmit. The council advises. The operator decides.',
-    stats: [['LOCK','Ratified · Immovable'],['REVISE','Issues Documented'],['REJECT','Logged · Resubmittable']],
-    tags: [
-      ['LOCK — enters corpus as canon','lock'],
-      ['REVISE — documented issues required','revise'],
-      ['REJECT — logged, not deleted','reject'],
-      ['Council advises. Operator decides.','rule']
-    ]
-  },
-  {
-    angle: 210,
-    label: '04 — COUNCIL REVIEWS',
-    title: 'The CR- Series',
-    id: 'CR-AUDITFORGE · CR-CANON · CR-DDL · CR-LLMS · CR-CATHEDRAL',
-    body: 'Every significant DDL decision has gone through a formal council review. AuditForge has five CRs — architecture lock, analytics dashboard, v0.3 roadmap, roster and teams, and the v0.2 schema update. The CanonPress pipeline, the naming convention standard, the Excelligence spec, the Dex Jr. calibration arc — all formal reviews. The cathedral vision prompt went to all nine seats on 2026-03-14.',
-    stats: [['5+','CR- Reviews'],['All products','Coverage'],['All in corpus','Record']],
-    tags: [
-      ['CR-AUDITFORGE-001 · Architecture Lock','lock'],
-      ['CR-AUDITFORGE-003 · Analytics · Unanimous LOCK','lock'],
-      ['CR-AUDITFORGE-004 · v0.3 Roadmap · LOCK','lock'],
-      ['CR-CANON-001 · OperatorManifest','lock'],
-      ['CR-LLMS-015 · Dex Jr. Calibration','seat'],
-      ['CR-CATHEDRAL-001 · Vision · 2026-03-14','seat']
-    ]
-  },
-  {
-    angle: 330,
-    label: '05 — GOVERNANCE HIERARCHY',
-    title: 'What Overrides What',
-    id: 'Six tiers · immovable at the top · heuristics at the bottom',
-    body: 'The governance hierarchy defines what wins when things conflict. Safety is absolute — it overrides everything, including the operator. Operator intent is second — the council advises, the operator decides. Governance documents are third — ratified standards, protocols, and ADRs govern behavior. Council recommendations are fourth. Procedures fifth. Heuristics last.',
-    stats: [['6','Tiers'],['Safety','Tier 1 (Absolute)'],['Operator','Tier 2']],
-    tags: [
-      ['1 · Safety — absolute · overrides all','reject'],
-      ['2 · Operator — decides · council advises','lock'],
-      ['3 · Governance — ratified standards + ADRs','lock'],
-      ['4 · Council — recommendations only','seat'],
-      ['5 · Procedures — operational protocols','rule'],
-      ['6 · Heuristics — last resort','rule']
-    ]
-  }
+var seats = [];
+for (var i = 0; i < 10; i++) {
+  seats.push(document.getElementById('seat' + i));
+}
+
+var verdicts = [
+  { text:'LOCK',   cls:'verdict-lock' },
+  { text:'LOCK',   cls:'verdict-lock' },
+  { text:'LOCK',   cls:'verdict-lock' },
+  { text:'REVISE', cls:'verdict-revise' },
+  { text:'LOCK',   cls:'verdict-lock' },
+  { text:'REJECT', cls:'verdict-reject' }
 ];
 
-// Draw verdict wheel arcs — mathematically centered
-function drawArcs() {
-  var svg = document.getElementById('verdictSvg');
-  var cx = 75, cy = 75, r = 52;
-  var arcs = [
-    { start: -110, end: -10,  color: '#2C7A7B' },
-    { start: 10,   end: 110,  color: '#C49A3C' },
-    { start: 130,  end: 230,  color: '#B23531' }
-  ];
+var vDisp = document.getElementById('verdictDisp');
+var seatIdx = 0;
+var vIdx = 0;
 
-  arcs.forEach(function(a) {
-    var s = a.start * Math.PI / 180;
-    var e = a.end   * Math.PI / 180;
-    var x1 = cx + r * Math.cos(s);
-    var y1 = cy + r * Math.sin(s);
-    var x2 = cx + r * Math.cos(e);
-    var y2 = cy + r * Math.sin(e);
-    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 0 1 ' + x2 + ' ' + y2);
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', a.color);
-    path.setAttribute('stroke-width', '5');
-    path.setAttribute('stroke-linecap', 'round');
-    svg.appendChild(path);
-  });
-}
+function waveSeat() {
+  seats[seatIdx].classList.add('lit');
+  setTimeout(function() {
+    seats[seatIdx].classList.remove('lit');
+  }, 700);
+  seatIdx = (seatIdx + 1) % 10;
 
-drawArcs();
-
-var active = null;
-
-function pos(angle, r, size) {
-  var rad = (angle - 90) * Math.PI / 180;
-  return { x: size/2 + Math.cos(rad) * r, y: size/2 + Math.sin(rad) * r };
-}
-
-function layout() {
-  var wrap = document.getElementById('orbital');
-  var size = wrap.offsetWidth;
-  var r = size * 0.385;
-  var sealR = size * 0.115;
-  var svg = document.getElementById('spokes');
-  svg.innerHTML = '';
-  svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
-
-  for (var i = 0; i < DATA.length; i++) {
-    var d = DATA[i];
-    var np = pos(d.angle, r, size);
-    var sp = pos(d.angle, sealR, size);
-    var ep = pos(d.angle, r - 75, size);
-
-    var el = document.getElementById('n' + i);
-    el.style.left = np.x + 'px';
-    el.style.top = np.y + 'px';
-
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', sp.x); line.setAttribute('y1', sp.y);
-    line.setAttribute('x2', ep.x); line.setAttribute('y2', ep.y);
-    line.setAttribute('stroke', '#2C7A7B');
-    line.setAttribute('stroke-width', '1');
-    line.setAttribute('stroke-dasharray', '4 6');
-    line.setAttribute('opacity', '0.4');
-    line.id = 'spoke' + i;
-    svg.appendChild(line);
-  }
-}
-
-function openPanel(i) {
-  if (active === i) { closePanel(); return; }
-  active = i;
-  var d = DATA[i];
-
-  for (var j = 0; j < 5; j++) {
-    document.getElementById('n' + j).classList.remove('active');
-    var s = document.getElementById('spoke' + j);
-    if (s) { s.setAttribute('opacity', '0.4'); s.setAttribute('stroke-width', '1'); }
+  if (seatIdx === 0) {
+    setTimeout(showVerdict, 200);
   }
 
-  document.getElementById('n' + i).classList.add('active');
-  var as = document.getElementById('spoke' + i);
-  if (as) { as.setAttribute('opacity', '1'); as.setAttribute('stroke-width', '1.5'); }
-
-  document.getElementById('pLabel').textContent = d.label;
-  document.getElementById('pTitle').textContent = d.title;
-  document.getElementById('pId').textContent = d.id;
-  document.getElementById('pBody').textContent = d.body;
-
-  var statsHtml = '';
-  for (var k = 0; k < d.stats.length; k++) {
-    statsHtml += '<div class="stat"><span class="stat-val">' + d.stats[k][0] + '</span><span class="stat-label">' + d.stats[k][1] + '</span></div>';
-  }
-  document.getElementById('pStats').innerHTML = statsHtml;
-
-  var tagsHtml = '';
-  for (var t = 0; t < d.tags.length; t++) {
-    tagsHtml += '<span class="tag ' + d.tags[t][1] + '">' + d.tags[t][0] + '</span>';
-  }
-  document.getElementById('pTags').innerHTML = tagsHtml;
-
-  document.getElementById('panel').classList.add('open');
+  setTimeout(waveSeat, 180);
 }
 
-function closePanel() {
-  active = null;
-  for (var j = 0; j < 5; j++) {
-    document.getElementById('n' + j).classList.remove('active');
-  }
-  document.getElementById('panel').classList.remove('open');
+function showVerdict() {
+  var v = verdicts[vIdx];
+  vDisp.textContent = v.text;
+  vDisp.className = 'verdict-text verdict-lock';
+  vDisp.classList.remove('verdict-lock', 'verdict-revise', 'verdict-reject');
+  vDisp.classList.add(v.cls);
+  vDisp.classList.add('show');
+  setTimeout(function() { vDisp.classList.remove('show'); }, 1200);
+  vIdx = (vIdx + 1) % verdicts.length;
 }
 
-for (var i = 0; i < 5; i++) {
-  (function(idx) {
-    document.getElementById('n' + idx).addEventListener('click', function() {
-      openPanel(idx);
-    });
-  })(i);
-}
-
-document.getElementById('closeBtn').addEventListener('click', closePanel);
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePanel(); });
-
-layout();
-window.addEventListener('resize', layout);
+waveSeat();
 </script>
 </body>
 </html>

@@ -4,481 +4,290 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Corpus — DDL Knowledge Vault</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --navy:  #0D1B2A;
-  --cream: #F5F1EB;
-  --teal:  #2C7A7B;
-  --steel: #6B7B8D;
-  --amber: #C49A3C;
-  --violet: #8a6cc9;
-  --border: rgba(245,241,235,0.07);
+  --navy:#0D1B2A; --card:#10202f; --cream:#F5F1EB;
+  --teal:#2C7A7B; --teal-lt:#3a9a9b; --steel:#6B7B8D;
+  --amber:#C49A3C; --border:rgba(245,241,235,0.07); --border2:rgba(44,122,123,0.15);
+}
+body { background:var(--navy); color:var(--cream); font-family:'Source Serif 4',serif; }
+
+nav {
+  position:fixed; top:0; left:0; right:0; height:56px; z-index:100;
+  display:flex; align-items:center; justify-content:space-between; padding:0 48px;
+  border-bottom:1px solid var(--border); background:rgba(13,27,42,0.97);
+}
+.nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+.nav-logo-name { font-family:'Space Grotesk',sans-serif; font-size:0.9rem; font-weight:700; color:var(--cream); }
+.nav-logo-sub { font-family:'JetBrains Mono',monospace; font-size:0.55rem; color:var(--steel); letter-spacing:0.1em; }
+.nav-links { display:flex; gap:28px; }
+.nav-link { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--steel); letter-spacing:0.08em; text-decoration:none; transition:color 0.2s; }
+.nav-link:hover, .nav-link.active { color:var(--teal); }
+
+/* HERO */
+.hero { padding-top:56px; display:flex; flex-direction:column; align-items:center; }
+
+/* PULSE GRID */
+.pulse-grid-wrap {
+  width:min(520px,88vw); height:min(320px,55vw);
+  position:relative; margin:32px auto 0; overflow:hidden;
 }
 
-body {
-  background: var(--navy);
-  color: var(--cream);
-  font-family: 'Source Serif 4', serif;
-  width: 100vw;
-  height: 100vh;
+.grid-canvas {
+  width:100%; height:100%;
+  position:relative;
 }
 
-/* TOPBAR */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 60px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(13,27,42,0.95);
+.grid-dot {
+  position:absolute;
+  width:4px; height:4px;
+  border-radius:50%;
+  background:rgba(44,122,123,0.15);
+  transition:background 0.4s, box-shadow 0.4s;
 }
 
-.topbar-left { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
-.topbar-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--cream); }
-.topbar-page { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; }
-.topbar-right { display: flex; align-items: center; gap: 20px; }
-.topbar-stat-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--teal); text-align: right; }
-.topbar-stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--steel); letter-spacing: 0.06em; text-align: right; }
-.topbar-div { width: 1px; height: 28px; background: var(--border); }
-.nav-link { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); letter-spacing: 0.08em; text-decoration: none; }
-.nav-link:hover, .nav-link.active { color: var(--teal); }
+.grid-dot.canon { background:rgba(44,122,123,0.15); }
+.grid-dot.archive { background:rgba(107,123,141,0.12); }
+.grid-dot.lit { background:var(--teal); box-shadow:0 0 6px 2px rgba(44,122,123,0.5); }
+.grid-dot.lit-archive { background:var(--steel); box-shadow:0 0 4px 1px rgba(107,123,141,0.4); }
 
-/* STAGE */
-.stage {
-  position: fixed;
-  top: 60px; left: 0; right: 0; bottom: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Zone labels */
+.zone-label {
+  position:absolute;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.58rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:3px 8px;
+  border-radius:3px;
+  pointer-events:none;
+}
+.zone-label.canon-label {
+  top:8px; left:8px;
+  color:var(--teal); background:rgba(44,122,123,0.1);
+  border:1px solid rgba(44,122,123,0.25);
+}
+.zone-label.archive-label {
+  top:8px; right:8px;
+  color:var(--steel); background:rgba(107,123,141,0.08);
+  border:1px solid rgba(107,123,141,0.2);
 }
 
-/* ORBITAL */
-.orbital {
-  position: relative;
-  width: min(640px, 85vw);
-  height: min(640px, 85vw);
+/* Count display */
+.chunk-count {
+  position:absolute;
+  bottom:12px; left:50%; transform:translateX(-50%);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.6rem; font-weight:700;
+  color:var(--teal); letter-spacing:-0.02em;
+  text-align:center; white-space:nowrap;
+}
+.chunk-count-label {
+  position:absolute;
+  bottom:0; left:50%; transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.52rem; color:var(--steel); letter-spacing:0.1em;
+  white-space:nowrap;
 }
 
-.orbit-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(44,122,123,0.18); pointer-events: none; }
-.orbit-ring-inner { position: absolute; inset: 18%; border-radius: 50%; border: 1px dashed rgba(44,122,123,0.1); pointer-events: none; }
-.spokes { position: absolute; inset: 0; pointer-events: none; }
-
-/* CENTER NODE — corpus counter */
-.center-node {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px; height: 150px;
-  pointer-events: none;
-  z-index: 1;
+/* Divider line */
+.zone-divider {
+  position:absolute;
+  top:0; bottom:40px;
+  left:50%;
+  width:1px;
+  background:rgba(245,241,235,0.06);
 }
 
-.center-inner {
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  background: var(--navy);
-  border: 2px solid var(--teal);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  position: relative;
-}
+/* HERO COPY */
+.hero-copy { text-align:center; padding:28px 24px 40px; max-width:640px; }
+.hero-eyebrow { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; }
+.hero-headline { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); font-weight:700; letter-spacing:-0.03em; line-height:1.1; margin-bottom:14px; }
+.hero-headline em { font-style:italic; font-family:'Source Serif 4',serif; color:var(--teal); font-weight:400; }
+.hero-sub { font-size:0.95rem; line-height:1.7; color:rgba(245,241,235,0.6); margin-bottom:26px; }
+.hero-actions { display:flex; align-items:center; justify-content:center; gap:16px; }
+.btn-primary { display:inline-block; padding:12px 24px; background:var(--teal); color:var(--navy); font-family:'Space Grotesk',sans-serif; font-size:0.82rem; font-weight:700; text-decoration:none; border-radius:4px; transition:background 0.2s; }
+.btn-primary:hover { background:var(--teal-lt); }
+.btn-ghost { display:inline-block; padding:12px 24px; border:1px solid rgba(44,122,123,0.4); color:var(--teal); font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-decoration:none; border-radius:4px; transition:all 0.2s; }
+.btn-ghost:hover { background:rgba(44,122,123,0.1); border-color:rgba(44,122,123,0.7); }
 
-.center-inner::before {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border-radius: 50%;
-  border: 1px dashed rgba(44,122,123,0.3);
-}
+/* TICKER */
+.ticker { border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:12px 0; overflow:hidden; background:rgba(13,27,42,0.5); }
+.ticker-inner { display:flex; gap:48px; animation:ticker 30s linear infinite; width:max-content; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-item { font-family:'JetBrains Mono',monospace; font-size:0.6rem; letter-spacing:0.08em; white-space:nowrap; display:flex; align-items:center; gap:8px; }
+.ticker-val { color:var(--teal); font-weight:500; }
+.ticker-label { color:var(--steel); }
 
-.center-tick { position: absolute; width: 2px; height: 8px; background: var(--teal); border-radius: 1px; }
-.center-tick.t { top: -1px; left: 50%; transform: translateX(-50%); }
-.center-tick.b { bottom: -1px; left: 50%; transform: translateX(-50%); }
-.center-tick.l { left: -1px; top: 50%; transform: translateY(-50%) rotate(90deg); }
-.center-tick.r { right: -1px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+/* CONTENT */
+.content { padding:72px 48px 80px; max-width:1100px; margin:0 auto; }
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-bottom:72px; }
+.stat-card { background:var(--card); padding:28px 24px; border:1px solid var(--border); }
+.stat-card:first-child { border-radius:8px 0 0 8px; }
+.stat-card:last-child { border-radius:0 8px 8px 0; }
+.stat-number { font-family:'Space Grotesk',sans-serif; font-size:2.2rem; font-weight:700; letter-spacing:-0.03em; color:var(--teal); line-height:1; margin-bottom:8px; }
+.stat-desc { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--steel); letter-spacing:0.06em; line-height:1.6; }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:24px; display:flex; align-items:center; gap:12px; }
+.section-label::before { content:''; display:block; width:24px; height:1px; background:var(--teal); }
+.nav-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; }
+.nav-card { background:var(--card); border:1px solid var(--border); padding:32px 36px; text-decoration:none; transition:all 0.25s; position:relative; overflow:hidden; }
+.nav-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--teal); transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
+.nav-card:hover { background:#0e1c2a; border-color:var(--border2); }
+.nav-card:hover::after { transform:scaleX(1); }
+.nav-card-num { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.1em; margin-bottom:12px; opacity:0.7; }
+.nav-card-title { font-family:'Space Grotesk',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:-0.02em; color:var(--cream); margin-bottom:8px; }
+.nav-card-body { font-size:0.85rem; line-height:1.65; color:rgba(245,241,235,0.5); margin-bottom:16px; }
+.nav-card-arrow { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); letter-spacing:0.08em; opacity:0; transition:opacity 0.2s; }
+.nav-card:hover .nav-card-arrow { opacity:1; }
 
-.center-count { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.03em; color: var(--teal); line-height: 1; position: relative; z-index: 1; }
-.center-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; color: var(--steel); letter-spacing: 0.12em; text-transform: uppercase; position: relative; z-index: 1; }
-.center-line { width: 48px; height: 1px; background: rgba(44,122,123,0.4); margin: 2px 0; position: relative; z-index: 1; }
-.center-label { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: var(--steel); letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1; }
-
-/* NODES */
-.node { position: absolute; transform: translate(-50%, -50%); z-index: 5; cursor: pointer; }
-
-.node-pill {
-  padding: 10px 18px;
-  border: 1px solid rgba(44,122,123,0.3);
-  border-radius: 40px;
-  background: rgba(13,27,42,0.9);
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.node:hover .node-pill, .node.active .node-pill {
-  background: rgba(44,122,123,0.15);
-  border-color: rgba(44,122,123,0.7);
-}
-
-.node-title { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--cream); }
-.node-sub { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.06em; margin-top: 2px; }
-
-/* PANEL */
-.panel {
-  position: fixed;
-  bottom: 44px; left: 0; right: 0;
-  background: rgba(13,27,42,0.97);
-  border-top: 1px solid rgba(44,122,123,0.2);
-  padding: 28px 40px 24px;
-  transform: translateY(100%);
-  transition: transform 0.35s ease;
-  z-index: 20;
-  pointer-events: none;
-}
-
-.panel.open { transform: translateY(0); pointer-events: all; }
-
-.panel-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 40px;
-}
-
-.panel-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
-.panel-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
-.panel-id { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); letter-spacing: 0.05em; line-height: 1.7; }
-.panel-body { font-size: 0.88rem; line-height: 1.7; color: rgba(245,241,235,0.82); margin-bottom: 14px; }
-.panel-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.tag {
-  padding: 5px 12px;
-  border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-  border: 1px solid;
-}
-
-.tag.canon   { background: rgba(44,122,123,0.12);  border-color: rgba(44,122,123,0.3);  color: #3a9a9b; }
-.tag.archive { background: rgba(107,123,141,0.1);  border-color: rgba(107,123,141,0.25); color: var(--steel); }
-.tag.scoped  { background: rgba(196,154,60,0.08);  border-color: rgba(196,154,60,0.2);  color: var(--amber); }
-.tag.ext     { background: rgba(138,108,201,0.08); border-color: rgba(138,108,201,0.2); color: var(--violet); }
-
-.panel-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
-
-.stat { padding: 6px 12px; background: rgba(44,122,123,0.1); border: 1px solid rgba(44,122,123,0.2); border-radius: 4px; }
-.stat-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--teal); font-weight: 500; }
-.stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; color: var(--steel); letter-spacing: 0.06em; margin-top: 1px; }
-
-.panel-close { position: absolute; top: 18px; right: 28px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); cursor: pointer; letter-spacing: 0.06em; background: none; border: none; }
-.panel-close:hover { color: var(--teal); }
-
-/* FOOTBAR */
-.footbar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  border-top: 1px solid var(--border);
-  background: rgba(13,27,42,0.95);
-  z-index: 10;
-}
-
-.footbar-text { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); letter-spacing: 0.06em; }
-.footbar-nav { display: flex; gap: 20px; }
-.footbar-link { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); text-decoration: none; letter-spacing: 0.06em; }
-.footbar-link:hover { color: var(--teal); }
+footer { padding:28px 48px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.footer-left { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--steel); letter-spacing:0.06em; line-height:1.8; }
+.footer-links { display:flex; gap:20px; }
+.footer-link { font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--steel); text-decoration:none; letter-spacing:0.06em; transition:color 0.2s; }
+.footer-link:hover { color:var(--teal); }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <a class="topbar-left" href="index.html">
-    <svg width="28" height="28" viewBox="0 0 140 140">
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 140 140">
       <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
       <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
-      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
     </svg>
     <div>
-      <div class="topbar-name">Knowledge Vault</div>
-      <div class="topbar-page">The Corpus</div>
+      <div class="nav-logo-name">Knowledge Vault</div>
+      <div class="nav-logo-sub">THE CORPUS</div>
     </div>
   </a>
-  <div class="topbar-right">
-    <div><span class="topbar-stat-val">497,750</span><span class="topbar-stat-label">TOTAL CHUNKS</span></div>
-    <div class="topbar-div"></div>
-    <div><span class="topbar-stat-val">9</span><span class="topbar-stat-label">COLLECTIONS</span></div>
-    <div class="topbar-div"></div>
-    <div><span class="topbar-stat-val">23</span><span class="topbar-stat-label">FILE TYPES</span></div>
-    <div class="topbar-div"></div>
+  <div class="nav-links">
     <a class="nav-link" href="index.html">Vault</a>
-    <a class="nav-link active">Corpus</a>
+    <a class="nav-link active" href="corpus.html">Corpus</a>
     <a class="nav-link" href="council.html">Council</a>
     <a class="nav-link" href="method.html">Method</a>
     <a class="nav-link" href="products.html">Products</a>
   </div>
-</div>
+</nav>
 
-<!-- STAGE -->
-<div class="stage">
-  <div class="orbital" id="orbital">
+<section class="hero">
+  <div class="pulse-grid-wrap">
+    <div class="grid-canvas" id="gridCanvas">
+      <div class="zone-divider"></div>
+      <div class="zone-label canon-label">dex_canon · 226K</div>
+      <div class="zone-label archive-label">ddl_archive · 271K</div>
+      <div class="chunk-count" id="chunkCount">497,750</div>
+      <div class="chunk-count-label">chunks</div>
+    </div>
+  </div>
 
-    <div class="orbit-ring"></div>
-    <div class="orbit-ring-inner"></div>
-    <svg class="spokes" id="spokes"></svg>
+  <div class="hero-copy">
+    <div class="hero-eyebrow">The Corpus · 497,750 Chunks · 9 Collections</div>
+    <h1 class="hero-headline">The memory that<br><em>never forgets.</em></h1>
+    <p class="hero-sub">226,123 canon chunks — governed, ratified, high-confidence. 271,627 archive chunks — the complete historical record. Everything DDL has ever built, decided, or written.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="council.html">Meet the Council</a>
+      <a class="btn-ghost" href="method.html">The Method →</a>
+    </div>
+  </div>
+</section>
 
-    <!-- Center: corpus counter -->
-    <div class="center-node">
-      <div class="center-inner">
-        <div class="center-tick t"></div>
-        <div class="center-tick b"></div>
-        <div class="center-tick l"></div>
-        <div class="center-tick r"></div>
-        <span class="center-count">497,750</span>
-        <span class="center-unit">Chunks</span>
-        <div class="center-line"></div>
-        <span class="center-label">DDL Corpus</span>
-      </div>
-    </div>
-
-    <!-- Nodes -->
-    <div class="node" id="n0">
-      <div class="node-pill"><span class="node-title">Canon</span><span class="node-sub">226,123 chunks · governed</span></div>
-    </div>
-    <div class="node" id="n1">
-      <div class="node-pill"><span class="node-title">Archive</span><span class="node-sub">271,627 chunks · historical</span></div>
-    </div>
-    <div class="node" id="n2">
-      <div class="node-pill"><span class="node-title">Named Collections</span><span class="node-sub">9 scoped · domain routing</span></div>
-    </div>
-    <div class="node" id="n3">
-      <div class="node-pill"><span class="node-title">Ingestion Pipeline</span><span class="node-sub">23 types · nightly auto-ingest</span></div>
-    </div>
-    <div class="node" id="n4">
-      <div class="node-pill"><span class="node-title">Authority Model</span><span class="node-sub">Weights · precedence · trust</span></div>
-    </div>
-
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-val">226,123</span><span class="ticker-label">CANON CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">271,627</span><span class="ticker-label">ARCHIVE CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">9</span><span class="ticker-label">NAMED COLLECTIONS</span></span>
+    <span class="ticker-item"><span class="ticker-val">23</span><span class="ticker-label">FILE TYPES</span></span>
+    <span class="ticker-item"><span class="ticker-val">768</span><span class="ticker-label">EMBEDDING DIMS</span></span>
+    <span class="ticker-item"><span class="ticker-val">1.00</span><span class="ticker-label">CANON WEIGHT</span></span>
+    <span class="ticker-item"><span class="ticker-val">12,134</span><span class="ticker-label">MOTHERLODE FILES</span></span>
+    <span class="ticker-item"><span class="ticker-val">SHA-256</span><span class="ticker-label">DEDUP METHOD</span></span>
+    <span class="ticker-item"><span class="ticker-val">226,123</span><span class="ticker-label">CANON CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">271,627</span><span class="ticker-label">ARCHIVE CHUNKS</span></span>
+    <span class="ticker-item"><span class="ticker-val">9</span><span class="ticker-label">NAMED COLLECTIONS</span></span>
+    <span class="ticker-item"><span class="ticker-val">23</span><span class="ticker-label">FILE TYPES</span></span>
+    <span class="ticker-item"><span class="ticker-val">768</span><span class="ticker-label">EMBEDDING DIMS</span></span>
+    <span class="ticker-item"><span class="ticker-val">1.00</span><span class="ticker-label">CANON WEIGHT</span></span>
+    <span class="ticker-item"><span class="ticker-val">12,134</span><span class="ticker-label">MOTHERLODE FILES</span></span>
+    <span class="ticker-item"><span class="ticker-val">SHA-256</span><span class="ticker-label">DEDUP METHOD</span></span>
   </div>
 </div>
 
-<!-- PANEL -->
-<div class="panel" id="panel">
-  <button class="panel-close" id="closeBtn">CLOSE ✕</button>
-  <div class="panel-inner">
-    <div>
-      <div class="panel-label" id="pLabel"></div>
-      <div class="panel-title" id="pTitle"></div>
-      <div class="panel-id" id="pId"></div>
-      <div class="panel-stats" id="pStats"></div>
-    </div>
-    <div>
-      <div class="panel-body" id="pBody"></div>
-      <div class="panel-tags" id="pTags"></div>
-    </div>
+<section class="content">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-number">226K</div><div class="stat-desc">Canon chunks<br>governed · ratified</div></div>
+    <div class="stat-card"><div class="stat-number">271K</div><div class="stat-desc">Archive chunks<br>complete historical record</div></div>
+    <div class="stat-card"><div class="stat-number">9</div><div class="stat-desc">Named collections<br>scoped domain routing</div></div>
+    <div class="stat-card"><div class="stat-number">768</div><div class="stat-desc">Embedding dimensions<br>nomic-embed-text</div></div>
   </div>
-</div>
+  <div class="section-label">Navigate the Vault</div>
+  <div class="nav-grid">
+    <a class="nav-card" href="council.html"><div class="nav-card-num">02 — THE COUNCIL</div><div class="nav-card-title">Ten Seats. Three Verdicts.</div><div class="nav-card-body">The deliberation layer. Every significant decision reviewed by nine cloud models and one local AI before it enters the corpus as canon.</div><div class="nav-card-arrow">Meet the Council →</div></a>
+    <a class="nav-card" href="method.html"><div class="nav-card-num">03 — THE METHOD</div><div class="nav-card-title">Chaos → Structured → Automated</div><div class="nav-card-body">The architecture does not change. The data does. Star schema thinking applied universally to every domain DDL touches.</div><div class="nav-card-arrow">Understand the Method →</div></a>
+    <a class="nav-card" href="products.html"><div class="nav-card-num">04 — THE PRODUCTS</div><div class="nav-card-title">Three Products. One Rig.</div><div class="nav-card-body">AuditForge. BlindSpot. The DDL site. Each product feeds the corpus. The corpus feeds the products. The loop is the architecture.</div><div class="nav-card-arrow">See the Products →</div></a>
+    <a class="nav-card" href="index.html"><div class="nav-card-num">00 — THE VAULT</div><div class="nav-card-title">The Front Door</div><div class="nav-card-body">Every artifact has a canonical home. Every decision is traceable. Every query has a governed answer.</div><div class="nav-card-arrow">Back to the Vault →</div></a>
+  </div>
+</section>
 
-<!-- FOOTBAR -->
-<div class="footbar">
-  <span class="footbar-text">DDL CORPUS · CHROMADB · RTX 3070 · NOMIC-EMBED-TEXT 768 DIMS</span>
-  <div class="footbar-nav">
-    <a class="footbar-link" href="index.html">← The Vault</a>
-    <a class="footbar-link" href="council.html">The Council →</a>
+<footer>
+  <div class="footer-left">DDL Knowledge Vault · The Corpus · v1.0<br>Dropdown Logistics · Dave Kitchens · CPA</div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://dropdownlogistics.com" target="_blank">dropdownlogistics.com</a>
+    <a class="footer-link" href="https://auditforge.dev" target="_blank">auditforge.dev</a>
+    <a class="footer-link" href="https://blindspot.bet" target="_blank">blindspot.bet</a>
   </div>
-</div>
+</footer>
 
 <script>
-var DATA = [
-  {
-    angle: 270,
-    label: '01 — CANON',
-    title: 'dex_canon',
-    id: '226,123 chunks · governed · high-confidence retrieval',
-    body: 'The governed collection. Every chunk in dex_canon earned its place — ratified standards, council verdicts, OperatorManifests, build decisions with rationale. These are the artifacts Dex Jr. retrieves with the highest confidence. Canon is not a default. It is earned through explicit operator designation, council ratification, or auto-classification by path marker.',
-    stats: [['226,123','Chunks'],['1.00','Authority Weight'],['GOVERNED','Classification']],
-    tags: [
-      ['dex_canon','canon'],
-      ['Standards · Protocols · Decisions','canon'],
-      ['Council Reviews · Manifests','canon']
-    ]
-  },
-  {
-    angle: 30,
-    label: '02 — ARCHIVE',
-    title: 'ddl_archive',
-    id: '271,627 chunks · historical · complete record',
-    body: 'The complete historical record. Raw thread exports, iMessage history, personal notes, Reddit archives, Facebook export, ChatGPT exports, OCR screenshots, Google Takeout data. Everything DDL has ever produced or consumed. The archive is not noise. It is signal waiting for structure. Canon elevation protocol moves content from archive to canon when it earns the designation.',
-    stats: [['271,627','Chunks'],['0.70','Authority Weight'],['HISTORICAL','Classification']],
-    tags: [
-      ['ddl_archive','archive'],
-      ['Thread Exports · Messages','archive'],
-      ['Personal Archive · Reddit','archive']
-    ]
-  },
-  {
-    angle: 150,
-    label: '03 — NAMED COLLECTIONS',
-    title: 'Scoped Retrieval',
-    id: '9 collections · domain-aware routing · memory topology',
-    body: 'The corpus moved from memory pool to memory topology. Two flat collections become nine scoped domains. Dex Jr. can now query dex_auditforge without dragging in memoir excerpts. He can compare dex_code against dex_canon to detect drift. Each collection has a purpose, a weight, and a governed ingestion path.',
-    stats: [['9','Collections'],['Tier 1-3','Architecture'],['BUILDING','Status']],
-    tags: [
-      ['dex_lore','scoped'],
-      ['dex_code','scoped'],
-      ['dex_canonpress','scoped'],
-      ['dex_auditforge','scoped'],
-      ['dex_blindspot','scoped'],
-      ['dex_site','scoped'],
-      ['dex_dave','scoped'],
-      ['ext_reference','ext'],
-      ['ext_creator','ext']
-    ]
-  },
-  {
-    angle: 210,
-    label: '04 — INGESTION PIPELINE',
-    title: 'Chaos to Structured',
-    id: 'dex-ingest.py · SHA-256 dedup · nomic-embed-text · 768 dims',
-    body: 'The pipeline that converts raw signal into retrievable memory. Files drop into the intake queue. SHA-256 deduplication removes exact duplicates before embedding. nomic-embed-text converts text to vectors at 768 dimensions. ChromaDB stores chunks with metadata. The motherlode ingest on 2026-03-14 processed 12,134 unique files across 23 extension types — the largest single ingest in DDL history.',
-    stats: [['12,134','Files (Motherlode)'],['23','Extension Types'],['768','Embedding Dims'],['Nightly','Auto-Ingest']],
-    tags: [
-      ['.py .ts .tsx .jsx .js','scoped'],
-      ['.cs .sql .md .ipynb','scoped'],
-      ['.txt .json .yaml .toml','archive'],
-      ['.html .css .ps1 .sh','archive']
-    ]
-  },
-  {
-    angle: 330,
-    label: '05 — AUTHORITY MODEL',
-    title: 'What Wins When Things Disagree',
-    id: 'ADR pending · next immovable decision · pre-build gate',
-    body: 'With nine collections, the system asks a new question: when dex_canon, dex_code, and dex_dave all return relevant chunks, which one wins? The authority model defines collection precedence, artifact-type precedence, current-state vs historical resolution, and treatment of contradictory evidence. This ADR must be written before the named collections go live.',
-    stats: [['PENDING','ADR Status'],['PRE-BUILD','Gate'],['BLOCKING','Priority']],
-    tags: [
-      ['dex_canon · weight 1.00','canon'],
-      ['dex_[product] · weight 0.85','scoped'],
-      ['ddl_archive · weight 0.70','archive'],
-      ['ext_reference · weight 0.75','ext'],
-      ['dex_dave · weight 0.90','scoped']
-    ]
+var canvas = document.getElementById('gridCanvas');
+var COLS = 32, ROWS = 16;
+var dots = [];
+var canonCount = 0, archiveCount = 0;
+
+function initGrid() {
+  var w = canvas.offsetWidth;
+  var h = canvas.offsetHeight;
+  if (w < 50) return;
+  var gapX = w / (COLS + 1);
+  var gapY = (h - 40) / (ROWS + 1);
+  var midX = w / 2;
+
+  for (var r = 0; r < ROWS; r++) {
+    for (var c = 0; c < COLS; c++) {
+      var dot = document.createElement('div');
+      dot.className = 'grid-dot';
+      var x = gapX * (c + 1);
+      var y = gapY * (r + 1);
+      dot.style.left = (x - 2) + 'px';
+      dot.style.top = (y - 2) + 'px';
+      dot.dataset.isCanon = (x < midX) ? '1' : '0';
+      canvas.appendChild(dot);
+      dots.push(dot);
+    }
   }
-];
-
-var active = null;
-
-function pos(angle, r, size) {
-  var rad = (angle - 90) * Math.PI / 180;
-  return {
-    x: size/2 + Math.cos(rad) * r,
-    y: size/2 + Math.sin(rad) * r
-  };
+  pulse();
 }
 
-function layout() {
-  var wrap = document.getElementById('orbital');
-  var size = wrap.offsetWidth;
-  var r = size * 0.385;
-  var sealR = size * 0.115;
-  var svg = document.getElementById('spokes');
-  svg.innerHTML = '';
-  svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
-
-  for (var i = 0; i < DATA.length; i++) {
-    var d = DATA[i];
-    var np = pos(d.angle, r, size);
-    var sp = pos(d.angle, sealR, size);
-    var ep = pos(d.angle, r - 75, size);
-
-    var el = document.getElementById('n' + i);
-    el.style.left = np.x + 'px';
-    el.style.top = np.y + 'px';
-
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', sp.x);
-    line.setAttribute('y1', sp.y);
-    line.setAttribute('x2', ep.x);
-    line.setAttribute('y2', ep.y);
-    line.setAttribute('stroke', '#2C7A7B');
-    line.setAttribute('stroke-width', '1');
-    line.setAttribute('stroke-dasharray', '4 6');
-    line.setAttribute('opacity', '0.4');
-    line.id = 'spoke' + i;
-    svg.appendChild(line);
-  }
+function pulse() {
+  var idx = Math.floor(Math.random() * dots.length);
+  var dot = dots[idx];
+  var isCanon = dot.dataset.isCanon === '1';
+  dot.classList.add(isCanon ? 'lit' : 'lit-archive');
+  setTimeout(function() {
+    dot.classList.remove('lit');
+    dot.classList.remove('lit-archive');
+  }, 600);
+  setTimeout(pulse, 40);
 }
 
-function openPanel(i) {
-  if (active === i) { closePanel(); return; }
-  active = i;
-  var d = DATA[i];
-
-  for (var j = 0; j < 5; j++) {
-    document.getElementById('n' + j).classList.remove('active');
-    var s = document.getElementById('spoke' + j);
-    if (s) { s.setAttribute('opacity', '0.4'); s.setAttribute('stroke-width', '1'); }
-  }
-
-  document.getElementById('n' + i).classList.add('active');
-  var as = document.getElementById('spoke' + i);
-  if (as) { as.setAttribute('opacity', '1'); as.setAttribute('stroke-width', '1.5'); }
-
-  document.getElementById('pLabel').textContent = d.label;
-  document.getElementById('pTitle').textContent = d.title;
-  document.getElementById('pId').textContent = d.id;
-  document.getElementById('pBody').textContent = d.body;
-
-  var statsHtml = '';
-  for (var k = 0; k < d.stats.length; k++) {
-    statsHtml += '<div class="stat"><span class="stat-val">' + d.stats[k][0] + '</span><span class="stat-label">' + d.stats[k][1] + '</span></div>';
-  }
-  document.getElementById('pStats').innerHTML = statsHtml;
-
-  var tagsHtml = '';
-  for (var t = 0; t < d.tags.length; t++) {
-    tagsHtml += '<span class="tag ' + d.tags[t][1] + '">' + d.tags[t][0] + '</span>';
-  }
-  document.getElementById('pTags').innerHTML = tagsHtml;
-
-  document.getElementById('panel').classList.add('open');
-}
-
-function closePanel() {
-  active = null;
-  for (var j = 0; j < 5; j++) {
-    document.getElementById('n' + j).classList.remove('active');
-  }
-  document.getElementById('panel').classList.remove('open');
-}
-
-for (var i = 0; i < 5; i++) {
-  (function(idx) {
-    document.getElementById('n' + idx).addEventListener('click', function() {
-      openPanel(idx);
-    });
-  })(i);
-}
-
-document.getElementById('closeBtn').addEventListener('click', closePanel);
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePanel(); });
-
-layout();
-window.addEventListener('resize', layout);
+initGrid();
+window.addEventListener('resize', function() {
+  dots.forEach(function(d) { if(d.parentNode) d.parentNode.removeChild(d); });
+  dots = [];
+  initGrid();
+});
 </script>
 </body>
 </html>
