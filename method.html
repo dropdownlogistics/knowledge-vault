@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Method — DDL Knowledge Vault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy:   #0D1B2A;
+  --cream:  #F5F1EB;
+  --teal:   #2C7A7B;
+  --steel:  #6B7B8D;
+  --crimson:#B23531;
+  --amber:  #C49A3C;
+  --border: rgba(245,241,235,0.07);
+}
+
+body {
+  background: var(--navy);
+  color: var(--cream);
+  font-family: 'Source Serif 4', serif;
+  width: 100vw;
+  height: 100vh;
+}
+
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(13,27,42,0.95);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
+.topbar-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--cream); }
+.topbar-page { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; }
+.topbar-right { display: flex; align-items: center; gap: 20px; }
+.topbar-stat-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--teal); text-align: right; }
+.topbar-stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--steel); letter-spacing: 0.06em; text-align: right; }
+.topbar-div { width: 1px; height: 28px; background: var(--border); }
+.nav-link { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); letter-spacing: 0.08em; text-decoration: none; }
+.nav-link:hover, .nav-link.active { color: var(--teal); }
+
+.stage {
+  position: fixed;
+  top: 60px; left: 0; right: 0; bottom: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orbital {
+  position: relative;
+  width: min(640px, 85vw);
+  height: min(640px, 85vw);
+}
+
+.orbit-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(44,122,123,0.18); pointer-events: none; }
+.orbit-ring-inner { position: absolute; inset: 18%; border-radius: 50%; border: 1px dashed rgba(44,122,123,0.1); pointer-events: none; }
+.spokes { position: absolute; inset: 0; pointer-events: none; }
+
+/* CENTER: METHOD FLOW */
+.center-node {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px; height: 150px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.method-inner {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 2px solid rgba(44,122,123,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+}
+
+.method-inner::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1px dashed rgba(44,122,123,0.2);
+}
+
+.method-step {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+  line-height: 1.1;
+}
+
+.method-step.chaos     { color: var(--crimson); }
+.method-step.structured { color: var(--amber); }
+.method-step.automated { color: var(--teal); }
+
+.method-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(107,123,141,0.5);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  margin: 2px 0;
+}
+
+/* NODES */
+.node { position: absolute; transform: translate(-50%, -50%); z-index: 5; cursor: pointer; }
+
+.node-pill {
+  padding: 10px 18px;
+  border: 1px solid rgba(44,122,123,0.3);
+  border-radius: 40px;
+  background: rgba(13,27,42,0.9);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.node:hover .node-pill, .node.active .node-pill {
+  background: rgba(44,122,123,0.15);
+  border-color: rgba(44,122,123,0.7);
+}
+
+.node-title { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--cream); }
+.node-sub { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.06em; margin-top: 2px; }
+
+/* PANEL */
+.panel {
+  position: fixed;
+  bottom: 44px; left: 0; right: 0;
+  background: rgba(13,27,42,0.97);
+  border-top: 1px solid rgba(44,122,123,0.2);
+  padding: 28px 40px 24px;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.panel.open { transform: translateY(0); pointer-events: all; }
+
+.panel-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 200px 1fr; gap: 40px; }
+.panel-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.panel-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+.panel-id { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); letter-spacing: 0.05em; line-height: 1.7; }
+.panel-body { font-size: 0.88rem; line-height: 1.7; color: rgba(245,241,235,0.82); margin-bottom: 14px; }
+.panel-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.panel-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+
+.tag { padding: 5px 12px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.06em; border: 1px solid; }
+.tag.chaos      { background: rgba(178,53,49,0.1);   border-color: rgba(178,53,49,0.3);   color: var(--crimson); }
+.tag.structured { background: rgba(196,154,60,0.1);  border-color: rgba(196,154,60,0.3);  color: var(--amber); }
+.tag.automated  { background: rgba(44,122,123,0.12); border-color: rgba(44,122,123,0.35); color: #3a9a9b; }
+.tag.principle  { background: rgba(107,123,141,0.1); border-color: rgba(107,123,141,0.25); color: var(--steel); }
+.tag.proof      { background: rgba(44,122,123,0.08); border-color: rgba(44,122,123,0.2);  color: var(--teal); }
+
+.stat { padding: 6px 12px; background: rgba(44,122,123,0.1); border: 1px solid rgba(44,122,123,0.2); border-radius: 4px; }
+.stat-val { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--teal); font-weight: 500; }
+.stat-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; color: var(--steel); letter-spacing: 0.06em; margin-top: 1px; }
+
+.panel-close { position: absolute; top: 18px; right: 28px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--steel); cursor: pointer; letter-spacing: 0.06em; background: none; border: none; }
+.panel-close:hover { color: var(--teal); }
+
+.footbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(13,27,42,0.95);
+  z-index: 10;
+}
+
+.footbar-text { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); letter-spacing: 0.06em; }
+.footbar-nav { display: flex; gap: 20px; }
+.footbar-link { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--steel); text-decoration: none; letter-spacing: 0.06em; }
+.footbar-link:hover { color: var(--teal); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="topbar-left" href="index.html">
+    <svg width="28" height="28" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" r="66" fill="none" stroke="#2C7A7B" stroke-width="3"/>
+      <circle cx="70" cy="70" r="62" fill="#0D1B2A"/>
+      <text x="70" y="82" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="50" fill="#2C7A7B" letter-spacing="-3">KV</text>
+    </svg>
+    <div>
+      <div class="topbar-name">Knowledge Vault</div>
+      <div class="topbar-page">The Method</div>
+    </div>
+  </a>
+  <div class="topbar-right">
+    <div><span class="topbar-stat-val">Chaos</span><span class="topbar-stat-label">STARTING STATE</span></div>
+    <div class="topbar-div"></div>
+    <div><span class="topbar-stat-val">Structured</span><span class="topbar-stat-label">GOVERNED STATE</span></div>
+    <div class="topbar-div"></div>
+    <div><span class="topbar-stat-val">Automated</span><span class="topbar-stat-label">END STATE</span></div>
+    <div class="topbar-div"></div>
+    <a class="nav-link" href="council.html">← Council</a>
+    <a class="nav-link active">Method</a>
+    <a class="nav-link" href="products.html">Products →</a>
+  </div>
+</div>
+
+<!-- STAGE -->
+<div class="stage">
+  <div class="orbital" id="orbital">
+
+    <div class="orbit-ring"></div>
+    <div class="orbit-ring-inner"></div>
+    <svg class="spokes" id="spokes"></svg>
+
+    <!-- Center: method flow -->
+    <div class="center-node">
+      <div class="method-inner">
+        <span class="method-step chaos">Chaos</span>
+        <span class="method-arrow">↓</span>
+        <span class="method-step structured">Structured</span>
+        <span class="method-arrow">↓</span>
+        <span class="method-step automated">Automated</span>
+      </div>
+    </div>
+
+    <!-- Nodes -->
+    <div class="node" id="n0">
+      <div class="node-pill"><span class="node-title">The Pattern</span><span class="node-sub">Same architecture · different data</span></div>
+    </div>
+    <div class="node" id="n1">
+      <div class="node-pill"><span class="node-title">Star Schema Thinking</span><span class="node-sub">Facts · dimensions · measures</span></div>
+    </div>
+    <div class="node" id="n2">
+      <div class="node-pill"><span class="node-title">Governance at Creation</span><span class="node-sub">OBS-01 · structure before you need it</span></div>
+    </div>
+    <div class="node" id="n3">
+      <div class="node-pill"><span class="node-title">CoherentVelocity</span><span class="node-sub">Complete · auditable · at speed</span></div>
+    </div>
+    <div class="node" id="n4">
+      <div class="node-pill"><span class="node-title">The Proof</span><span class="node-sub">Three live products · one methodology</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel" id="panel">
+  <button class="panel-close" id="closeBtn">CLOSE ✕</button>
+  <div class="panel-inner">
+    <div>
+      <div class="panel-label" id="pLabel"></div>
+      <div class="panel-title" id="pTitle"></div>
+      <div class="panel-id" id="pId"></div>
+      <div class="panel-stats" id="pStats"></div>
+    </div>
+    <div>
+      <div class="panel-body" id="pBody"></div>
+      <div class="panel-tags" id="pTags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTBAR -->
+<div class="footbar">
+  <span class="footbar-text">THE ARCHITECTURE DOES NOT CHANGE · THE DATA DOES</span>
+  <div class="footbar-nav">
+    <a class="footbar-link" href="council.html">← The Council</a>
+    <a class="footbar-link" href="products.html">The Products →</a>
+  </div>
+</div>
+
+<script>
+var DATA = [
+  {
+    angle: 270,
+    label: '01 — THE PATTERN',
+    title: 'Same Architecture. Different Data.',
+    id: 'Applied universally · domains change · structure does not',
+    body: 'The DDL methodology is not domain-specific. It is a cognitive architecture that repeats across every problem. AuditForge is a star schema with governed document generation. BlindSpot is a star schema with governed behavioral analytics. The DDL site is a governed route taxonomy. The corpus is a governed collection hierarchy. The council is a governed deliberation engine. Same pattern. Different data. Every time. The architecture does not change. The data does.',
+    stats: [['Universal','Application'],['Star Schema','Core Pattern'],['Every domain','Coverage']],
+    tags: [
+      ['AuditForge — star schema + document generation','proof'],
+      ['BlindSpot — star schema + behavioral analytics','proof'],
+      ['DDL site — governed route taxonomy','proof'],
+      ['Corpus — governed collection hierarchy','proof'],
+      ['Council — governed deliberation engine','proof']
+    ]
+  },
+  {
+    angle: 30,
+    label: '02 — STAR SCHEMA THINKING',
+    title: 'Facts. Dimensions. Measures.',
+    id: 'Kimball methodology · applied universally · audit-derived cognition',
+    body: 'The operator thinks in star schemas. This is not a professional habit — it is a cognitive architecture. Every system gets a fact table at the center, dimensions radiating outward, measures that answer the questions the business actually asks. AuditForge: Fact_Control with six dimensions. BlindSpot: bet outcomes with behavioral dimensions. The corpus: chunks with collection and authority metadata. The same design pattern, applied to every domain, produces systems that are queryable, auditable, and extensible.',
+    stats: [['Fact Table','Center always'],['Dimensions','Radiate outward'],['Measures','Answer questions']],
+    tags: [
+      ['Fact_Control — AuditForge center','structured'],
+      ['Dim_Risk · Dim_Framework · Dim_Assertion','structured'],
+      ['Fact_Bet — BlindSpot center','structured'],
+      ['Chunk + Collection + Authority — Corpus','structured'],
+      ['Kimball methodology applied universally','principle']
+    ]
+  },
+  {
+    angle: 150,
+    label: '03 — GOVERNANCE AT CREATION',
+    title: 'OBS-01',
+    id: 'Structure before you need it · governance is not optional',
+    body: 'OBS-01 is the first principle: governance at creation, not after. Every DDL artifact is named, versioned, classified, and filed before it is used — not after it has proven its value. The AuditTrail exists before it is needed. The naming convention is ratified before the files exist. The Vault structure is locked before the artifacts are created. This is the discipline that separates a governed studio from a smart person with a lot of threads.',
+    stats: [['OBS-01','First Principle'],['Before use','Governance timing'],['Always','No exceptions']],
+    tags: [
+      ['Name it before you need it','principle'],
+      ['Version it from the start','principle'],
+      ['Classify before ingesting','principle'],
+      ['AuditTrail on every mutation','structured'],
+      ['Vault structure locked before files exist','automated']
+    ]
+  },
+  {
+    angle: 210,
+    label: '04 — COHERENTVELOCITY',
+    title: 'CoherentVelocity',
+    id: 'Complete auditable systems built at speed · no debt, no shortcuts',
+    body: 'CoherentVelocity is the DDL canon term for building fast without building wrong. It means every artifact shipped is complete — not a prototype, not a draft, not "good enough for now." It has a name. It has a version. It has a home in the Vault. It has a path to the corpus. AuditForge v0.1 shipped in one session with a full star schema, seed data, three generators, and a working API. Not because the operator works fast. Because the methodology eliminates the waste that makes building slow.',
+    stats: [['Complete','Every artifact'],['Auditable','Every decision'],['At speed','No waste']],
+    tags: [
+      ['AuditForge v0.1 — full schema in one session','proof'],
+      ['DDL-Vault — 44 folders, two drives, one session','proof'],
+      ['No prototypes — only governed artifacts','principle'],
+      ['Speed comes from structure, not shortcuts','principle'],
+      ['CoherentVelocity — DDL canon term','automated']
+    ]
+  },
+  {
+    angle: 330,
+    label: '05 — THE PROOF',
+    title: 'Three Products. One Method.',
+    id: 'dropdownlogistics.com · auditforge.dev · blindspot.bet',
+    body: 'The methodology is not theoretical. It shipped. AuditForge is a governed audit document generation platform — v0.4, live at auditforge.dev, star schema at center, four generators, all eight routes live with real Prisma queries. BlindSpot is a sports betting analytics engine — waitlist live at blindspot.bet, built for a professional trader, D&A Analytics brand. The DDL site is 203 pages across eight wings, built and maintained by one operator. Three products, one rig, one methodology, no team.',
+    stats: [['3','Live Products'],['1','Operator'],['1','Rig']],
+    tags: [
+      ['auditforge.dev — governed audit generation','proof'],
+      ['blindspot.bet — behavioral analytics','proof'],
+      ['dropdownlogistics.com — 203 pages, 8 wings','proof'],
+      ['One methodology across all three','principle'],
+      ['CottageHumble — humble surface, cathedral underneath','principle']
+    ]
+  }
+];
+
+var active = null;
+
+function pos(angle, r, size) {
+  var rad = (angle - 90) * Math.PI / 180;
+  return { x: size/2 + Math.cos(rad) * r, y: size/2 + Math.sin(rad) * r };
+}
+
+function layout() {
+  var wrap = document.getElementById('orbital');
+  var size = wrap.offsetWidth;
+  var r = size * 0.385;
+  var sealR = size * 0.115;
+  var svg = document.getElementById('spokes');
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
+
+  for (var i = 0; i < DATA.length; i++) {
+    var d = DATA[i];
+    var np = pos(d.angle, r, size);
+    var sp = pos(d.angle, sealR, size);
+    var ep = pos(d.angle, r - 75, size);
+
+    var el = document.getElementById('n' + i);
+    el.style.left = np.x + 'px';
+    el.style.top = np.y + 'px';
+
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', sp.x); line.setAttribute('y1', sp.y);
+    line.setAttribute('x2', ep.x); line.setAttribute('y2', ep.y);
+    line.setAttribute('stroke', '#2C7A7B');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', '4 6');
+    line.setAttribute('opacity', '0.4');
+    line.id = 'spoke' + i;
+    svg.appendChild(line);
+  }
+}
+
+function openPanel(i) {
+  if (active === i) { closePanel(); return; }
+  active = i;
+  var d = DATA[i];
+
+  for (var j = 0; j < 5; j++) {
+    document.getElementById('n' + j).classList.remove('active');
+    var s = document.getElementById('spoke' + j);
+    if (s) { s.setAttribute('opacity', '0.4'); s.setAttribute('stroke-width', '1'); }
+  }
+
+  document.getElementById('n' + i).classList.add('active');
+  var as = document.getElementById('spoke' + i);
+  if (as) { as.setAttribute('opacity', '1'); as.setAttribute('stroke-width', '1.5'); }
+
+  document.getElementById('pLabel').textContent = d.label;
+  document.getElementById('pTitle').textContent = d.title;
+  document.getElementById('pId').textContent = d.id;
+  document.getElementById('pBody').textContent = d.body;
+
+  var statsHtml = '';
+  for (var k = 0; k < d.stats.length; k++) {
+    statsHtml += '<div class="stat"><span class="stat-val">' + d.stats[k][0] + '</span><span class="stat-label">' + d.stats[k][1] + '</span></div>';
+  }
+  document.getElementById('pStats').innerHTML = statsHtml;
+
+  var tagsHtml = '';
+  for (var t = 0; t < d.tags.length; t++) {
+    tagsHtml += '<span class="tag ' + d.tags[t][1] + '">' + d.tags[t][0] + '</span>';
+  }
+  document.getElementById('pTags').innerHTML = tagsHtml;
+
+  document.getElementById('panel').classList.add('open');
+}
+
+function closePanel() {
+  active = null;
+  for (var j = 0; j < 5; j++) {
+    document.getElementById('n' + j).classList.remove('active');
+  }
+  document.getElementById('panel').classList.remove('open');
+}
+
+for (var i = 0; i < 5; i++) {
+  (function(idx) {
+    document.getElementById('n' + idx).addEventListener('click', function() {
+      openPanel(idx);
+    });
+  })(i);
+}
+
+document.getElementById('closeBtn').addEventListener('click', closePanel);
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePanel(); });
+
+layout();
+window.addEventListener('resize', layout);
+</script>
+</body>
+</html>
