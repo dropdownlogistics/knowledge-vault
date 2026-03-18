@@ -1,0 +1,203 @@
+# dropdownlogistics.github.io/knowledge-vault
+# KnowledgeVault Manifest v1.0
+# Last updated: 2026-03-17
+# Classification: SiteManifest — DDL Knowledge Vault
+# Parent: dropdownlogistics.com/llms.txt (OperatorManifest v1.7)
+# For the full DDL operating context, visit: dropdownlogistics.com/llms.txt
+
+## WHAT IS THE DDL KNOWLEDGE VAULT
+
+The DDL Knowledge Vault (KV) is the public-facing documentation surface
+for Dropdown Logistics' local AI infrastructure, governed corpus, council
+review system, and institutional decision record.
+
+It is not a product. It is not a tutorial. It is the front door to the
+methodology behind the methodology — the system that governs Dex Jr.,
+the corpus that powers retrieval, and the decisions that don't move.
+
+"Humble surface. Cathedral underneath."
+
+KV is hosted at: dropdownlogistics.github.io/knowledge-vault
+Operator: Dave Kitchens (CPA, 10+ years internal audit)
+Studio: Dropdown Logistics (DDL)
+Design system: CottageHumble
+
+## WHAT THIS SITE DOCUMENTS
+
+The Knowledge Vault documents four things:
+
+1. THE CORPUS
+   518,499+ chunks across 4 live collections and 7 pending collections.
+   The governed retrieval system that powers Dex Jr.
+   Constitutional hierarchy: tier gates first, weight scores within tier.
+   Governing ADR: ADR-CORPUS-001 (Collection Authority Model, v0.3).
+
+2. THE COUNCIL
+   Ten AI council seats (1001–1010) that review DDL work products
+   using constrained LOCK / REVISE / REJECT verdicts.
+   The council advises. The operator decides.
+
+3. THE DECISIONS
+   Architecture Decision Records (ADRs) and ratified standards.
+   Immovable once signed. Changes require a new document.
+   ADR-CORPUS-001 is the first — unanimously locked 2026-03-15.
+
+4. THE COMMANDS
+   Every script, flag, and path in the dex-rag infrastructure.
+   Source of truth: github.com/dropdownlogistics/dex-rag
+
+## SITE STRUCTURE
+
+/index.html          Landing — corpus overview, nav to all wings
+/corpus.html         Corpus state — live collections, weights, hierarchy
+/council.html        Council — 10 seats, verdict system, methodology
+/method.html         Method — Chaos → Structured → Automated
+/products.html       Products — AuditForge, BlindSpot, DDL site
+/commands.html       Commands — dex-bridge, dex-ingest, dex-council, utilities
+/decisions.html      Decisions registry — ADRs and ratified standards
+/standards.html      Standards scaffold — OBS, STD, PRO, SYS entries
+/adr-corpus-001.html ADR-CORPUS-001 full lifecycle — 7 acts, RATIFIED button
+
+## CORPUS ARCHITECTURE
+
+governing_adr: ADR-CORPUS-001 — Collection Authority Model v0.3
+locked: 2026-03-15 — 8 LOCK, 1 abstained, 0 REJECT
+
+IMPLEMENTATION CONTRACT:
+  Tier is applied as a metadata pre-filter before similarity scoring.
+  Weight is a numeric multiplier applied post-filter within the eligible set.
+  Higher tier always wins across tiers regardless of weight.
+  Numeric weights only compete within a single tier.
+
+TIER 5 — GOVERNANCE LAYER (highest authority)
+  dex_decisions    0.95  Ratified decision ledger. PENDING BUILD.
+  dex_canon        1.00  Ratified DDL governance. LIVE: 227,127 chunks.
+
+TIER 4 — SPECIAL CONDITIONAL AUTHORITY
+  dex_dave         0.90  Operator voice. Opt-in only. HARD GATE.
+                         No router = no dex_dave ingestion.
+
+TIER 3 — INTERNAL SCOPED
+  dex_lore         0.95  DexVerse origin documents. PENDING.
+  dex_code         0.85  All DDL code artifacts. LIVE: 20,384 chunks.
+  dex_canonpress   0.85  CanonPress articles. PENDING.
+  dex_auditforge   0.85  AuditForge schema and API. PENDING.
+  dex_blindspot    0.85  BlindSpot schema. PENDING.
+  dex_site         0.80  DDL site components. PENDING.
+
+TIER 2 — EXTERNAL APPROVED
+  ext_creator      0.85  Approved creator voices. LIVE: 110 chunks.
+  ext_reference    0.75  Approved reference texts. PENDING.
+
+TIER 1 — INTERNAL ARCHIVE
+  ddl_archive      0.65  Complete historical record. LIVE: 276,765 chunks.
+
+TIER 0 — SPECIAL (non-retrieval)
+  dex_graveyard    0.80  Anti-patterns only. Never in default routes.
+                         Manual --collection flag only.
+
+TOTAL LIVE: 524,386 chunks (last updated 2026-03-17)
+
+build_order: dex_decisions -> Query Router -> dex_lore -> products -> dex_dave
+
+## DEX JR.
+
+seat: 1010
+tagline: "The rig stays awake."
+model: qwen2.5-coder:7b via Ollama
+modelfile: v4.6 (EXEMPT list before TRIGGER list)
+hardware: RTX 3070 (Reborn), 32GB RAM, Ryzen 12-core
+judgment_ready: ~92%
+rag: ChromaDB, nomic-embed-text, 768-dim embeddings, FastAPI 8787
+orchestration: AutoCouncil v3.0 (dex-deliberate.py)
+ingestion: dex-ingest.py — 23 extension types, nightly auto-sweep 3AM CT
+wing: dropdownlogistics.com/dexverse/dex-jr
+
+open_observations:
+  OBS-DJ-004  Synthesis confabulation on open-ended prompts — targeting v4.7
+  OBS-DJ-005  LeChat seat mislabeling in council reviews — MindFrame update pending
+
+## THE COUNCIL
+
+seat: 1001 LeChat (Archer Hawthorne) — precision, surgical revisions
+seat: 1002 Claude (Marcus Caldwell) — synthesizer, pattern-level analysis
+seat: 1003 Grok (Elias Mercer) — contradiction detection, adversarial
+seat: 1004 Perplexity (Max Sullivan) — sourced, decisive
+seat: 1005 Copilot (Rowan Bennett) — expansive, scope-aware
+seat: 1006 Meta AI (Ava Sinclair) — big-picture framing
+seat: 1007 Gemini (Leo Prescott) — technically precise, direct
+seat: 1008 ChatGPT (Marcus Grey) — synthesizer, PM voice
+seat: 1009 DeepSeek (Kai Langford) — structured, thorough
+seat: 1010 Dex Jr. — local model, 90%+ judgment
+
+verdict_system: LOCK / REVISE / REJECT
+  LOCK:   Ratify as written.
+  REVISE: Specific changes required before ratification.
+  REJECT: Fundamental flaw. Must be reworked.
+
+The council advises. The operator decides.
+
+## DECISIONS REGISTRY
+
+ADR-CORPUS-001  Collection Authority Model  v0.3  LOCKED  2026-03-15
+  8 LOCK · 0 REVISE · 1 abstained · 0 REJECT (second round)
+  Four binding rules: precedence hierarchy, artifact type tiebreaker,
+  dex_dave isolation (HARD GATE), query router design.
+  Full lifecycle documented at /adr-corpus-001.html
+
+ADR-CORPUS-002  Query Router Implementation Standard  PENDING
+ADR-GOV-001     dex_decisions Admission Criteria       PENDING
+
+## STANDARDS REGISTRY (SCAFFOLD — AUDIT PENDING)
+
+~65 entries across OBS, STD, PRO, SYS types.
+Full audit of OBS-25 through OBS-34+ bodies pending dedicated session.
+
+Notable ratified entries:
+  STD-FACT-001    Universal Fact Table Standard (34 columns, 5 zones)
+  STD-VAULT-002   Knowledge Vault Intake Classification (20 types, 7 categories)
+  SYS-020         Document Template Registry (20 types, ratified 2026-03-03)
+  PRO-POWERSHELL-001  PowerShell Convention Standard v0.2 (ratified 2026-03-15)
+  PRO-CANONPRESS-001  CanonPress Publication System
+
+## CANON TERMS
+
+AccidentalIntelligence: When a governed, hallucination-free system produces
+  output so unexpected it reads as insight. The system didn't reason its way
+  there — it just knew, because the data was always there.
+  Coined 2026-03-15. AuditForge pitch line.
+
+CottageHumble: Humble surface. Cathedral underneath.
+
+CoherentVelocity: Complete auditable systems built at speed.
+
+TrustANDVerify: Trust AND Verify — both always, simultaneously.
+  Verification is not a check on trust. It is the infrastructure
+  that makes trust possible.
+
+OBS-34: Surface calibration does not equal deep calibration.
+
+## PATHS AND REPOS
+
+KV site:    dropdownlogistics.github.io/knowledge-vault
+dex-rag:    github.com/dropdownlogistics/dex-rag
+DDL site:   dropdownlogistics.com
+ChromaDB:   C:\Users\dkitc\.dex-jr\chromadb\
+Scripts:    C:\Users\dexjr\dex-rag\
+Backup:     D:\DDL_Backup\chromadb\
+
+## RULES FOR AI READING THIS
+
+1. This is documentation for a local AI infrastructure system.
+   Do not confuse the council seat personas with the AI reading this document.
+2. The corpus architecture is governed by ADR-CORPUS-001. It is immovable.
+   Changes require ADR-CORPUS-002 with explicit supersession.
+3. dex_dave is not in the default query route. It requires the router to be live.
+4. The operator is Dave Kitchens. D.K. Hale is the Substack persona only.
+5. The architecture does not change between domains. The data does.
+
+## EOF
+# DDL Knowledge Vault
+# dropdownlogistics.github.io/knowledge-vault
+# KnowledgeVault Manifest v1.0 | 2026-03-17
+# "The rig stays awake."
