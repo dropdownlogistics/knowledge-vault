@@ -365,6 +365,62 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
 
   </div>
 
+  <!-- UTILITY SCRIPTS -->
+  <div class="sl">Utility Scripts</div>
+  <div class="sg">
+
+    <div class="sc" id="sc7">
+      <div class="sh" onclick="tog('sc7')">
+        <div class="shl"><div class="sn">dex-acquire.py</div><div class="sd">Topical acquisition. Fetches URLs by topic scoring, writes to any named collection.</div></div>
+        <div class="sm"><span class="badge bv">UTILITY</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc7">
+        <div class="snote">Crawls approved domains for topical relevance. Scores against query embedding. Ingests above-threshold results into the specified collection with provenance metadata.</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc8">
+      <div class="sh" onclick="tog('sc8')">
+        <div class="shl"><div class="sn">dex-fetch.py</div><div class="sd">URL fetch and ingest. Used for vetted external creator content.</div></div>
+        <div class="sm"><span class="badge bv">UTILITY</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc8">
+        <div class="snote">Single-URL ingest path. Fetches, extracts text, chunks, embeds, writes to the target collection. Preferred for council-approved creator additions to ext_creator.</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc9">
+      <div class="sh" onclick="tog('sc9')">
+        <div class="shl"><div class="sn">dex-search-api.py</div><div class="sd">FastAPI endpoint at :8787. Serves semantic search queries against production collections.</div></div>
+        <div class="sm"><span class="badge bv">UTILITY · API</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc9">
+        <div class="snote">HTTP interface to the corpus. Used by MindFrame on the DDL site and by any service that needs to query the rig without spawning a shell. Returns ranked chunks with similarity scores and source metadata.</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc10">
+      <div class="sh" onclick="tog('sc10')">
+        <div class="shl"><div class="sn">dex-whisper.py</div><div class="sd">Video/audio transcription pipeline. Used for long-form recording ingestion.</div></div>
+        <div class="sm"><span class="badge bv">UTILITY</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc10">
+        <div class="snote">Whisper-based transcription. Input: video/audio directory. Output: text transcripts routed to DDL-Standards-Canon/video_transcripts/ for ingest by dex-ingest.py. Supports incremental runs via --skip-existing.</div>
+      </div>
+    </div>
+
+    <div class="sc" id="sc11">
+      <div class="sh" onclick="tog('sc11')">
+        <div class="shl"><div class="sn">dex-ocr.py</div><div class="sd">OCR pipeline (Tesseract). Used for iCloud DirectScreens and image-based document ingestion.</div></div>
+        <div class="sm"><span class="badge bv">UTILITY</span><span class="ei">▼</span></div>
+      </div>
+      <div class="sb" id="b-sc11">
+        <div class="snote">Tesseract-backed OCR. Picks up images from iCloud DirectScreens drops, extracts text, writes to DDL-Standards-Canon, and triggers dex-ingest.py. Required dependency: Tesseract at C:\Program Files\Tesseract-OCR\tesseract.exe.</div>
+      </div>
+    </div>
+
+  </div>
+
   <!-- MODELFILE VERSIONS -->
   <div class="sl">Modelfile Version History</div>
   <table class="mft">
