@@ -1,6 +1,6 @@
 # dropdownlogistics.github.io/knowledge-vault
 # KnowledgeVault Manifest v1.1
-# Last updated: 2026-03-22
+# Last updated: 2026-04-14
 # Classification: SiteManifest — DDL Knowledge Vault
 # Parent: dropdownlogistics.com/llms.txt (OperatorManifest v1.9)
 # For the full DDL operating context, visit: dropdownlogistics.com/llms.txt
@@ -102,7 +102,7 @@ TIER 0 — SPECIAL (non-retrieval)
   dex_graveyard    0.80  Anti-patterns only. PLANNED. Never in default routes.
                          Manual --collection flag only.
 
-TOTAL LIVE: 566,804 chunks (last updated 2026-03-22)
+TOTAL LIVE: 566,804 chunks (last updated 2026-04-14)
 
 build_order: dex_decisions -> Query Router -> dex_lore -> products -> dex_dave
 
@@ -166,7 +166,7 @@ Full audit of OBS-25 through OBS-34+ bodies pending dedicated session.
 Notable ratified entries:
   STD-FACT-001        Universal Fact Table Standard (34 columns, 5 zones)
   STD-VAULT-002       Knowledge Vault Intake Classification (20 types, 7 categories)
-  STD-FCODE-001       F-Code Diagnostic Taxonomy (v1.0, ratified 2026-03-21)
+  STD-FCODE-001       F-Code Diagnostic Taxonomy (v1.0, ratified 2026-04-13)
                       Six diagnostic codes: F1 Overbuild, F2 Role Drift,
                       F3 Hallucination, F4 Constraint Violation,
                       F5 Unsafe Assumption, F6 Context Collapse.
@@ -237,5 +237,5 @@ are dev checkouts, not production runtime.
 ## EOF
 # DDL Knowledge Vault
 # dropdownlogistics.github.io/knowledge-vault
-# KnowledgeVault Manifest v1.1 | 2026-03-22
+# KnowledgeVault Manifest v1.1 | 2026-04-14
 # "The rig stays awake."
