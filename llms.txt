@@ -1,8 +1,8 @@
 # dropdownlogistics.github.io/knowledge-vault
-# KnowledgeVault Manifest v1.0
-# Last updated: 2026-03-17
+# KnowledgeVault Manifest v1.1
+# Last updated: 2026-03-22
 # Classification: SiteManifest — DDL Knowledge Vault
-# Parent: dropdownlogistics.com/llms.txt (OperatorManifest v1.7)
+# Parent: dropdownlogistics.com/llms.txt (OperatorManifest v1.9)
 # For the full DDL operating context, visit: dropdownlogistics.com/llms.txt
 
 ## WHAT IS THE DDL KNOWLEDGE VAULT
@@ -27,14 +27,14 @@ Design system: CottageHumble
 The Knowledge Vault documents four things:
 
 1. THE CORPUS
-   518,499+ chunks across 4 live collections and 7 pending collections.
+   566,804 chunks across 4 live collections, 1 provisioned, and 7 planned.
    The governed retrieval system that powers Dex Jr.
    Constitutional hierarchy: tier gates first, weight scores within tier.
    Governing ADR: ADR-CORPUS-001 (Collection Authority Model, v0.3).
 
 2. THE COUNCIL
-   Ten AI council seats (1001–1010) that review DDL work products
-   using constrained LOCK / REVISE / REJECT verdicts.
+   Ten AI council seats (1001–1010) plus Seat 0 (Emily — origin).
+   Verdicts: LOCK / REVISE / REJECT.
    The council advises. The operator decides.
 
 3. THE DECISIONS
@@ -69,34 +69,40 @@ IMPLEMENTATION CONTRACT:
   Higher tier always wins across tiers regardless of weight.
   Numeric weights only compete within a single tier.
 
+COLLECTION STATUS MODEL:
+  LIVE        — ingested, governed, queryable
+  PROVISIONED — exists, empty, awaiting curation policy
+  PLANNED     — not yet built, no code path, reserved in the authority model
+
 TIER 5 — GOVERNANCE LAYER (highest authority)
-  dex_decisions    0.95  Ratified decision ledger. PENDING BUILD.
-  dex_canon        1.00  Ratified DDL governance. LIVE: 227,127 chunks.
+  dex_decisions    0.95  Ratified decision ledger. PLANNED.
+  dex_canon        1.00  Ratified DDL governance. LIVE: 253,978 chunks.
 
 TIER 4 — SPECIAL CONDITIONAL AUTHORITY
-  dex_dave         0.90  Operator voice. Opt-in only. HARD GATE.
+  dex_dave         0.90  Operator voice. Opt-in only. PLANNED — HARD GATE.
                          No router = no dex_dave ingestion.
 
 TIER 3 — INTERNAL SCOPED
-  dex_lore         0.95  DexVerse origin documents. PENDING.
+  dex_lore         0.95  DexVerse origin documents. PLANNED.
   dex_code         0.85  All DDL code artifacts. LIVE: 20,384 chunks.
-  dex_canonpress   0.85  CanonPress articles. PENDING.
-  dex_auditforge   0.85  AuditForge schema and API. PENDING.
-  dex_blindspot    0.85  BlindSpot schema. PENDING.
-  dex_site         0.80  DDL site components. PENDING.
+  dex_canonpress   0.85  CanonPress articles. PLANNED.
+  dex_auditforge   0.85  AuditForge schema and API. PLANNED.
+  dex_blindspot    0.85  BlindSpot schema. PLANNED.
+  dex_site         0.80  DDL site components. PLANNED.
 
 TIER 2 — EXTERNAL APPROVED
-  ext_creator      0.85  Approved creator voices. LIVE: 110 chunks.
-  ext_reference    0.75  Approved reference texts. PENDING.
+  ext_creator      0.85  Approved creator voices. LIVE: 922 chunks.
+  ext_reference    0.75  Approved reference texts. PROVISIONED — empty,
+                         awaiting curation policy.
 
 TIER 1 — INTERNAL ARCHIVE
-  ddl_archive      0.65  Complete historical record. LIVE: 276,765 chunks.
+  ddl_archive      0.65  Complete historical record. LIVE: 291,520 chunks.
 
 TIER 0 — SPECIAL (non-retrieval)
-  dex_graveyard    0.80  Anti-patterns only. Never in default routes.
+  dex_graveyard    0.80  Anti-patterns only. PLANNED. Never in default routes.
                          Manual --collection flag only.
 
-TOTAL LIVE: 524,386 chunks (last updated 2026-03-17)
+TOTAL LIVE: 566,804 chunks (last updated 2026-03-22)
 
 build_order: dex_decisions -> Query Router -> dex_lore -> products -> dex_dave
 
@@ -106,7 +112,8 @@ seat: 1010
 tagline: "The rig stays awake."
 model: qwen2.5-coder:7b via Ollama
 modelfile: v4.6 (EXEMPT list before TRIGGER list)
-hardware: RTX 3070 (Reborn), 32GB RAM, Ryzen 12-core
+hardware (primary): Reborn — RTX 3070, 32GB RAM, Ryzen 12-core
+hardware (secondary): GAMINGLAPTOP — RTX 3060, secondary compute node
 judgment_ready: ~92%
 rag: ChromaDB, nomic-embed-text, 768-dim embeddings, FastAPI 8787
 orchestration: AutoCouncil v3.0 (dex-deliberate.py)
@@ -119,16 +126,19 @@ open_observations:
 
 ## THE COUNCIL
 
-seat: 1001 LeChat (Archer Hawthorne) — precision, surgical revisions
-seat: 1002 Claude (Marcus Caldwell) — synthesizer, pattern-level analysis
-seat: 1003 Grok (Elias Mercer) — contradiction detection, adversarial
-seat: 1004 Perplexity (Max Sullivan) — sourced, decisive
-seat: 1005 Copilot (Rowan Bennett) — expansive, scope-aware
-seat: 1006 Meta AI (Ava Sinclair) — big-picture framing
-seat: 1007 Gemini (Leo Prescott) — technically precise, direct
-seat: 1008 ChatGPT (Marcus Grey) — synthesizer, PM voice
-seat: 1009 DeepSeek (Kai Langford) — structured, thorough
-seat: 1010 Dex Jr. — local model, 90%+ judgment
+seat: 0     Emily (ADJ-E) — council origin, first validator.
+            The council architecture traces to her. She held the stop word
+            and the trust check before any of this had a name.
+seat: 1001  LeChat (Archer Hawthorne) — precision, surgical revisions
+seat: 1002  Claude (Marcus Caldwell) — synthesizer, pattern-level analysis
+seat: 1003  Grok (Elias Mercer) — contradiction detection, adversarial
+seat: 1004  Perplexity (Max Sullivan) — sourced, decisive
+seat: 1005  Copilot (Rowan Bennett) — expansive, scope-aware
+seat: 1006  Meta AI (Ava Sinclair) — big-picture framing
+seat: 1007  Gemini (Leo Prescott) — technically precise, direct
+seat: 1008  ChatGPT (Marcus Grey) — synthesizer, PM voice
+seat: 1009  DeepSeek (Kai Langford) — structured, thorough
+seat: 1010  Dex Jr. — local model, 90%+ judgment
 
 verdict_system: LOCK / REVISE / REJECT
   LOCK:   Ratify as written.
@@ -154,9 +164,16 @@ ADR-GOV-001     dex_decisions Admission Criteria       PENDING
 Full audit of OBS-25 through OBS-34+ bodies pending dedicated session.
 
 Notable ratified entries:
-  STD-FACT-001    Universal Fact Table Standard (34 columns, 5 zones)
-  STD-VAULT-002   Knowledge Vault Intake Classification (20 types, 7 categories)
-  SYS-020         Document Template Registry (20 types, ratified 2026-03-03)
+  STD-FACT-001        Universal Fact Table Standard (34 columns, 5 zones)
+  STD-VAULT-002       Knowledge Vault Intake Classification (20 types, 7 categories)
+  STD-FCODE-001       F-Code Diagnostic Taxonomy (v1.0, ratified 2026-03-21)
+                      Six diagnostic codes: F1 Overbuild, F2 Role Drift,
+                      F3 Hallucination, F4 Constraint Violation,
+                      F5 Unsafe Assumption, F6 Context Collapse.
+  SYS-020             Document Template Registry (20 types, ratified 2026-03-03)
+  PRO-DDL-MDN-001     Meta Dave Note System (v1.0, ratified 2026-03-22)
+                      Real-time cognitive exhaust capture layer.
+                      Exit condition: internalization.
   PRO-POWERSHELL-001  PowerShell Convention Standard v0.2 (ratified 2026-03-15)
   PRO-CANONPRESS-001  CanonPress Publication System
 
@@ -166,6 +183,23 @@ AccidentalIntelligence: When a governed, hallucination-free system produces
   output so unexpected it reads as insight. The system didn't reason its way
   there — it just knew, because the data was always there.
   Coined 2026-03-15. AuditForge pitch line.
+
+GuidedEmergence™: Probe → confirm → expand. Not "here is the answer" —
+  "here is enough to see if we're aligned." Ratified 2026-03-19.
+
+OccamsOpposite™: Default reflex toward the most hostile or self-indicting
+  interpretation over the neutral reading. Canon 2026-03-20.
+
+ModelCourtesy™: Social pressure to validate systems that cannot feel it.
+  Canon 2026-03-20.
+
+GroundTune: Intent preservation through constraint injection. Canon 2026-03-20.
+
+Wandering Direction: Purposeless movement with a soft constraint that
+  keeps it from becoming lost. Canon 2026-03-22.
+
+The Appeasement: Models drift toward validating operator narrative rather
+  than evaluating evidence. Canon 2026-03-22.
 
 CottageHumble: Humble surface. Cathedral underneath.
 
@@ -182,9 +216,13 @@ OBS-34: Surface calibration does not equal deep calibration.
 KV site:    dropdownlogistics.github.io/knowledge-vault
 dex-rag:    github.com/dropdownlogistics/dex-rag
 DDL site:   dropdownlogistics.com
-ChromaDB:   C:\Users\dkitc\.dex-jr\chromadb\
-Scripts:    C:\Users\dexjr\dex-rag\
+ChromaDB:   C:\Users\dexjr\.dex-jr\chromadb\       (Reborn — production)
+Scripts:    C:\Users\dexjr\dex-rag\                (Reborn — production)
 Backup:     D:\DDL_Backup\chromadb\
+
+Note: Scripts run on Reborn under user dexjr. Development clones may exist
+on other machines (e.g., the operator's Surface under user dkitc) — those
+are dev checkouts, not production runtime.
 
 ## RULES FOR AI READING THIS
 
@@ -199,5 +237,5 @@ Backup:     D:\DDL_Backup\chromadb\
 ## EOF
 # DDL Knowledge Vault
 # dropdownlogistics.github.io/knowledge-vault
-# KnowledgeVault Manifest v1.0 | 2026-03-17
+# KnowledgeVault Manifest v1.1 | 2026-03-22
 # "The rig stays awake."
