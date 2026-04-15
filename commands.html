@@ -191,7 +191,7 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
   <div class="hcopy">
     <div class="eyebrow">Council Constellation · Seat 1010 · RTX 3070 · Modelfile v4.6</div>
     <h1 class="headline">The rig has<br><em>commands.</em></h1>
-    <p class="hsub">Every script, every flag, every path that keeps 518,499 chunks governed, ingested, and retrievable. The reference that lives in the Vault.</p>
+    <p class="hsub">Every script, every flag, every path that keeps 566,804 chunks governed, ingested, and retrievable. The reference that lives in the Vault.</p>
     <div class="hacts">
       <a class="btn1" href="corpus.html">The Corpus</a>
       <a class="btn2" href="#scripts">Jump to Scripts ↓</a>
@@ -211,7 +211,7 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
     <span class="ti"><span class="tv">--collection</span><span class="tla">NAMED ROUTING</span></span>
     <span class="ti"><span class="tv">--no-ingest</span><span class="tla">CALIBRATION MODE</span></span>
     <span class="ti"><span class="tv">100.117.38.55</span><span class="tla">REBORN TAILSCALE</span></span>
-    <span class="ti"><span class="tv">518,499</span><span class="tla">CHUNKS INDEXED</span></span>
+    <span class="ti"><span class="tv">566,804</span><span class="tla">CHUNKS INDEXED</span></span>
     <span class="ti"><span class="tv">Seat 1010</span><span class="tla">DEX JR. LOCAL NODE</span></span>
     <span class="ti"><span class="tv">dex-bridge.py</span><span class="tla">RAG QUERY ENGINE</span></span>
     <span class="ti"><span class="tv">dex-ingest.py</span><span class="tla">CORPUS BUILDER</span></span>
@@ -221,7 +221,7 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
     <span class="ti"><span class="tv">dex-sweep.py</span><span class="tla">NIGHTLY SWEEP</span></span>
     <span class="ti"><span class="tv">--build-canon</span><span class="tla">CANON INGEST</span></span>
     <span class="ti"><span class="tv">--collection</span><span class="tla">NAMED ROUTING</span></span>
-    <span class="ti"><span class="tv">518,499</span><span class="tla">CHUNKS INDEXED</span></span>
+    <span class="ti"><span class="tv">566,804</span><span class="tla">CHUNKS INDEXED</span></span>
     <span class="ti"><span class="tv">Seat 1010</span><span class="tla">DEX JR. LOCAL NODE</span></span>
   </div>
 </div>
@@ -286,7 +286,7 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
 
     <div class="sc" id="sc3">
       <div class="sh" onclick="tog('sc3')">
-        <div class="shl"><div class="sn">dex-ingest.py</div><div class="sd">Corpus builder. 23 file types, nomic-embed-text embeddings, ChromaDB writes. Produced 518K chunks from 12,134 files.</div></div>
+        <div class="shl"><div class="sn">dex-ingest.py</div><div class="sd">Corpus builder. 23 file types, nomic-embed-text embeddings, ChromaDB writes. Produced 566K chunks from 12,134+ files.</div></div>
         <div class="sm"><span class="badge bl">LIVE v2.1</span><span class="ei">▼</span></div>
       </div>
       <div class="sb" id="b-sc3">
@@ -384,15 +384,16 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
     <tr><td class="cn">dex_canon</td><td class="cw">1.00</td><td class="clive">LIVE</td><td class="cdesc">Ratified governance — standards, protocols, council verdicts, ADRs</td></tr>
     <tr><td class="cn">ddl_archive</td><td class="cw">0.65</td><td class="clive">LIVE</td><td class="cdesc">Full historical RAW — threads, messages, session logs</td></tr>
     <tr><td class="cn">dex_code</td><td class="cw">0.85</td><td class="clive">LIVE</td><td class="cdesc">All DDL code files — .py .ts .tsx .jsx .js .cs .sql and more</td></tr>
-    <tr><td class="cn">ext_creator</td><td class="cw">0.85</td><td class="clive">LIVE (partial)</td><td class="cdesc">Approved external creator voices — 1 live, 8 approved in queue</td></tr>
-    <tr><td class="cn">dex_decisions</td><td class="cw">0.95</td><td class="cbuild">BUILDING</td><td class="cdesc">Decision ledger — ADR-CORPUS-001 is the first artifact. Highest build priority.</td></tr>
-    <tr><td class="cn">dex_lore</td><td class="cw">0.95</td><td class="cbuild">PENDING</td><td class="cdesc">DexVerse origin docs, council profiles, DEXLORE narrative</td></tr>
-    <tr><td class="cn">dex_canonpress</td><td class="cw">0.85</td><td class="cbuild">PENDING</td><td class="cdesc">CanonPress articles across all six series</td></tr>
-    <tr><td class="cn">dex_auditforge</td><td class="cw">0.85</td><td class="cbuild">PENDING</td><td class="cdesc">AuditForge schema, API routes, council reviews</td></tr>
-    <tr><td class="cn">dex_blindspot</td><td class="cw">0.85</td><td class="cbuild">PENDING</td><td class="cdesc">BlindSpot schema and behavioral analytics content</td></tr>
-    <tr><td class="cn">dex_site</td><td class="cw">0.80</td><td class="cbuild">PENDING</td><td class="cdesc">DDL site JSX/TSX components and routes</td></tr>
-    <tr><td class="cn" style="color:var(--vlt)">dex_dave</td><td class="cw">0.90</td><td class="cbuild">GATED</td><td class="cdesc">Operator voice — iMessages, emails, notes, memoir. Isolated from governance queries per ADR-CORPUS-001 Rule 3.</td></tr>
-    <tr><td class="cn">ext_reference</td><td class="cw">0.75</td><td class="cbuild">PENDING</td><td class="cdesc">6 council-approved texts — Kimball, NIST SP 800-53, PCAOB AS 2201/2301</td></tr>
+    <tr><td class="cn">ext_creator</td><td class="cw">0.85</td><td class="clive">LIVE</td><td class="cdesc">Approved external creator voices — 922 chunks ingested</td></tr>
+    <tr><td class="cn">ext_reference</td><td class="cw">0.75</td><td class="cbuild">PROVISIONED</td><td class="cdesc">Empty — awaiting curation policy. Target: council-approved external reference texts.</td></tr>
+    <tr><td class="cn">dex_decisions</td><td class="cw">0.95</td><td class="cbuild">PLANNED</td><td class="cdesc">Decision ledger — ADR-CORPUS-001 is the first artifact. Highest build priority.</td></tr>
+    <tr><td class="cn">dex_lore</td><td class="cw">0.95</td><td class="cbuild">PLANNED</td><td class="cdesc">DexVerse origin docs, council profiles, DEXLORE narrative</td></tr>
+    <tr><td class="cn">dex_canonpress</td><td class="cw">0.85</td><td class="cbuild">PLANNED</td><td class="cdesc">CanonPress articles across all six series</td></tr>
+    <tr><td class="cn">dex_auditforge</td><td class="cw">0.85</td><td class="cbuild">PLANNED</td><td class="cdesc">AuditForge schema, API routes, council reviews</td></tr>
+    <tr><td class="cn">dex_blindspot</td><td class="cw">0.85</td><td class="cbuild">PLANNED</td><td class="cdesc">BlindSpot schema and behavioral analytics content</td></tr>
+    <tr><td class="cn">dex_site</td><td class="cw">0.80</td><td class="cbuild">PLANNED</td><td class="cdesc">DDL site JSX/TSX components and routes</td></tr>
+    <tr><td class="cn" style="color:var(--vlt)">dex_dave</td><td class="cw">0.90</td><td class="cbuild">PLANNED</td><td class="cdesc">Operator voice — hard-gated per ADR-CORPUS-001 Rule 3. Isolated from governance queries.</td></tr>
+    <tr><td class="cn">dex_graveyard</td><td class="cw">0.80</td><td class="cbuild">PLANNED</td><td class="cdesc">Anti-patterns only — manual --collection flag, never in default routes</td></tr>
   </table>
 
   <!-- INFRASTRUCTURE -->
@@ -402,7 +403,7 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
     <div class="ic"><div class="it">GAMINGLAPTOP (Node 2)</div><div class="ir">Local: <span>192.168.0.210</span></div><div class="ir">Tailscale: <span style="color:rgba(107,123,141,.4)">pending</span></div><div class="ir">GPU: <span>RTX 3060</span></div><div class="ir">Route: <span class="tl">--node laptop</span></div><div class="ir">Env: <span>OLLAMA_CHAT_URL_LAPTOP</span></div></div>
     <div class="ic"><div class="it">WORKINGSURFACE</div><div class="ir">Tailscale: <span class="tl">100.92.99.115</span></div><div class="ir">User: <span>dkitc</span></div><div class="ir">Role: <span>operator terminal</span></div><div class="ir">Git push: <span>primary machine</span></div></div>
     <div class="ic"><div class="it">DEX JR. (Seat 1010)</div><div class="ir">Model: <span class="hl">qwen2.5-coder:7b</span></div><div class="ir">Modelfile: <span class="hl">v4.6 CURRENT</span></div><div class="ir">Judgment: <span>~92%</span></div><div class="ir">Next: <span>v4.7 OBS-DJ-004</span></div></div>
-    <div class="ic"><div class="it">CHROMADB</div><div class="ir">dex_canon: <span>226,123</span></div><div class="ir">ddl_archive: <span>271,627</span></div><div class="ir">dex_code: <span>~20,384</span></div><div class="ir">Total: <span class="hl">518,499</span></div></div>
+    <div class="ic"><div class="it">CHROMADB</div><div class="ir">dex_canon: <span>253,978</span></div><div class="ir">ddl_archive: <span>291,520</span></div><div class="ir">dex_code: <span>20,384</span></div><div class="ir">ext_creator: <span>922</span></div><div class="ir">Total: <span class="hl">566,804</span></div></div>
     <div class="ic"><div class="it">GIT WORKFLOW</div><div class="ir" style="flex-direction:column;gap:2px"><span style="color:var(--teal);font-size:.6rem">cd C:\Users\dexjr\dex-rag</span><span style="color:var(--teal);font-size:.6rem">git pull</span><span style="color:var(--steel);font-size:.58rem;margin-top:4px">Push from Surface (dkitc)</span><span style="color:var(--teal);font-size:.6rem">git add . &amp;&amp; git commit -m "msg"</span><span style="color:var(--teal);font-size:.6rem">git push</span></div></div>
   </div>
 
@@ -426,7 +427,7 @@ footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;align-i
   <!-- NAV -->
   <div class="sl">Navigate the Vault</div>
   <div class="ng">
-    <a class="nc" href="corpus.html"><div class="ncn">01 — THE CORPUS</div><div class="nct">Half a Million Chunks</div><div class="ncb">What these scripts built. 518,499 chunks. Every command on this page feeds into it.</div><div class="nca">Explore the Corpus →</div></a>
+    <a class="nc" href="corpus.html"><div class="ncn">01 — THE CORPUS</div><div class="nct">Half a Million Chunks</div><div class="ncb">What these scripts built. 566,804 chunks. Every command on this page feeds into it.</div><div class="nca">Explore the Corpus →</div></a>
     <a class="nc" href="council.html"><div class="ncn">02 — THE COUNCIL</div><div class="nct">Ten Seats. Three Verdicts.</div><div class="ncb">dex-council.py runs the local version. Seat 1010 synthesizes. Nine cloud seats deliberate in parallel.</div><div class="nca">Meet the Council →</div></a>
     <a class="nc" href="method.html"><div class="ncn">03 — THE METHOD</div><div class="nct">Chaos → Structured → Automated</div><div class="ncb">These scripts are the Automated phase. The corpus is Structured. The raw archives were Chaos.</div><div class="nca">Understand the Method →</div></a>
     <a class="nc" href="products.html"><div class="ncn">04 — THE PRODUCTS</div><div class="nct">Three Products. One Rig.</div><div class="ncb">All three feed the corpus. The corpus feeds Dex Jr. The loop is the architecture.</div><div class="nca">See the Products →</div></a>
@@ -455,7 +456,7 @@ var lines=[
   {t:'b'},
   {t:'p',s:'dexjr@reborn:~$ python dex-ingest.py --path "DDL-Standards-Canon" --build-canon --fast'},
   {t:'o',s:'[SCAN] 491 new chunks queued · 23 file types'},
-  {t:'k',s:'[DONE] dex_canon: 226,123 total chunks'},
+  {t:'k',s:'[DONE] dex_canon: 253,978 total chunks'},
   {t:'b'},
   {t:'p',s:'dexjr@reborn:~$ python dex-sweep.py'},
   {t:'o',s:'[SWEEP] 4 source folders · nightly run'},
